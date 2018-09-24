@@ -3,6 +3,7 @@
 using namespace std;
 
 void showMenu();
+void showTitle();
 void clearScreen();
 int getOption();
 void selectMenuOption(int option);
