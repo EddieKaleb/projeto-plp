@@ -8,22 +8,31 @@ struct player {
   int chips;
 };
 
+// Quantidade de jogadores na mesa
+int QTD_PLAYERS = 9;
+
 // Array que armazena as cartas comunitárias.
 card cardsTable[5];
 
 // Array que armazena os jogadores da mesa.
-player playersTable[9];
+player playersTable[QTD_PLAYERS];
+
+char playersRoles[QTD_PLAYERS];
 
 // Posição do usuário na mesa.
 int USER_POSITION = 0;
+
+// Posição do dealer durante a partida;
+int DEALER_POSITION = 0;
+
+// Valor do pot da partida.
+int POT = 0;
 
 /**
     Inicia o jogo.
 **/
 void startGame() {
     setGame();
-
-
 }
 
 /**
@@ -38,11 +47,12 @@ void setGame() {
 }
 
 /**
-    Configura as fichas e as cartas dos jogadores.
+    Configura as fichas, as cartas dos jogadores e define a função inicial de cada jogador.
 **/
 void setPlayers() {
     setPlayersChips();
     setPlayersCards();
+    setInitialPlayersRoles();
 }
 
 /**
@@ -62,6 +72,42 @@ void setPlayersCards() {
         playersTable[i].hand[0] = getCard();
         playersTable[i].hand[1] = getCard();
     }
+}
+
+// Define as funções iniciais dos jogadores de forma aleatória.
+void setInitialPlayersRoles() {
+    srand(time(NULL));
+
+    DEALER_POSITION = rand() % 9;
+
+    setPlayersRoles(DEALER_POSITION);
+}
+
+// Define as funções de cada jogador durante a partida.
+void setPlayersRoles(int dealerPosition) {
+    int i = 0;
+    int index = dealerPosition;
+
+    playersRoles[index] = 'D';
+
+    index = nextPlayerPosition(index);
+
+    playersRoles[index] = 'S';
+
+    index = nextPlayerPosition(index);
+
+    playersRoles[index] = 'B';
+
+    while(i < QTD_PLAYERS - 3) {
+        index = nextPlayerPosition(index);
+        playersRoles[index] = 'C';
+
+    }
+}
+
+// Retorna a posição do próximo jogador com base no array de jogadores.
+int nextPlayerPosition(int currentPos) {
+    return (currentPos + 1) % QTD_PLAYERS;
 }
 
 /**
