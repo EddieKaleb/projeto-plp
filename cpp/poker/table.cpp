@@ -1,15 +1,16 @@
-#include "deck.cpp"
+#include "hands.cpp"
+
+struct player {
+  card hand[2];
+  int fichas;
+};
+
+card cardsTable[5];
 
 int main() {
 
   buildDeck();
-
-  for(int i = 0; i <= 3; i++) {
-    for(int j = 0; j <= 12; j++) {
-      cout << deck[i][j].value << " " << deck[i][j].naipe << " ";
-    }
-    cout << endl;
-  }
+  shuffleDeck();
 
   return 0;
 }
