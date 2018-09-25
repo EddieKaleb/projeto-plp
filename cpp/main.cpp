@@ -43,8 +43,7 @@ void showMenu() {
 
     cout << "           1  -  Modos de jogo" << endl;
     cout << "           2  -  Regras" << endl;
-    cout << "           3  -  Ranking" << endl;
-    cout << "           4  -  Sair" << endl;
+    cout << "           3  -  Sair" << endl;
 
     selectMenuOption(getOption());
 }
@@ -67,9 +66,6 @@ void selectMenuOption(int option) {
             showRules();
             break;
         case 3:
-            showRanking();
-            break;
-        case 4:
             quit();
             break;
         default:
