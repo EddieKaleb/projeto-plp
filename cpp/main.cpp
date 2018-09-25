@@ -10,6 +10,9 @@ void selectMenuOption(int option);
 void showGameModesMenu();
 void selectGameModeOption(int option);
 void quit();
+void showRules();
+void pause();
+void showRanking();
 
 void clearScreen() {
     system("clear");
@@ -26,12 +29,13 @@ void showTitle() {
     cout << "               $$ |       $$$$$$  |$$ | \134$$\134 $$$$$$$$\134 $$ |  $$ |" << endl;
     cout << "               \134__|       \134______/ \134__|  \134__|\134________|\134__|  \134__|" << endl;
     cout << endl;
+    cout << "                                  Carregando..." << endl;
+
+    system("sleep 2s");
 }
 
 void showMenu() {
     clearScreen();
-
-    showTitle();
 
     cout << endl;
     cout << "---------------------------------     MENU     ---------------------------------";
@@ -60,8 +64,10 @@ void selectMenuOption(int option) {
             showGameModesMenu();
             break;
         case 2:
+            showRules();
             break;
         case 3:
+            showRanking();
             break;
         case 4:
             quit();
@@ -98,6 +104,35 @@ void selectGameModeOption(int option) {
     }
 }
 
+void showRules() {
+    clearScreen();
+
+    cout << endl;
+    cout << "-----------------------------     REGRAS     -----------------------------";
+    cout << endl << endl;
+
+    cout << "                         [ Pressione ENTER para voltar ]" << endl;
+
+    pause();
+}
+
+void showRanking() {
+    clearScreen();
+
+    cout << endl;
+    cout << "-----------------------------     RANKING     -----------------------------";
+    cout << endl << endl;
+
+    cout << "                         [ Pressione ENTER para voltar ]" << endl;
+
+    pause();
+}
+
+void pause() {
+    cin.ignore();
+    getchar();
+}
+
 void quit() {
     clearScreen();
 
@@ -123,6 +158,8 @@ void quit() {
 }
 
 int main() {
+
+    showTitle();
 
     while(true) {
         showMenu();
