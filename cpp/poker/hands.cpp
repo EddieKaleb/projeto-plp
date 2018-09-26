@@ -1,4 +1,5 @@
-#include "util.cpp"
+#include "util.cpp" 
+#include "hand_prob.cpp"
 
 typedef struct {
   string flag;
@@ -6,6 +7,26 @@ typedef struct {
   int quant;
 } handStatus;
 
+float getPreFlopProb(card pair[], int num_players) {
+  string target_hand;
+  quickSort(pair,0,1);
+
+  for (int i = 0; i < 2; i++) {
+    target_hand += pair[i].value;
+  }
+  
+  if (pair[0].value != pair[1].value) {
+    if (pair[0].naipe == pair[1].naipe) {
+      target_hand += "s";
+    } else {
+      target_hand += "o";
+    }
+  }
+  
+  float prob = hand_probability(target_hand, num_players);
+  cout << target_hand << ": " << prob << endl;
+  return prob;
+}
 
 handStatus verifyHand(card handPlayer[],card cTable[], int quantCards){
   card agroup[quantCards];

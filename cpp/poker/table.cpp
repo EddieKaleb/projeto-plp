@@ -1,5 +1,6 @@
 #include "hands.cpp"
 #include <cstdlib>
+
 void setGame();
 void startGame();
 void setPlayers();
@@ -21,6 +22,7 @@ void clearScreen();
 int getOption();
 void setInitialDealerPosition();
 void setNextDealerPosition();
+void setPlayersPreFlopProb();
 
 void clearScreen() {
     system("clear");
@@ -33,6 +35,7 @@ struct player {
   card hand[2];
   int chips;
   char role;
+  float preFlopProb;
 };
 
 // Quantidade de jogadores na mesa
@@ -166,6 +169,14 @@ void setPlayersRoles(int dealerPosition) {
         index = nextPlayerPosition(index);
         playersTable[index].role = 'C';
         i++;
+    }
+}
+/**
+    Define as probabilidades pré-flop de cada jogador
+**/
+void setPlayersPreFlopProb() {
+    for (int i = 0; i < QTD_PLAYERS; i++) {
+        playersTable[i].preFlopProb = getPreFlopProb(playersTable[i].hand, QTD_PLAYERS);
     }
 }
 

@@ -61,16 +61,3 @@ string get_probability(string probs, int num_players) {
 
     return target_probability;
 }
-
-/*
-    Temporary test method
-*/
-int main() {
-    cout << hand_probability("AA", 2) << endl;
-    cout << hand_probability("AA", 3) << endl;
-    cout << hand_probability("22", 3) << endl;
-    cout << hand_probability("KK", 7) << endl;
-    
-    cout << hand_probability("WWWW", 3) << endl;
-    cout << hand_probability("KK", 12) << endl;
-}
