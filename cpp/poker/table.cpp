@@ -1,4 +1,5 @@
 #include "hands.cpp"
+#include <cstdlib>
 void setGame();
 void startGame();
 void setPlayers();
@@ -18,6 +19,8 @@ void foldAction();
 void exitAction();
 void clearScreen();
 int getOption();
+void setInitialDealerPosition();
+void setNextDealerPosition();
 
 void clearScreen() {
     system("clear");
@@ -55,13 +58,23 @@ int POT = 0;
 **/
 void startGame() {
 
+    setPlayersChips();
+    setInitialDealerPosition();
+
     /**
         Controlar a passagem do dealer, e executar enquanto o usuário não desiste,
         perde todas as fichas, ou não é vencedor.
     **/
     while(true) {
 
-        setGame();
+        buildDeck();
+        shuffleDeck();
+        setPlayersCards();
+
+        setNextDealerPosition();
+        setPlayersRoles(DEALER_POSITION);
+
+        POT = 0;
 
         /**
             Controlar as partidas, ou seja, roda enquanto as cinco cartas comunitárias não são definidas.
@@ -119,14 +132,20 @@ void setPlayersCards() {
 
 // Define as funções iniciais dos jogadores de forma aleatória.
 void setInitialPlayersRoles() {
-    srand(time(NULL));
-
-    DEALER_POSITION = rand() % QTD_PLAYERS;
-
+    setInitialDealerPosition();
     setPlayersRoles(DEALER_POSITION);
 }
 
-// Define as funções de cada jogador durante a partida.
+void setInitialDealerPosition() {
+    srand(time(NULL));
+    DEALER_POSITION = rand() % QTD_PLAYERS;
+}
+
+void setNextDealerPosition() {
+    DEALER_POSITION = nextPlayerPosition(DEALER_POSITION);
+}
+
+// Define as funções de cada jogador durante a partida com base no dealer.
 void setPlayersRoles(int dealerPosition) {
     int i = 0;
     int index = dealerPosition;
