@@ -6,18 +6,17 @@
 struct player {
   card hand[2];
   int chips;
+  char role;
 };
 
 // Quantidade de jogadores na mesa
-int QTD_PLAYERS = 9;
+int QTD_PLAYERS = 6;
 
 // Array que armazena as cartas comunitárias.
 card cardsTable[5];
 
 // Array que armazena os jogadores da mesa.
 player playersTable[QTD_PLAYERS];
-
-char playersRoles[QTD_PLAYERS];
 
 // Posição do usuário na mesa.
 int USER_POSITION = 0;
@@ -32,7 +31,28 @@ int POT = 0;
     Inicia o jogo.
 **/
 void startGame() {
-    setGame();
+
+    /**
+        Controlar a passagem do dealer, e executar enquanto o usuário não desiste,
+        perde todas as fichas, ou não é vencedor.
+    **/
+    while(true) {
+
+        setGame();
+
+        /**
+            Controlar as partidas, ou seja, roda enquanto as cinco cartas comunitárias não são definidas.
+        **/
+        while() {
+
+            /**
+                Controla a passagem de vez de cada jogador.
+            **/
+            for(int i = 0; i < QTD_PLAYERS; i++) {
+
+            }
+        }
+    }
 }
 
 /**
@@ -78,7 +98,7 @@ void setPlayersCards() {
 void setInitialPlayersRoles() {
     srand(time(NULL));
 
-    DEALER_POSITION = rand() % 9;
+    DEALER_POSITION = rand() % QTD_PLAYERS;
 
     setPlayersRoles(DEALER_POSITION);
 }
@@ -88,20 +108,20 @@ void setPlayersRoles(int dealerPosition) {
     int i = 0;
     int index = dealerPosition;
 
-    playersRoles[index] = 'D';
+    playersTable[index].role = 'D';
 
     index = nextPlayerPosition(index);
 
-    playersRoles[index] = 'S';
+    playersTable[index].role = 'S';
 
     index = nextPlayerPosition(index);
 
-    playersRoles[index] = 'B';
+    playersTable[index].role = 'B';
 
     while(i < QTD_PLAYERS - 3) {
         index = nextPlayerPosition(index);
-        playersRoles[index] = 'C';
-
+        playersTable[index].role = 'C';
+        i++;
     }
 }
 
@@ -132,6 +152,7 @@ void showUserActions() {
     cout << "          3  -  Pagar" << endl;
     cout << "          4  -  Aumentar" << endl;
     cout << "          5  -  Desistir" << endl;
+    cout << "          6  -  Sair da mesa" << endl;
 
     selectActionOption(getOption());
 }
@@ -167,6 +188,9 @@ void selectActionOption(int option) {
             break;
         case 5:
             foldAction();
+            break;
+        case 6:
+            exitAction();
             break;
         default:
             break;
@@ -205,5 +229,12 @@ void raiseAction() {
     Realiza a ação de 'Desistir' (Encerrar o jogo).
 **/
 void foldAction() {
+
+}
+
+/**
+    Realiza a ação de 'Sair' da mesa.
+**/
+void exitAction() {
 
 }
