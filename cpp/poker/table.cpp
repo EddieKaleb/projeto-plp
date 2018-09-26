@@ -84,9 +84,11 @@ void startGame() {
             /**
                 Controla a passagem de vez de cada jogador.
             **/
-            for(int i = 0; i < QTD_PLAYERS; i++) {
-
-            }
+            int i = DEALER_POSITION;
+            
+            do{
+                i = nextPlayerPosition(i);
+            }while(i != DEALER_POSITION);
         }
     }
 }
