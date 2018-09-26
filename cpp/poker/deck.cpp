@@ -10,7 +10,7 @@ struct card {
   char naipe;
 };
 
-string cards[] = {"A","K","Q","J","10","9","8","7","6","5","4","3","2"};
+char cards[] = {'A','K','Q','J','T','9','8','7','6','5','4','3','2'};
 char naipes[] = {'E','C','P','O'};
 
 card deck[52];
