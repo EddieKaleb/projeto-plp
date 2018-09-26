@@ -1,5 +1,12 @@
 #include "deck.cpp"
 
+
+void copyArrayCards(card current[], card* target, int quantCards){
+  for(int i = 0; i < quantCards; i++){
+    target[i] = current[i];
+  }
+}
+
 void agroupCards(card handPlayer[],card cTable[], card *agroup){
   for(int i =0; i<=6; i++){
     if(i<2){
@@ -12,9 +19,9 @@ void agroupCards(card handPlayer[],card cTable[], card *agroup){
   }
 }
 
-int map(string value){
-    string cards[] = {"A","K","Q","J","10","9","8","7","6","5","4","3","2"};
-    int numValue[] = {1,2,3,4,5,6,7,8,9,10,11,12,13};
+int map(char value){
+    char cards[] = {'A','K','Q','J','T','9','8','7','6','5','4','3','2'};
+    int numValue[] = {1,13,12,11,10,9,8,7,6,5,4,3,2};
     for(int i = 0; i <= 12; i++){
         if(cards[i] == value){
             return numValue[i];
@@ -23,7 +30,7 @@ int map(string value){
     return 0;
 }
 
-int compareTo(string value, string pivot){
+int compareTo(char value, char pivot){
     return map(value) <= map(pivot);
 }
 
@@ -34,7 +41,7 @@ void swap(card* a, card* b) {
 } 
 
 int partition (card arr[], int low, int high) { 
-  string pivot = arr[high].value; 
+  char pivot = arr[high].value; 
   int i = (low - 1);  
   for (int j = low; j <= high- 1; j++) { 
     if (compareTo(arr[j].value, pivot)) { 

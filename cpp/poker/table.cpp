@@ -1,4 +1,27 @@
 #include "hands.cpp"
+void setGame();
+void startGame();
+void setPlayers();
+void setPlayersChips();
+void setPlayersCards();
+void setInitialPlayersRoles();
+void setPlayersRoles(int dealerPosition);
+int nextPlayerPosition(int currentPos);
+void showTable();
+void showUserActions();
+void selectActionOption(int option);
+void checkAction();
+void betAction();
+void callAction();
+void raiseAction();
+void foldAction();
+void exitAction();
+void clearScreen();
+int getOption();
+
+void clearScreen() {
+    system("clear");
+}
 
 /**
     Representação de um jogador.
@@ -16,7 +39,7 @@ int QTD_PLAYERS = 6;
 card cardsTable[5];
 
 // Array que armazena os jogadores da mesa.
-player playersTable[QTD_PLAYERS];
+player playersTable[6];
 
 // Posição do usuário na mesa.
 int USER_POSITION = 0;
@@ -43,7 +66,7 @@ void startGame() {
         /**
             Controlar as partidas, ou seja, roda enquanto as cinco cartas comunitárias não são definidas.
         **/
-        while() {
+        while(true) {
 
             /**
                 Controla a passagem de vez de cada jogador.
@@ -237,4 +260,8 @@ void foldAction() {
 **/
 void exitAction() {
 
+}
+
+int main(){
+    return 0;
 }
