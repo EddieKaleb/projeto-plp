@@ -87,11 +87,12 @@ void startGame() {
             /**
                 Controla a passagem de vez de cada jogador.
             **/
-            int i = DEALER_POSITION;
+            int i = DEALER_POSITION + 1;
+            int lastBet = 0;
             
             do{
                 i = nextPlayerPosition(i);
-            }while(i != DEALER_POSITION);
+            }while(i != DEALER_POSITION + 1);
         }
     }
 }
