@@ -112,18 +112,6 @@ void showRules() {
     pause();
 }
 
-void showRanking() {
-    clearScreen();
-
-    cout << endl;
-    cout << "-----------------------------     RANKING     -----------------------------";
-    cout << endl << endl;
-
-    cout << "                         [ Pressione ENTER para voltar ]" << endl;
-
-    pause();
-}
-
 void pause() {
     cin.ignore();
     getchar();
