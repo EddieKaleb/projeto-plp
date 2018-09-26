@@ -34,6 +34,47 @@ Ao final da partida o sistema deve mostrar as probabilidades do jogador obter ca
 O sistema deve classificar o jogador como: conservador, muito conservador, moderado, muito moderado, agressivo ou muito 
 agressivo, levando em consideração as ações do jogador nos diferentes cenários da partida.
 
+## Poker
+
+### Mãos do Poker
+
+![Jogos](https://blog.betmotion.com/media/03.jpg)
+
+### Posições na Mesa
+
+![Pos](https://horusrafa.files.wordpress.com/2014/09/regrras-gerais-da-modalidade-mesa_do_guia.png)
+<br>
+O botão de Dealer gira ao longo da partida de forma a alternar as posições na mesa.
+
+### Ações
+* Call (cobrir uma aposta)
+* Check (passar a vez)
+* Raise (apostar)
+* Re-raise (aumentar uma aposta)
+* Fold (desistir)
+
+### Turnos
+* Pré flop 
+* Flop
+* Turn 
+* River
+
+#### Pré Flop
+* O Dealer é escolhido através de sorteio
+* Cada jogador recebe 2 cartas
+
+#### Flop
+* O Crupier coloca 3 cartas na mesa
+
+#### Turn
+* O Crupier coloca 1 carta na mesa
+
+#### River 
+* O Crupier coloca 1 carta na mesa
+
+### Vencedor 
+Será aquele que tiver acumulado todas as fichas da mesa após várias partidas.
+
 ##### Participantes
 - [Arthur Ferrão](https://github.com/ArthurFerrao)
 - [Eddie Kaleb](https://github.com/EddieKaleb)
