@@ -13,24 +13,28 @@ void setInitialPlayersRoles();
 void setPlayersRoles(int dealerPosition);
 int nextPlayerPosition(int currentPos);
 void showTable();
-void showUserActions();
-void selectActionOption(int option);
-bool checkAction();
-bool betAction();
-bool callAction();
-bool raiseAction();
-bool foldAction();
+void showUserActions(int round, int currentPosition);
+void selectActionOption(int option, int round, int playerPosition);
+bool checkAction(int round, int position, int bigBet);
+bool betAction(int position, int bet);
+bool callAction(int position);
+bool raiseAction(int position, int raise);
+void foldAction(int position);
 void exitAction();
 void clearScreen();
 int getOption();
 void setInitialDealerPosition();
 void setNextDealerPosition();
 void setPlayersPreFlopProb();
-void checkPlayerAction(int position, int raise, int bigBet);
+void checkPlayerAction(int round, int position, int bigBet);
 void betPlayerAction(int position);
 void callPlayerAction(int position);
 void raisePlayerAction(int position);
-void foldPlayerAction(int position);
+void preFlopRound();
+void flopRound();
+void turnRound();
+void riverRound();
+void runRound(int beginPosition, int endPosition, int round);
 
 void clearScreen() {
     system("clear");
@@ -47,35 +51,66 @@ struct player {
   bool enabled;
 };
 
-// Quantidade de jogadores na mesa
+/**
+    Quantidade de jogadores na mesa.
+**/
 int QTD_PLAYERS = 6;
 
-// Array que armazena as cartas comunitárias.
+/**
+    Array que armazena as cartas comunitárias.
+**/
 card cardsTable[5];
 
-// Array que armazena os jogadores da mesa.
+/**
+    Array que armazena os jogadores da mesa.
+**/
 player playersTable[6];
 
-// Posição do usuário na mesa.
+/**
+    Posição do usuário na mesa.
+**/
 int USER_POSITION = 0;
 
-// Posição do dealer durante a partida;
+/**
+    Posição do dealer durante a partida.
+**/
 int DEALER_POSITION = 0;
 
-// Valor do pot da partida.
+/**
+    Valor da aposta inicial que é realizada pelo Small Blind.
+**/
+int MINIMUM_BET = 2;
+
+/**
+    Variável que armazena o valor atual da aposta do Big Blind;
+**/
+int bigBet = 0;
+
+/**
+    Valor do pot da partida.
+**/
 int POT = 0;
 
-// Ativar todos os usuários.
+/**
+    Ativa todos os usuários.
+**/
 void enablePlayers(){
     for(int i = 0; i < QTD_PLAYERS; i++){
-        playersTable[position].enabled = true;
+        playersTable[i].enabled = true;
     }
 }
 
-// Desativar determinado usuário.
+/**
+    Desativar determinado usuário.
+**/
 void disablePlayer(int position){
     playersTable[position].enabled = false;
 }
+
+/**
+    Última aposta feita por um jogador durante uma partida.
+**/
+int lastBet = 0;
 
 /**
     Inicia o jogo.
@@ -86,8 +121,8 @@ void startGame() {
     setInitialDealerPosition();
 
     /**
-        Controlar a passagem do dealer, e executar enquanto o usuário não desiste,
-        perde todas as fichas, ou não é vencedor.
+        Controlar a passagem do dealer, e executar enquanto o usuário não desiste, ou
+        perde todas as fichas.
     **/
     while(true) {
 
@@ -101,21 +136,99 @@ void startGame() {
         POT = 0;
 
         /**
-            Controlar as partidas, ou seja, roda enquanto as cinco cartas comunitárias não são definidas.
+            Controla os quartro turnos do jogo: pre-flop, flop, turn e river.
         **/
-        while(true) {
+        for(int i = 0; i < 4; i++) {
 
-            /**
-                Controla a passagem de vez de cada jogador.
-            **/
-            int i = DEALER_POSITION + 1;
-            int lastBet = 0;
+            lastBet = 0;
 
-            do{
-                i = nextPlayerPosition(i);
-            }while(i != DEALER_POSITION + 1);
+            switch(i) {
+                case 0:
+                    preFlopRound();
+                    break;
+                case 1:
+                    flopRound();
+                    break;
+                case 2:
+                    turnRound();
+                    break;
+                case 3:
+                    riverRound();
+                default:
+                    break;
+            }
         }
     }
+}
+
+/**
+    Realiza as operações necessárias do turno de pre-flop.
+**/
+void preFlopRound() {
+    int smallPosition = nextPlayerPosition(DEALER_POSITION);
+    int bigPosition = nextPlayerPosition(smallPosition);
+
+    lastBet = MINIMUM_BET;
+
+    betAction(smallPosition, MINIMUM_BET);
+    raiseAction(bigPosition, MINIMUM_BET);
+
+    runRound(nextPlayerPosition(bigPosition), bigPosition, 0);
+}
+
+/**
+    Realiza as operações necessárias do turno de flop.
+**/
+void flopRound() {
+    int smallPosition = nextPlayerPosition(DEALER_POSITION);
+
+    cardsTable[0] = getCard();
+    cardsTable[1] = getCard();
+    cardsTable[2] = getCard();
+
+    runRound(smallPosition, DEALER_POSITION, 1);
+}
+
+/**
+    Realiza as operações necessárias do turno de turn.
+**/
+void turnRound() {
+    int smallPosition = nextPlayerPosition(DEALER_POSITION);
+
+    cardsTable[3] = getCard();
+
+    runRound(smallPosition, DEALER_POSITION, 2);
+}
+
+/**
+    Realiza as operações necessárias do turno de river.
+**/
+void riverRound() {
+    int smallPosition = nextPlayerPosition(DEALER_POSITION);
+
+    cardsTable[4] = getCard();
+
+    runRound(smallPosition, DEALER_POSITION, 3);
+
+    /** chamar método que compara as mãos e declarar o vencedor**/
+}
+
+/**
+    Executa uma rodada permitindo que todos os jogadores ativos na mesa façam suas ações.
+**/
+void runRound(int beginPosition, int endPosition, int round) {
+    int currentPosition = beginPosition;
+    do {
+        if(playersTable[currentPosition].enabled == true) {
+            if(currentPosition == USER_POSITION) {
+                showUserActions(round, currentPosition);
+            }
+            else {
+                //botActions();
+            }
+        }
+        currentPosition = nextPlayerPosition(currentPosition);
+    } while(currentPosition == nextPlayerPosition(endPosition));
 }
 
 /**
@@ -157,22 +270,32 @@ void setPlayersCards() {
     }
 }
 
-// Define as funções iniciais dos jogadores de forma aleatória.
+/**
+    Define as funções iniciais dos jogadores de forma aleatória.
+**/
 void setInitialPlayersRoles() {
     setInitialDealerPosition();
     setPlayersRoles(DEALER_POSITION);
 }
 
+/**
+    Define a posição atual do dealer de forma aleatória.
+**/
 void setInitialDealerPosition() {
     srand(time(NULL));
     DEALER_POSITION = rand() % QTD_PLAYERS;
 }
 
+/**
+    Define a próxima posição do dealer.
+**/
 void setNextDealerPosition() {
     DEALER_POSITION = nextPlayerPosition(DEALER_POSITION);
 }
 
-// Define as funções de cada jogador durante a partida com base no dealer.
+/**
+    Define as funções de cada jogador com base no dealer.
+**/
 void setPlayersRoles(int dealerPosition) {
     int i = 0;
     int index = dealerPosition;
@@ -193,8 +316,9 @@ void setPlayersRoles(int dealerPosition) {
         i++;
     }
 }
+
 /**
-    Define as probabilidades pré-flop de cada jogador
+    Define as probabilidades pré-flop de cada jogador.
 **/
 void setPlayersPreFlopProb() {
     for (int i = 0; i < QTD_PLAYERS; i++) {
@@ -202,7 +326,9 @@ void setPlayersPreFlopProb() {
     }
 }
 
-// Retorna a posição do próximo jogador com base no array de jogadores.
+/**
+    Retorna a posição do próximo jogador com base no array de jogadores.
+**/
 int nextPlayerPosition(int currentPos) {
     return (currentPos + 1) % QTD_PLAYERS;
 }
@@ -215,9 +341,9 @@ void showTable() {
 }
 
 /**
-    Exibe as ações que um usuário pode realizar em sua vez.
+    Exibe as ações que um usuário pode realizar em sua vez. lastBet round position qtd
 **/
-void showUserActions() {
+void showUserActions(int round, int playerPosition) {
     clearScreen();
     
     cout << endl;
@@ -231,7 +357,7 @@ void showUserActions() {
     cout << "          5  -  Desistir" << endl;
     cout << "          6  -  Sair da mesa" << endl;
 
-    selectActionOption(getOption());
+    selectActionOption(getOption(), round, playerPosition);
 }
 
 /**
@@ -249,22 +375,22 @@ int getOption() {
 /**
     Interpreta a ação selecionada pelo usuário.
 **/
-void selectActionOption(int option) {
+void selectActionOption(int option, int round, int playerPosition) {
     switch(option) {
         case 1:
-            checkAction();
+            checkPlayerAction(round, playerPosition, bigBet);
             break;
         case 2:
-            betAction();
+            betPlayerAction(playerPosition);
             break;
         case 3:
-            callAction();
+            callPlayerAction(playerPosition);
             break;
         case 4:
-            raiseAction();
+            raisePlayerAction(playerPosition);
             break;
         case 5:
-            foldAction();
+            foldAction(playerPosition);
             break;
         case 6:
             exitAction();
@@ -277,15 +403,16 @@ void selectActionOption(int option) {
 /**
  * Ligações entre menu de seleção e métodos de ação
 **/
-void checkPlayerAction(int position, int raise, int bigBet){
-    if(!checkAction(position, raise, bigBet)){
+void checkPlayerAction(int round, int position, int bigBet){
+    if(!checkAction(round, position, bigBet)){
         cout << "Ação inválida!";
     }
 }
 
 void betPlayerAction(int position){
     int value;
-    cin >> "Digite a quantia que você deseja apostar: " >> value;
+    cout << "Digite a quantia que você deseja apostar: ";
+    cin >> value;
 
     if(!raiseAction(position, value)){
         cout << "Ação inválida!";
@@ -300,15 +427,10 @@ void callPlayerAction(int position){
 
 void raisePlayerAction(int position){
     int value;
-    cin >> "Digite a quantia que você deseja aumentar na aposta: " >> value;
+    cout << "Digite a quantia que você deseja aumentar na aposta: ";
+    cin >> value;
 
     if(!raiseAction(position, value)){
-        cout << "Ação inválida!";
-    }
-}
-
-void foldPlayerAction(int position){
-    if(!foldAction(position)){
         cout << "Ação inválida!";
     }
 }
@@ -317,7 +439,7 @@ void foldPlayerAction(int position){
     Realiza a ação de 'Mesa' (Passar a vez).
 **/
 bool checkAction(int round, int position, int bigBet) {
-    if(!(round == 0 && playersTable[position] == 'B' && bigBet == lastBet) || lastBet != 0) {
+    if(!(round == 0 && playersTable[position].role == 'B' && bigBet == lastBet) || lastBet != 0) {
         return false;
     }
 
