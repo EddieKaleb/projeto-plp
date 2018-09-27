@@ -267,49 +267,94 @@ void selectActionOption(int option) {
     }
 }
 
+void checkPlayerAction(int position, int raise, int bigBet){
+    if(!checkAction(position, raise, bigBet)){
+        cout << "Ação inválida!";
+    }
+}
+
+void betPlayerAction(int position){
+    int value;
+    cin >> "Digite a quantia que você deseja apostar: " >> value;
+
+    if(!raiseAction(position, value)){
+        cout << "Ação inválida!";
+    }
+}
+
+void callPlayerAction(int position){
+    if(!callAction(position)){
+        cout << "Ação inválida!";
+    }
+}
+
+void raisePlayerAction(int position){
+    int value;
+    cin >> "Digite a quantia que você deseja aumentar na aposta: " >> value;
+
+    if(!raiseAction(position, value)){
+        cout << "Ação inválida!";
+    }
+}
+
+void foldPlayerAction(int position){
+    if(!foldAction(position)){
+        cout << "Ação inválida!";
+    }
+}
+
 /**
     Realiza a ação de 'Mesa' (Passar a vez).
 **/
-void checkAction(int lastBet, int round, int position, int bigBet) {
+bool checkAction(int round, int position, int bigBet) {
     if(!(round == 0 && playersTable[position] == 'B' && bigBet == lastBet) || lastBet != 0) {
-        cout << "Ação inválida!";
+        return false;
     }
+
+    return true;
 }
 
 /**
     Realiza a ação de 'Apostar'.
 **/
-void betAction(int lastBet, int position, int bet) {
+bool betAction(int position, int bet) {
     if(lastBet == 0){
         playersTable[position].chips -= bet;
         POT += bet;
-    } else {
-       cout << "Ação inválida!";
+        lastBet = bet;
+
+        return true;
     }
+    
+    return false;
 }
 
 /**
     Realiza a ação de 'Pagar'.
 **/
-void callAction(int lastBet, int position) {
+bool callAction(int position) {
     if(playersTable[position].chips >= lastBet){
         playersTable[position].chips -= lastBet;
         POT += lastBet;
-    } else {
-        cout << "Ação inválida!";
+        return true;
     }
+    
+    return false;
 }
 
 /**
     Realiza a ação de 'Aumentar' a aposta.
 **/
-void raiseAction(int lastBet, int position, int raise) {
+bool raiseAction(int position, int raise) {
     if(playersTable[position].chips >= lastBet + raise){
         playersTable[position].chips -= lastBet + raise;
         POT += lastBet + raise;
-    } else {
-        cout << "Ação inválida!";
+        lastBet += raise;
+
+        return true;
     }
+    
+    return false;
 }
 
 /**
