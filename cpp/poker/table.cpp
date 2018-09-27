@@ -13,17 +13,22 @@ int nextPlayerPosition(int currentPos);
 void showTable();
 void showUserActions();
 void selectActionOption(int option);
-void checkAction();
-void betAction();
-void callAction();
-void raiseAction();
-void foldAction();
+bool checkAction();
+bool betAction();
+bool callAction();
+bool raiseAction();
+bool foldAction();
 void exitAction();
 void clearScreen();
 int getOption();
 void setInitialDealerPosition();
 void setNextDealerPosition();
 void setPlayersPreFlopProb();
+void checkPlayerAction(int position, int raise, int bigBet);
+void betPlayerAction(int position);
+void callPlayerAction(int position);
+void raisePlayerAction(int position);
+void foldPlayerAction(int position);
 
 void clearScreen() {
     system("clear");
@@ -267,6 +272,9 @@ void selectActionOption(int option) {
     }
 }
 
+/**
+ * Ligações entre menu de seleção e métodos de ação
+**/
 void checkPlayerAction(int position, int raise, int bigBet){
     if(!checkAction(position, raise, bigBet)){
         cout << "Ação inválida!";
