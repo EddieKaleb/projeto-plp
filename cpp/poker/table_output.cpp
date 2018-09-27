@@ -197,7 +197,7 @@ void cardsLateral(player p1, player p2){//card c1, card c2, card c3, card c4){
     printf("%c\n", 179);
 }
 
-void flopTurnRiver(card c1, card c2, card c3, card c4, card c5){
+void flopTurnRiver(card cards[]){
     printf("%c", 179);
     spaces(30);
     cardTop(3);
@@ -210,25 +210,25 @@ void flopTurnRiver(card c1, card c2, card c3, card c4, card c5){
 
     printf("%c", 179);
     spaces(30);
-    cardLateral(c1.value);
-    cardLateral(c2.value);
-    cardLateral(c3.value);
+    cardLateral(cards[0].value);
+    cardLateral(cards[1].value);
+    cardLateral(cards[2].value);
     spaces(2);
-    cardLateral(c4.value);
+    cardLateral(cards[3].value);
     spaces(2);
-    cardLateral(c5.value);
+    cardLateral(cards[4].value);
     spaces(31);
     printf("%c\n", 179);
 
     printf("%c", 179);
     spaces(30);
-    cardLateral(c1.naipe);
-    cardLateral(c2.naipe);
-    cardLateral(c3.naipe);
+    cardLateral(cards[0].naipe);
+    cardLateral(cards[1].naipe);
+    cardLateral(cards[2].naipe);
     spaces(2);
-    cardLateral(c4.naipe);
+    cardLateral(cards[3].naipe);
     spaces(2);
-    cardLateral(c5.naipe);
+    cardLateral(cards[4].naipe);
     spaces(31);
     printf("%c\n", 179);
 
@@ -300,21 +300,21 @@ void printPot(int pot){
     printf("%c\n", 179);
 }
 
-void printTable(player p1, player p2, player p3, player p4, player p5, player p6, card c1, card c2, card c3, card c4, card c5, int pot){
+void printTable(player players[], card cards[], int pot){
     topBorder();
-    centralCard(p4);
-    printCentralPlayer(p4, 4);
-    cardsLateral(p3, p5);
-    printLateralPlayers(p3, 3, p5, 5);
+    centralCard(players[3]);
+    printCentralPlayer(players[3], 4);
+    cardsLateral(players[2], players[4]);
+    printLateralPlayers(players[2], 3, players[4], 5);
     
-    flopTurnRiver(c1, c2, c3, c4, c5);
+    flopTurnRiver(cards);
     printPot(pot);
     
-    cardsLateral(p2, p6);
-    printLateralPlayers(p2, 2, p6, 6);
+    cardsLateral(players[1], players[5]);
+    printLateralPlayers(players[1], 2, players[5], 6);
 
-    printCentralPlayer(p1, 1);
-    centralCard(p1);
+    printCentralPlayer(players[0], 1);
+    centralCard(players[0]);
     bottomBorder();   
 }
 
@@ -365,7 +365,10 @@ int main(){
     p6.hand[1] = c2;
     p6.chips = 500;
     p6.role = 'C';
-    printTable(p1, p2, p3, p4, p5, p6, c1, c2, c3, c4, c5, 500000);
+
+    player players[] = {p1, p2, p3, p4, p5, p6};
+    card cards[] = {c1, c2, c3, c4, c5};
+    printTable(players, cards, 50000);//p1, p2, p3, p4, p5, p6, c1, c2, c3, c4, c5, 500000);
 }
 
 /*
