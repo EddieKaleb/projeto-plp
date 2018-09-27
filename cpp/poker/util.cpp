@@ -19,19 +19,24 @@ void agroupCards(card handPlayer[],card cTable[], card *agroup){
   }
 }
 
+void shift(card* arr,int posIni, int posFin){
+  for(int i = posIni; i<posFin;i++){
+    swap(arr[i],arr[i+1]);
+  }
+}
+
 int map(char value){
-    char cards[] = {'A','K','Q','J','T','9','8','7','6','5','4','3','2'};
-    int numValue[] = {1,13,12,11,10,9,8,7,6,5,4,3,2};
+    char cards[] = {'2','3','4','5','6','7','8','9','T','J','Q','K','A'};
     for(int i = 0; i <= 12; i++){
         if(cards[i] == value){
-            return numValue[i];
+            return i+2;
         }
     }
     return 0;
 }
 
 int compareTo(char value, char pivot){
-    return map(value) <= map(pivot);
+    return map(value) >= map(pivot);
 }
 
 void swap(card* a, card* b) { 

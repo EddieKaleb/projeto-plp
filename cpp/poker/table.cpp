@@ -504,5 +504,24 @@ void exitAction() {
 }
 
 int main(){
+    player play1;
+
+    play1.hand[0].value = 'T';
+    play1.hand[1].value = '3';
+    play1.hand[0].naipe = 'E';
+    play1.hand[1].naipe = 'E';
+
+    cardsTable[0].value = '4';
+    cardsTable[0].naipe = 'E';
+    cardsTable[1].value = 'Q';
+    cardsTable[1].naipe = 'E';
+    cardsTable[2].value = 'J';
+    cardsTable[2].naipe = 'E';
+    cardsTable[3].value = 'A';
+    cardsTable[3].naipe = 'E';
+    cardsTable[4].value = 'K';
+    cardsTable[4].naipe = 'E';
+
+    cout<<verifyHand(play1.hand,cardsTable,7).flag;
     return 0;
 }
