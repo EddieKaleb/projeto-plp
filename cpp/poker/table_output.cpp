@@ -1,4 +1,14 @@
 #include<stdio.h>
+#include"deck.cpp"
+
+
+struct player {
+  card hand[2];
+  int chips;
+  char role;
+  float preFlopProb;
+};
+
 
 void topBorder(){
     printf("%c", 218);
@@ -77,19 +87,15 @@ void cardLateral(int n){
     }   
 }
 
-void cardLateral(char c){
-    if(c != '0'){
-        printf("%c", 179);
-        
-        if(c == 'T'){
-        printf("10 ", c);      
-        }else{
-            printf("%c  ", c);
-        }
-        printf("%c", 179);
+void cardLateral(char c){   
+    printf("%c", 179);
+    
+    if(c == 'T'){
+    printf("10 ", c);      
     }else{
-        cardLateral();
+        printf("%c  ", c);
     }
+    printf("%c", 179);  
 }
 
 void cardBottom(){
@@ -107,7 +113,7 @@ void cardBottom(int n){
     }
 }
 
-void centralCard(char num1, char naipe1, char num2, char naipe2){
+void centralCard(player p){
     printf("%c", 179);
 
     centralCardSpaces();
@@ -119,8 +125,8 @@ void centralCard(char num1, char naipe1, char num2, char naipe2){
     printf("%c", 179);
 
     centralCardSpaces();
-    cardLateral(num1);
-    cardLateral(num2);
+    cardLateral(p.hand[0].value);
+    cardLateral(p.hand[1].value);
     centralCardSpaces();
 
     printf("%c\n", 179);
@@ -128,8 +134,8 @@ void centralCard(char num1, char naipe1, char num2, char naipe2){
     printf("%c", 179);
 
     centralCardSpaces();
-    cardLateral(naipe1);
-    cardLateral(naipe2);
+    cardLateral(p.hand[0].naipe);
+    cardLateral(p.hand[1].naipe);
     centralCardSpaces();
 
     printf("%c\n", 179);
@@ -143,11 +149,8 @@ void centralCard(char num1, char naipe1, char num2, char naipe2){
     printf("%c\n", 179);
 }
 
-void centralCard(){
-    centralCard('0','0','0','0');
-}
 
-void cardsLateral(){
+void cardsLateral(player p1, player p2){//card c1, card c2, card c3, card c4){
     printf("%c", 179);
     lateralSpaces();
     cardTop(2);
@@ -158,17 +161,21 @@ void cardsLateral(){
 
     printf("%c", 179);
     lateralSpaces(); 
-    cardLateral(2);
+    cardLateral(p1.hand[0].value);
+    cardLateral(p1.hand[1].value);
     centralSpaces();
-    cardLateral(2);
+    cardLateral(p2.hand[0].value);
+    cardLateral(p2.hand[1].value);
     lateralSpaces();
     printf("%c\n", 179);
 
     printf("%c", 179);
     lateralSpaces(); 
-    cardLateral(2);
+    cardLateral(p1.hand[0].naipe);
+    cardLateral(p1.hand[1].naipe);
     centralSpaces();
-    cardLateral(2);
+    cardLateral(p2.hand[0].naipe);
+    cardLateral(p1.hand[1].naipe);
     lateralSpaces();
     printf("%c\n", 179);
 
@@ -181,7 +188,7 @@ void cardsLateral(){
     printf("%c\n", 179);
 }
 
-void flopTurnRiver(char num1, char naipe1, char num2, char naipe2, char num3, char naipe3, char num4, char naipe4, char num5, char naipe5){
+void flopTurnRiver(card c1, card c2, card c3, card c4, card c5){
     printf("%c", 179);
     spaces(30);
     cardTop(3);
@@ -194,25 +201,25 @@ void flopTurnRiver(char num1, char naipe1, char num2, char naipe2, char num3, ch
 
     printf("%c", 179);
     spaces(30);
-    cardLateral(num1);
-    cardLateral(num2);
-    cardLateral(num3);
+    cardLateral(c1.value);
+    cardLateral(c2.value);
+    cardLateral(c3.value);
     spaces(2);
-    cardLateral(num4);
+    cardLateral(c4.value);
     spaces(2);
-    cardLateral(num5);
+    cardLateral(c5.value);
     spaces(31);
     printf("%c\n", 179);
 
     printf("%c", 179);
     spaces(30);
-    cardLateral(naipe1);
-    cardLateral(naipe2);
-    cardLateral(naipe3);
+    cardLateral(c1.naipe);
+    cardLateral(c2.naipe);
+    cardLateral(c3.naipe);
     spaces(2);
-    cardLateral(naipe4);
+    cardLateral(c4.naipe);
     spaces(2);
-    cardLateral(naipe5);
+    cardLateral(c5.naipe);
     spaces(31);
     printf("%c\n", 179);
 
@@ -228,28 +235,39 @@ void flopTurnRiver(char num1, char naipe1, char num2, char naipe2, char num3, ch
 
 }
 
-void flopTurnRiver(){
-    flopTurnRiver('0', '0', '0', '0', '0', '0', '0', '0', '0', '0');
-}
-
-void flopTurnRiver(char num1, char naipe1, char num2, char naipe2, char num3, char naipe3){
-    flopTurnRiver(num1, naipe1, num2, naipe2, num3, naipe3, '0', '0', '0', '0');
-}
-
-void flopTurnRiver(char num1, char naipe1, char num2, char naipe2, char num3, char naipe3, char num4, char naipe4){
-    flopTurnRiver(num1, naipe1, num2, naipe2, num3, naipe3, num4, naipe4, '0', '0');
-}
-
-
 void printTable(){
+
+   
+    card c1;
+    c1.value = 'K';
+    c1.naipe = 'P';
+    card c2;
+    c2.value = 'Q';
+    c2.naipe = 'C';
+    card c3;
+    c3.value = 'J';
+    c3.naipe = 'O';
+    card c4;
+    c4.value = ' ';
+    c4.naipe = ' ';
+    card c5;
+    c5.value = ' ';
+    c5.naipe = ' ';
+
+    player p1;
+    p1.hand[0] = c1;
+    p1.hand[1] = c5;
+
     topBorder();
-    centralCard();
-    cardsLateral();
+    centralCard(p1);
+    cardsLateral(p1, p1);
     lateralBorder(2);
-    flopTurnRiver('K', 'P', 'Q', 'C', 'J', 'O');
+    
+
+    flopTurnRiver(c1, c2, c3, c4, c5);
     lateralBorder(2);
-    cardsLateral();
-    centralCard('T','O','8','P');
+    cardsLateral(p1, p1);
+    centralCard(p1);
     bottomBorder();   
 }
 
