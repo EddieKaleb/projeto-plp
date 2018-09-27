@@ -1,5 +1,6 @@
 #include "hands.cpp"
 #include <cstdlib>
+#include <string>
 
 void setGame();
 void startGame();
@@ -36,6 +37,7 @@ struct player {
   int chips;
   char role;
   float preFlopProb;
+  bool enabled;
 };
 
 // Quantidade de jogadores na mesa
@@ -55,6 +57,18 @@ int DEALER_POSITION = 0;
 
 // Valor do pot da partida.
 int POT = 0;
+
+// Ativar todos os usuários.
+void enablePlayers(){
+    for(int i = 0; i < QTD_PLAYERS; i++){
+        playersTable[position].enabled = true;
+    }
+}
+
+// Desativar determinado usuário.
+void disablePlayer(int position){
+    playersTable[position].enabled = false;
+}
 
 /**
     Inicia o jogo.
@@ -89,7 +103,7 @@ void startGame() {
             **/
             int i = DEALER_POSITION + 1;
             int lastBet = 0;
-            
+
             do{
                 i = nextPlayerPosition(i);
             }while(i != DEALER_POSITION + 1);
@@ -256,36 +270,53 @@ void selectActionOption(int option) {
 /**
     Realiza a ação de 'Mesa' (Passar a vez).
 **/
-void checkAction() {
-
+void checkAction(int lastBet, int round, int position, int bigBet) {
+    if(!(round == 0 && playersTable[position] == 'B' && bigBet == lastBet) || lastBet != 0) {
+        cout << "Ação inválida!";
+    }
 }
 
 /**
     Realiza a ação de 'Apostar'.
 **/
-void betAction() {
-
+void betAction(int lastBet, int position, int bet) {
+    if(lastBet == 0){
+        playersTable[position].chips -= bet;
+        POT += bet;
+    } else {
+       cout << "Ação inválida!";
+    }
 }
 
 /**
     Realiza a ação de 'Pagar'.
 **/
-void callAction() {
-
+void callAction(int lastBet, int position) {
+    if(playersTable[position].chips >= lastBet){
+        playersTable[position].chips -= lastBet;
+        POT += lastBet;
+    } else {
+        cout << "Ação inválida!";
+    }
 }
 
 /**
     Realiza a ação de 'Aumentar' a aposta.
 **/
-void raiseAction() {
-
+void raiseAction(int lastBet, int position, int raise) {
+    if(playersTable[position].chips >= lastBet + raise){
+        playersTable[position].chips -= lastBet + raise;
+        POT += lastBet + raise;
+    } else {
+        cout << "Ação inválida!";
+    }
 }
 
 /**
     Realiza a ação de 'Desistir' (Encerrar o jogo).
 **/
-void foldAction() {
-
+void foldAction(int position) {
+    disablePlayer(position);
 }
 
 /**
