@@ -248,7 +248,12 @@ void printCentralPlayer(player p, int numPlayer){
     printf("%c", 179);
     spaces(40);
     printf("Player %d", numPlayer);
-    spaces(42);
+    int numSpaces = 42;
+    if(p.role != 'C'){
+        printf("(%c)", p.role);
+        numSpaces = numSpaces - 3;
+    }
+    spaces(numSpaces);
     printf("%c\n", 179);
     
     int digits = numDigits(p.chips);
@@ -263,7 +268,17 @@ void printLateralPlayers(player p1, int numPlayer1, player p2, int numPlayer2){
     printf("%c", 179);
     lateralSpaces();
     printf("Player %d", numPlayer1);
-    spaces(68);
+    int numSpaces = 65;
+    if(p1.role != 'C'){
+        printf("(%c)", p1.role);
+        numSpaces = numSpaces - 3;
+    }
+    spaces(numSpaces);
+    if(p2.role != 'C'){
+        printf("(%c)", p2.role);
+    }else{
+        spaces(3);
+    }
     printf("Player %d", numPlayer2);
     lateralSpaces();
     printf("%c\n", 179);
@@ -277,9 +292,33 @@ void printLateralPlayers(player p1, int numPlayer1, player p2, int numPlayer2){
     printf("%c\n", 179);
 }
 
-void printTable(){
+void printPot(int pot){
+    printf("%c", 179);
+    spaces(40);
+    printf("Pot: %d", pot);
+    spaces(45 - numDigits(pot));
+    printf("%c\n", 179);
+}
 
-   
+void printTable(player p1, player p2, player p3, player p4, player p5, player p6, card c1, card c2, card c3, card c4, card c5){
+    topBorder();
+    centralCard(p4);
+    printCentralPlayer(p4, 4);
+    cardsLateral(p3, p5);
+    printLateralPlayers(p3, 3, p5, 5);
+    
+    flopTurnRiver(c1, c2, c3, c4, c5);
+    printPot(1000);
+    
+    cardsLateral(p2, p6);
+    printLateralPlayers(p2, 2, p6, 6);
+
+    printCentralPlayer(p1, 1);
+    centralCard(p1);
+    bottomBorder();   
+}
+
+int main(){
     card c1;
     c1.value = 'K';
     c1.naipe = 'P';
@@ -298,95 +337,91 @@ void printTable(){
 
     player p1;
     p1.hand[0] = c1;
-    p1.hand[1] = c5;
+    p1.hand[1] = c2;
     p1.chips = 500;
-
-    topBorder();
-    centralCard(p1);
-    printCentralPlayer(p1, 4);
-    cardsLateral(p1, p1);
-    printLateralPlayers(p1, 3, p1, 5);
-    
-    flopTurnRiver(c1, c2, c3, c4, c5);
-    
-    cardsLateral(p1, p1);
-    printLateralPlayers(p1, 2, p1, 6);
-
-    printCentralPlayer(p1, 1);
-    centralCard(p1);
-    bottomBorder();   
+    p1.role = 'C';
+    player p2;
+    p2.hand[0] = c3;
+    p2.hand[1] = c4;
+    p2.chips = 500;
+    p2.role = 'C';
+    player p3;
+    p3.hand[0] = c5;
+    p3.hand[1] = c5;
+    p3.chips = 500;
+    p3.role = 'D';
+    player p4;
+    p4.hand[0] = c3;
+    p4.hand[1] = c1;
+    p4.chips = 500;
+    p4.role = 'B';
+    player p5;
+    p5.hand[0] = c2;
+    p5.hand[1] = c5;
+    p5.chips = 500;
+    p5.role = 'S';
+    player p6;
+    p6.hand[0] = c5;
+    p6.hand[1] = c2;
+    p6.chips = 500;
+    p6.role = 'C';
+    printTable(p1, p2, p3, p4, p5, p6, c1, c2, c3, c4, c5);
 }
-
-
-
-int main(){
-    printTable();
-}
-
-
-
-
-
-
 
 /*
-    +------------------------------------------------------------------------------------------+
-    ¦                                                                                          ¦
-    ¦                                                                                          ¦
-    ¦   +---++---+                                                                             ¦
-    ¦   ¦8 C¦¦3 P¦                                                                             ¦
-    ¦   ¦   ¦¦   ¦                                                                             ¦
-    ¦   +---++---+                                                                             ¦
-    ¦                                                                                          ¦
-    ¦   +---++---+                                                                             ¦
-    ¦   ¦8 O¦¦3 E¦                                                                             ¦
-    ¦   ¦   ¦¦   ¦                                                                             ¦
-    ¦   +---++---+                                                                             ¦
-    ¦                                                                                          ¦
-    +------------------------------------------------------------------------------------------+ 
+    ╔══════════════════════════════════════════════════════════════════════════════════════════╗
+    ║                                                                                          ║
+    ║                                                                                          ║
+    ║   ╔═══╗╔═══╗                                                                             ║
+    ║   ║8 C║║3 P║                                                                             ║
+    ║   ║   ║║   ║                                                                             ║
+    ║   ╚═══╝╚═══╝                                                                             ║
+    ║                                                                                          ║
+    ║   ┌───┐┌───┐                                                                             ║
+    ║   │8 O││3 E│                                                                             ║
+    ║   │   ││   │                                                                             ║
+    ║   └───┘└───┘                                                                             ║
+    ║                                                                                          ║
+    ╚══════════════════════════════════════════════════════════════════════════════════════════╝ 
    
-    +------------------------------------------------------------------------------------------+
-    ¦                                                                                          ¦
-    ¦                                                                                          ¦
-    ¦   +---++---+                                                                             ¦
-    ¦   ¦8 C¦¦3 P¦                                                                             ¦
-    ¦   ¦   ¦¦   ¦                                                                             ¦
-    ¦   +---++---+                                                                             ¦
-    ¦                                                                                          ¦
-    ¦   +---++---+                                                                             ¦
-    ¦   ¦8 O¦¦3 E¦                                                                             ¦
-    ¦   ¦   ¦¦   ¦                                                                             ¦
-    ¦   +---++---+                                                                             ¦
-    ¦                                                                                          ¦
-    ¦                                                                                          ¦
-    +------------------------------------------------------------------------------------------+
+    ┌──────────────────────────────────────────────────────────────────────────────────────────┐
+    │                                                                                          │
+    │                                                                                          │
+    │   ╔═══╗╔═══╗                                                                             │
+    │   ║8 C║║3 P║                                                                             │
+    │   ║   ║║   ║                                                                             │
+    │   ╚═══╝╚═══╝                                                                             │
+    │                                                                                          │
+    │   ┌───┐┌───┐                                                                             │
+    │   │8 O││3 E│                                                                             │
+    │   │   ││   │                                                                             │
+    │   └───┘└───┘                                                                             │
+    │                                                                                          │
+    │                                                                                          │
+    └──────────────────────────────────────────────────────────────────────────────────────────┘
    
-    ¦ = 179
-    + = 192
-    - = 196
-    + = 191
-    + = 217
-    + = 218
-    + = 201
-	- = 205
-	+ = 187
-	¦ = 186
-	+ = 188
-	+ = 200
-    +---++---+
-    ¦8  ¦¦3  ¦
-    ¦   ¦¦   ¦
-    +---++---+
-    +---++---+
-    ¦8  ¦¦3  ¦
-    ¦O  ¦¦E  ¦
-    +---++---+
-
-
-    +---++---+
-    ¦8  ¦¦3  ¦
-    ¦   ¦¦   ¦
-    +---++---+
-
-
+    │ = 179
+    └ = 192
+    ─ = 196
+    ┐ = 191
+    ┘ = 217
+    ┌ = 218
+    ╔ = 201
+	═ = 205
+	╗ = 187
+	║ = 186
+	╝ = 188
+	╚ = 200
+    ┌───┐┌───┐
+    │8  ││3  │
+    │   ││   │
+    └───┘└───┘
+    ┌───┐┌───┐
+    │8  ││3  │
+    │O  ││E  │
+    └───┘└───┘
+    ╔═══╗╔═══╗
+    ║8  ║║3  ║
+    ║   ║║   ║
+    ╚═══╝╚═══╝
 */
