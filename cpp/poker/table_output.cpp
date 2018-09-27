@@ -12,7 +12,11 @@ struct player {
   int chips;
   char role;
   float preFlopProb;
-  bool enabled;
+  float flopToTurnProb;
+  float turnToRiverProb;
+  float riverToShowDownProb;
+  string action;
+  bool active;
 };
 
 int numDigits(int num){

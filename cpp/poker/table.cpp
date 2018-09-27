@@ -1,6 +1,8 @@
 #include "hands.cpp"
 #include <cstdlib>
 #include <string>
+#include <iostream> 
+#include <time.h> 
 
 void enablePlayers();
 void disablePlayer(int position);
@@ -36,19 +38,47 @@ void turnRound();
 void riverRound();
 void runRound(int beginPosition, int endPosition, int round);
 
+/* Métodos que controlam o comportamento dos bots */
+void setPlayersPreFlopProb();
+void setPlayersFlopToTurnProb();
+void setPlayersTurnToRiverProb(); 
+void setPlayersRiverToShowDown();
+void botsPreFlop();
+void botsFlop();
+void botsTurn();
+void botsRiver();
+void setRaiseOtherwiseCall(player plyr, int prob);
+void setFoldOtherwiseCall(player plyr, int prob);
+float getImproveHandProb(string hand);
+float getImproveProb(int outs);
+float getRandomProb();
+void botActions(string action, int round, int playerPosition);
+int getActivePlayers();
+void wait(int time);
+
 void clearScreen() {
     system("clear");
 }
 
+void wait (int seconds) { 
+  clock_t endwait; 
+  endwait = clock () + seconds * CLOCKS_PER_SEC ; 
+  while (clock() < endwait) {} 
+} 
+
 /**
     Representação de um jogador.
-**/
-/*struct player {
+**//*
+struct player {
   card hand[2];
   int chips;
   char role;
   float preFlopProb;
-  bool enabled;
+  float flopToTurnProb;
+  float turnToRiverProb;
+  float riverToShowDownProb;
+  string action;
+  bool active;
 };*/
 
 /**
@@ -70,6 +100,8 @@ player playersTable[6];
     Posição do usuário na mesa.
 **/
 int USER_POSITION = 0;
+
+string USER_ACTION;
 
 /**
     Posição do dealer durante a partida.
@@ -96,7 +128,8 @@ int POT = 0;
 **/
 void enablePlayers(){
     for(int i = 0; i < QTD_PLAYERS; i++){
-        playersTable[i].enabled = true;
+        playersTable[i].active = true;
+        playersTable[i].action = "NO_ACTION";
     }
 }
 
@@ -104,7 +137,7 @@ void enablePlayers(){
     Desativar determinado usuário.
 **/
 void disablePlayer(int position){
-    playersTable[position].enabled = false;
+    playersTable[position].active = false;
 }
 
 /**
@@ -117,8 +150,8 @@ int lastBet = 0;
 **/
 void startGame() {
 
-    setPlayersChips();
-    setInitialDealerPosition();
+   setPlayersChips();
+   setInitialDealerPosition();
 
     /**
         Controlar a passagem do dealer, e executar enquanto o usuário não desiste, ou
@@ -132,6 +165,7 @@ void startGame() {
 
         setNextDealerPosition();
         setPlayersRoles(DEALER_POSITION);
+        enablePlayers();
 
         POT = 0;
 
@@ -157,6 +191,9 @@ void startGame() {
                 default:
                     break;
             }
+
+            wait(3);
+            cout << "ROUND: " << i << endl;        
         }
     }
 }
@@ -169,6 +206,8 @@ void preFlopRound() {
     int bigPosition = nextPlayerPosition(smallPosition);
 
     lastBet = MINIMUM_BET;
+
+    botsPreFlop();
 
     betAction(smallPosition, MINIMUM_BET);
     raiseAction(bigPosition, MINIMUM_BET);
@@ -186,6 +225,8 @@ void flopRound() {
     cardsTable[1] = getCard();
     cardsTable[2] = getCard();
 
+    botsFlop();
+
     runRound(smallPosition, DEALER_POSITION, 1);
 }
 
@@ -196,6 +237,8 @@ void turnRound() {
     int smallPosition = nextPlayerPosition(DEALER_POSITION);
 
     cardsTable[3] = getCard();
+
+    botsTurn();
 
     runRound(smallPosition, DEALER_POSITION, 2);
 }
@@ -208,6 +251,8 @@ void riverRound() {
 
     cardsTable[4] = getCard();
 
+    botsRiver();
+
     runRound(smallPosition, DEALER_POSITION, 3);
 
     /** chamar método que compara as mãos e declarar o vencedor**/
@@ -218,18 +263,42 @@ void riverRound() {
 **/
 void runRound(int beginPosition, int endPosition, int round) {
     int currentPosition = beginPosition;
-    do {
-        showTable();
-        if(playersTable[currentPosition].enabled == true) {
-            if(currentPosition == USER_POSITION) {
-                showUserActions(round, currentPosition);
+
+    if (getActivePlayers() >= 2) {
+        do {
+            showTable();
+            if(playersTable[currentPosition].action != "OUT") {
+                if(currentPosition == USER_POSITION) {
+                    showUserActions(round, currentPosition);
+                }
+                else {
+                    if (playersTable[currentPosition].action != "OUT") {
+                        botActions(playersTable[currentPosition].action, round, currentPosition);
+
+                        if (playersTable[currentPosition].action == "FOLD") {
+                            playersTable[currentPosition].action = "OUT";
+                        }
+                    }
+                }
             }
-            else {
-                //botActions();
-            }
+            currentPosition = nextPlayerPosition(currentPosition);
+        } while(currentPosition == nextPlayerPosition(endPosition));
+    } else {
+        // fim de partida
+    }
+}
+
+/*
+
+*/
+int getActivePlayers() {
+    int count = 0;
+    for (int i = 0; i < QTD_PLAYERS; i++) {
+        if (playersTable[i].action != "OUT") {
+            count++;
         }
-        currentPosition = nextPlayerPosition(currentPosition);
-    } while(currentPosition == nextPlayerPosition(endPosition));
+    }
+    return count;
 }
 
 /**
@@ -256,7 +325,7 @@ void setPlayers() {
     Configura as fichas dos jogadores.
 **/
 void setPlayersChips() {
-    for(int i = 0; i < sizeof(playersTable); i++) {
+    for(int i = 0; i < QTD_PLAYERS; i++) {
         playersTable[i].chips = 200;
     }
 }
@@ -265,9 +334,10 @@ void setPlayersChips() {
     Configura as cartas dos jogadores.
 **/
 void setPlayersCards() {
-    for(int i = 0; i < sizeof(playersTable); i++) {
-        playersTable[i].hand[0] = getCard();
-        playersTable[i].hand[1] = getCard();
+    for(int i = 0; i < QTD_PLAYERS; i++) {
+        for(int j = 0; j < 2; j++) {
+            playersTable[i].hand[j] = getCard();
+        }
     }
 }
 
@@ -318,6 +388,7 @@ void setPlayersRoles(int dealerPosition) {
     }
 }
 
+
 /**
     Define as probabilidades pré-flop de cada jogador.
 **/
@@ -327,9 +398,157 @@ void setPlayersPreFlopProb() {
     }
 }
 
+void setPlayersFlopToTurnProb() {
+    for (int i = 0; i < QTD_PLAYERS; i++) {
+        handStatus hand = verifyHand(playersTable[i].hand, cardsTable, 5);
+        playersTable[i].flopToTurnProb = playersTable[i].preFlopProb * (1 - getImproveHandProb(hand.flag));
+    }
+}
+
+void setPlayersTurnToRiverProb() {
+    for (int i = 0; i < QTD_PLAYERS; i++) {
+        handStatus hand = verifyHand(playersTable[i].hand, cardsTable, 6);
+        playersTable[i].turnToRiverProb = playersTable[i].flopToTurnProb * (1 - getImproveHandProb(hand.flag));
+    }
+}
+
+void setPlayersRiverToShowDown() {
+    for (int i = 0; i < QTD_PLAYERS; i++) {
+        handStatus hand = verifyHand(playersTable[i].hand, cardsTable, 7);
+        playersTable[i].riverToShowDownProb = playersTable[i].turnToRiverProb * (1 - getImproveHandProb(hand.flag));
+    }
+}
+
+void botsPreFlop() {
+    setPlayersPreFlopProb();
+
+    for (int i = 1; i < QTD_PLAYERS; i++) {
+
+        float win_prob = playersTable[i].preFlopProb;
+
+        if (getRandomProb() > (win_prob * 10)) {
+            playersTable[i].action = "FOLD";
+        } else {
+            
+            if (win_prob >= 75) {
+                setRaiseOtherwiseCall(playersTable[i], 0.5);
+            } else {
+                setRaiseOtherwiseCall(playersTable[i], 0.2);
+            }
+        }
+    }
+}
+
+void botsFlop() {
+    setPlayersFlopToTurnProb();
+    
+    for (int i = 1; i < QTD_PLAYERS; i++) {
+        float win_turn = playersTable[i].flopToTurnProb;
+
+        if (win_turn <= 25) {
+            setFoldOtherwiseCall(playersTable[i], 0.75);
+        } else if (win_turn <= 50) {
+            setFoldOtherwiseCall(playersTable[i], 0.5);
+        } else {
+            setFoldOtherwiseCall(playersTable[i], 0.25);
+        }
+    }
+}
+
+void botsTurn() {
+    setPlayersTurnToRiverProb();
+    
+    for (int i = 1; i < QTD_PLAYERS; i++) {
+        float win_river = playersTable[i].turnToRiverProb;
+
+        if (win_river <= 25) {
+            setFoldOtherwiseCall(playersTable[i], 0.75);
+        } else if (win_river <= 50) {
+            setFoldOtherwiseCall(playersTable[i], 0.5);
+        } else {
+            setFoldOtherwiseCall(playersTable[i], 0.25);
+        }
+    }
+}
+
+void botsRiver() {
+    setPlayersRiverToShowDown();
+
+    for (int i = 1; i < QTD_PLAYERS; i++) {
+        float win_show_down = playersTable[i].turnToRiverProb;
+
+        if (win_show_down <= 25) {
+            setFoldOtherwiseCall(playersTable[i], 0.95);
+        } else if (win_show_down <= 50) {
+            setFoldOtherwiseCall(playersTable[i], 0.50);
+        } else {
+            setFoldOtherwiseCall(playersTable[i], 0.05);
+        }
+    }
+}
+
+void setRaiseOtherwiseCall(player plyr, int prob) {
+    if (getRandomProb() <= prob) {
+        plyr.action = "RAISE";
+    } else {
+        plyr.action = "CALL";
+    }
+}
+
+void setFoldOtherwiseCall(player plyr, int prob) {
+    if (getRandomProb() <= prob) {
+       plyr.action = "FOLD";
+    } else {
+       setRaiseOtherwiseCall(plyr, 0.5);    
+    }
+}
+
 /**
-    Retorna a posição do próximo jogador com base no array de jogadores.
+    Probabilidade de melhorar a mão do flop ao river
 **/
+float getImproveHandProb(string hand) {
+    int outs;
+
+    if (hand == "IS_ONE_PAIR"){ // TRINCA (2) OU DOIS PARES (3) 
+        outs = 5;
+    } else if (hand == "IS_TWO_PAIR") { // FULL HOUSE (4) 
+        outs = 4;
+    } else if (hand == "IS_THREE") { // QUADRA (1) OU FULL HOUSE (7)
+        outs = 8;
+    } else if (hand == "IS_STRAIGHT") { // DRAW ROYAL FLUSH (1)
+        outs = 1;
+    } else if (hand == "IS_FLUSH") { // DRAW STRAIGHT FLUSH (2)
+        outs = 2;
+    } else if (hand == "IS_FULL_HOUSE") { // QUADRA
+        outs = 1;
+    } else if (hand == "IS_FOUR") {
+        outs = 0;
+    } else if (hand == "IS_STRAIGHT_FLUSH") {
+        outs = 0;
+    } else if (hand == "IS_ROYAL_FLUSH") {
+        outs = 0;
+    } else { // HIGH CARD QUALQUER PAR (3 * 5)
+        outs = 15;
+    } 
+
+    return getImproveProb(outs);
+}
+
+/**
+    Gera uma probabilidade aleatória
+**/
+float getRandomProb() {
+    return (rand() % 11) / 100;
+}
+
+/**
+    Calcula a probabilidade no flop (47 odds) até o river 
+**/
+float getImproveProb(int outs) {
+    return (outs * 4) - (outs - 8);
+}
+
+// Retorna a posição do próximo jogador com base no array de jogadores.
 int nextPlayerPosition(int currentPos) {
     return (currentPos + 1) % QTD_PLAYERS;
 }
@@ -382,24 +601,46 @@ void selectActionOption(int option, int round, int playerPosition) {
     switch(option) {
         case 1:
             checkPlayerAction(round, playerPosition, bigBet);
+            USER_ACTION = "CHECK";
             break;
         case 2:
             betPlayerAction(playerPosition);
+            USER_ACTION = "BET";
             break;
         case 3:
             callPlayerAction(playerPosition);
+            USER_ACTION = "CALL";
             break;
         case 4:
             raisePlayerAction(playerPosition);
+            USER_ACTION = "RAISE";
             break;
         case 5:
             foldAction(playerPosition);
+            USER_ACTION = "OUT";
             break;
         case 6:
             exitAction();
             break;
         default:
             break;
+    }
+}
+
+/**
+
+**/
+void botActions(string action, int round, int playerPosition) {
+    if (action == "CHECK") {
+        checkPlayerAction(round, playerPosition, bigBet);
+    } else if (action == "BET") {
+        betPlayerAction(playerPosition);
+    } else if (action == "CALL") {
+        callPlayerAction(playerPosition);
+    } else if (action == "RAISE") {
+        raisePlayerAction(playerPosition);
+    } else if (action == "FOLD") {
+        foldAction(playerPosition);
     }
 }
 
