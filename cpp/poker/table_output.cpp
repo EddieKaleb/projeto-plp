@@ -12,11 +12,7 @@ struct player {
   int chips;
   char role;
   float preFlopProb;
-  float flopToTurnProb;
-  float turnToRiverProb;
-  float riverToShowDownProb;
-  string action;
-  bool active;
+  bool enabled;
 };
 
 int numDigits(int num){
@@ -45,8 +41,11 @@ void bottomBorder(){
     //printf("%c", 192);
     printf("└");
     
-    for(int i = 0; i < 90; i++){
-        //printf("%c", 196);
+    for(int i = 0; i < 10; i++){
+        printf("─");
+    }
+    printf("┴");
+    for(int i = 0; i < 79; i++){
         printf("─");
     }
     //printf("%c\n",217);
@@ -124,7 +123,7 @@ void cardLateral(char c){
     printf("│");
     
     if(c == 'T'){
-    printf("10 ");      
+        printf("10 ");      
     }else{
         printf("%c  ", c);
     }
@@ -135,10 +134,10 @@ void cardLateral(char c){
 void cardBottom(){
     //printf("%c", 192);
     printf("└");  
-        for(int j = 0; j < 3; j++){
-            //printf("%c", 196);
-            printf("─");
-        }
+    for(int j = 0; j < 3; j++){
+        //printf("%c", 196);
+        printf("─");
+    }
     //printf("%c\n",217);
     printf("┘");
 
@@ -150,48 +149,83 @@ void cardBottom(int n){
     }
 }
 
-void centralCard(player p){
-    //printf("%c\n", 179);      
+void centralCard(player p){      
     printf("│");
 
     centralCardSpaces();
     cardTop(2);
     centralCardSpaces();
-
-    ////printf("%c\n", 179);     
+       
     printf("│\n");
-    
-
-    //printf("%c\n", 179);      
+         
     printf("│");
 
     centralCardSpaces();
     cardLateral(p.hand[0].value);
     cardLateral(p.hand[1].value);
     centralCardSpaces();
-
-    ////printf("%c\n", 179);     
+;     
     printf("│\n");     
-
-    //printf("%c\n", 179);      
+   
     printf("│");
 
     centralCardSpaces();
     cardLateral(p.hand[0].naipe);
     cardLateral(p.hand[1].naipe);
     centralCardSpaces();
-
-    ////printf("%c\n", 179);     
+  
     printf("│\n");     
-
-    //printf("%c\n", 179);      
+     
     printf("│");
 
     centralCardSpaces();
     cardBottom(2);
     centralCardSpaces();
+     
+    printf("│\n");
+}
 
-    //printf("%c\n", 179);     
+void centralCardWithProb(player p, int prob){      
+    printf("│");
+
+    centralCardSpaces();
+    cardTop(2);
+    centralCardSpaces();
+       
+    printf("│\n");
+         
+    printf("├");
+
+    for(int i = 0; i < 10; i++)
+        printf("─");
+    printf("┐");
+    spaces(29);
+    cardLateral(p.hand[0].value);
+    cardLateral(p.hand[1].value);
+    centralCardSpaces();
+;     
+    printf("│\n");     
+   
+    printf("│");
+
+    printf(" WIN: %d%", prob);
+    if(numDigits(prob) == 1){
+        spaces(1);
+    }
+    printf("│");
+    centralCardSpaces();
+    cardLateral(p.hand[0].naipe);
+    cardLateral(p.hand[1].naipe);
+    centralCardSpaces();
+  
+    printf("│\n");     
+     
+    printf("│");
+
+    centralCardSpaces();
+    cardBottom(2);
+    centralCardSpaces();
+     
     printf("│\n");
 }
 
@@ -377,11 +411,11 @@ void printTable(player players[], card cards[], int pot){
     printLateralPlayers(players[1], 2, players[5], 6);
 
     printCentralPlayer(players[0], 1);
-    centralCard(players[0]);
+    centralCardWithProb(players[0], 5);
     bottomBorder();   
 }
 
-/*int main(){
+int main(){
     card c1;
     c1.value = 'K';
     c1.naipe = 'P';
@@ -431,8 +465,9 @@ void printTable(player players[], card cards[], int pot){
 
     player players[] = {p1, p2, p3, p4, p5, p6};
     card cards[] = {c1, c2, c3, c4, c5};
+
     printTable(players, cards, 50000);//p1, p2, p3, p4, p5, p6, c1, c2, c3, c4, c5, 500000);
-}*/
+}
 
 /*
     ╔══════════════════════════════════════════════════════════════════════════════════════════╗
@@ -462,10 +497,11 @@ void printTable(player players[], card cards[], int pot){
     │   │8 O││3 E│                                                                             │
     │   │   ││   │                                                                             │
     │   └───┘└───┘                                                                             │
-    │                                                                                          │
-    │                                                                                          │
-    └──────────────────────────────────────────────────────────────────────────────────────────┘
-   
+    ├──────────┐                                                                                        │
+    │ WIN: 00% │                                                                                        │
+    └──────────┴───────────────────────────────────────────────────────────────────────────────┘
+   193 ┴
+   195 ├
     │ = 179
     └ = 192
     ─ = 196
