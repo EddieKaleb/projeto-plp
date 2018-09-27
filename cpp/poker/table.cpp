@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <string>
 
+void enablePlayers();
+void disablePlayer(int position);
 void setGame();
 void startGame();
 void setPlayers();
