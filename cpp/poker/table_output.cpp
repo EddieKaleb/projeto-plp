@@ -184,7 +184,7 @@ void cardsLateral(player p1, player p2){//card c1, card c2, card c3, card c4){
     cardLateral(p1.hand[1].naipe);
     centralSpaces();
     cardLateral(p2.hand[0].naipe);
-    cardLateral(p1.hand[1].naipe);
+    cardLateral(p2.hand[1].naipe);
     lateralSpaces();
     printf("%c\n", 179);
 
@@ -300,7 +300,7 @@ void printPot(int pot){
     printf("%c\n", 179);
 }
 
-void printTable(player p1, player p2, player p3, player p4, player p5, player p6, card c1, card c2, card c3, card c4, card c5){
+void printTable(player p1, player p2, player p3, player p4, player p5, player p6, card c1, card c2, card c3, card c4, card c5, int pot){
     topBorder();
     centralCard(p4);
     printCentralPlayer(p4, 4);
@@ -308,7 +308,7 @@ void printTable(player p1, player p2, player p3, player p4, player p5, player p6
     printLateralPlayers(p3, 3, p5, 5);
     
     flopTurnRiver(c1, c2, c3, c4, c5);
-    printPot(1000);
+    printPot(pot);
     
     cardsLateral(p2, p6);
     printLateralPlayers(p2, 2, p6, 6);
@@ -338,7 +338,7 @@ int main(){
     player p1;
     p1.hand[0] = c1;
     p1.hand[1] = c2;
-    p1.chips = 500;
+    p1.chips = 50000;
     p1.role = 'C';
     player p2;
     p2.hand[0] = c3;
@@ -353,19 +353,19 @@ int main(){
     player p4;
     p4.hand[0] = c3;
     p4.hand[1] = c1;
-    p4.chips = 500;
+    p4.chips = 50000;
     p4.role = 'B';
     player p5;
     p5.hand[0] = c2;
     p5.hand[1] = c5;
-    p5.chips = 500;
+    p5.chips = 500000;
     p5.role = 'S';
     player p6;
     p6.hand[0] = c5;
     p6.hand[1] = c2;
     p6.chips = 500;
     p6.role = 'C';
-    printTable(p1, p2, p3, p4, p5, p6, c1, c2, c3, c4, c5);
+    printTable(p1, p2, p3, p4, p5, p6, c1, c2, c3, c4, c5, 500000);
 }
 
 /*
