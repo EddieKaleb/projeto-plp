@@ -1,6 +1,11 @@
-#include<stdio.h>
-#include"deck.cpp"
+#include<cstdio>
+//#include"deck.cpp"
 
+
+struct card {
+  char value;
+  char naipe;
+};
 
 struct player {
   card hand[2];
@@ -20,31 +25,39 @@ int numDigits(int num){
 }
 
 void topBorder(){
-    printf("%c", 218);
+    //printf("%c", 218);
+    printf("┌");
     
     for(int i = 0; i < 90; i++){
-        printf("%c", 196);
+      //  printf("%c", 196);
+        printf("─");
     }
-    printf("%c\n",191);
+    //printf("%c\n",191);
+    printf("┐\n");
 }
 
 void bottomBorder(){
-    printf("%c", 192);
+    //printf("%c", 192);
+    printf("└");
     
     for(int i = 0; i < 90; i++){
-        printf("%c", 196);
+        //printf("%c", 196);
+        printf("─");
     }
-    printf("%c\n",217);
+    //printf("%c\n",217);
+    printf("┘\n");
 
 }
 
 void lateralBorder(int n){
     for(int i = 0; i < n; i++){
-        printf("%c", 179);
+        //printf("%c\n", 179);       \n   
+        printf("│");
         for(int j = 0; j < 90; j++){
             printf(" ");
         }
-        printf("%c\n", 179);
+        //printf("%c\n", 179);     
+        printf("│\n");
     }
 
 }
@@ -68,11 +81,14 @@ void lateralSpaces(){
 }
 
 void cardTop(){
-    printf("%c", 218);  
+    //printf("%c", 218);  
+    printf("┌");
     for(int j = 0; j < 3; j++){
-        printf("%c", 196);
+        //printf("%c", 196);
+        printf("─");
     }
-    printf("%c",191);
+    //printf("%c",191);
+    printf("┐");
 }
 
 void cardTop(int n){
@@ -82,11 +98,13 @@ void cardTop(int n){
 }
 
 void cardLateral(){
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
         for(int j = 0; j < 3; j++){
             printf(" ");
         }
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     
 }
 
@@ -97,22 +115,27 @@ void cardLateral(int n){
 }
 
 void cardLateral(char c){   
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     
     if(c == 'T'){
-    printf("10 ", c);      
+    printf("10 ");      
     }else{
         printf("%c  ", c);
     }
-    printf("%c", 179);  
+    //printf("%c\n", 179);      
+    printf("│");  
 }
 
 void cardBottom(){
-    printf("%c", 192);  
+    //printf("%c", 192);
+    printf("└");  
         for(int j = 0; j < 3; j++){
-            printf("%c", 196);
+            //printf("%c", 196);
+            printf("─");
         }
-        printf("%c", 217);
+    //printf("%c\n",217);
+    printf("┘");
 
 }
 
@@ -123,52 +146,64 @@ void cardBottom(int n){
 }
 
 void centralCard(player p){
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
 
     centralCardSpaces();
     cardTop(2);
     centralCardSpaces();
 
-    printf("%c\n", 179);
+    ////printf("%c\n", 179);     
+    printf("│\n");
+    
 
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
 
     centralCardSpaces();
     cardLateral(p.hand[0].value);
     cardLateral(p.hand[1].value);
     centralCardSpaces();
 
-    printf("%c\n", 179);
+    ////printf("%c\n", 179);     
+    printf("│\n");     
 
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
 
     centralCardSpaces();
     cardLateral(p.hand[0].naipe);
     cardLateral(p.hand[1].naipe);
     centralCardSpaces();
 
-    printf("%c\n", 179);
+    ////printf("%c\n", 179);     
+    printf("│\n");     
 
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
 
     centralCardSpaces();
     cardBottom(2);
     centralCardSpaces();
 
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 }
 
 
 void cardsLateral(player p1, player p2){//card c1, card c2, card c3, card c4){
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     lateralSpaces();
     cardTop(2);
     centralSpaces();
     cardTop(2);
     lateralSpaces();
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     lateralSpaces(); 
     cardLateral(p1.hand[0].value);
     cardLateral(p1.hand[1].value);
@@ -176,9 +211,11 @@ void cardsLateral(player p1, player p2){//card c1, card c2, card c3, card c4){
     cardLateral(p2.hand[0].value);
     cardLateral(p2.hand[1].value);
     lateralSpaces();
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     lateralSpaces(); 
     cardLateral(p1.hand[0].naipe);
     cardLateral(p1.hand[1].naipe);
@@ -186,19 +223,23 @@ void cardsLateral(player p1, player p2){//card c1, card c2, card c3, card c4){
     cardLateral(p2.hand[0].naipe);
     cardLateral(p2.hand[1].naipe);
     lateralSpaces();
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     lateralSpaces();
     cardBottom(2);
     centralSpaces();
     cardBottom(2);
     lateralSpaces();
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 }
 
 void flopTurnRiver(card cards[]){
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     spaces(30);
     cardTop(3);
     spaces(2);
@@ -206,9 +247,11 @@ void flopTurnRiver(card cards[]){
     spaces(2);
     cardTop();
     spaces(31);
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     spaces(30);
     cardLateral(cards[0].value);
     cardLateral(cards[1].value);
@@ -218,9 +261,11 @@ void flopTurnRiver(card cards[]){
     spaces(2);
     cardLateral(cards[4].value);
     spaces(31);
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     spaces(30);
     cardLateral(cards[0].naipe);
     cardLateral(cards[1].naipe);
@@ -230,9 +275,11 @@ void flopTurnRiver(card cards[]){
     spaces(2);
     cardLateral(cards[4].naipe);
     spaces(31);
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     spaces(30);
     cardBottom(3);
     spaces(2);
@@ -240,12 +287,14 @@ void flopTurnRiver(card cards[]){
     spaces(2);
     cardBottom();
     spaces(31);
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 
 }
 
 void printCentralPlayer(player p, int numPlayer){
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     spaces(40);
     printf("Player %d", numPlayer);
     int numSpaces = 42;
@@ -254,18 +303,22 @@ void printCentralPlayer(player p, int numPlayer){
         numSpaces = numSpaces - 3;
     }
     spaces(numSpaces);
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
     
     int digits = numDigits(p.chips);
-    printf("%c", 179);
+    //printf("%c\n", 179);      
+    printf("│");
     spaces(40);
     printf("Chips: %d", p.chips);
     spaces(43 - digits);
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 }
 
 void printLateralPlayers(player p1, int numPlayer1, player p2, int numPlayer2){
-    printf("%c", 179);
+    //printf("%c\n", 179);          
+    printf("│");
     lateralSpaces();
     printf("Player %d", numPlayer1);
     int numSpaces = 65;
@@ -281,23 +334,28 @@ void printLateralPlayers(player p1, int numPlayer1, player p2, int numPlayer2){
     }
     printf("Player %d", numPlayer2);
     lateralSpaces();
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 
-    printf("%c", 179);
+    //printf("%c\n", 179);          
+    printf("│");
     lateralSpaces();
     printf("Chips: %d", p1.chips);
     spaces(70 - numDigits(p1.chips) - numDigits(p2.chips));
     printf("Chips: %d", p2.chips);
     lateralSpaces();
-    printf("%c\n", 179);
+    //printf("%c\n", 179);     
+    printf("│\n");
 }
 
 void printPot(int pot){
-    printf("%c", 179);
+    ////printf("%c\n", 179);           
+    printf("│");
     spaces(40);
     printf("Pot: %d", pot);
     spaces(45 - numDigits(pot));
-    printf("%c\n", 179);
+    //printf("%c\n", 179);    
+    printf("│\n");
 }
 
 void printTable(player players[], card cards[], int pot){
