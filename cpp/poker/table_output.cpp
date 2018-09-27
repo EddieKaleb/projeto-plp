@@ -1,17 +1,18 @@
 #include<cstdio>
-//#include"deck.cpp"
+#include "deck.cpp"
 
 
-struct card {
+/*struct card {
   char value;
   char naipe;
-};
+};*/
 
 struct player {
   card hand[2];
   int chips;
   char role;
   float preFlopProb;
+  bool enabled;
 };
 
 int numDigits(int num){
@@ -376,7 +377,7 @@ void printTable(player players[], card cards[], int pot){
     bottomBorder();   
 }
 
-int main(){
+/*int main(){
     card c1;
     c1.value = 'K';
     c1.naipe = 'P';
@@ -427,7 +428,7 @@ int main(){
     player players[] = {p1, p2, p3, p4, p5, p6};
     card cards[] = {c1, c2, c3, c4, c5};
     printTable(players, cards, 50000);//p1, p2, p3, p4, p5, p6, c1, c2, c3, c4, c5, 500000);
-}
+}*/
 
 /*
     ╔══════════════════════════════════════════════════════════════════════════════════════════╗

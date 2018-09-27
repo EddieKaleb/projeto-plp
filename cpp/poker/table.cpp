@@ -43,13 +43,13 @@ void clearScreen() {
 /**
     Representação de um jogador.
 **/
-struct player {
+/*struct player {
   card hand[2];
   int chips;
   char role;
   float preFlopProb;
   bool enabled;
-};
+};*/
 
 /**
     Quantidade de jogadores na mesa.
@@ -219,6 +219,7 @@ void riverRound() {
 void runRound(int beginPosition, int endPosition, int round) {
     int currentPosition = beginPosition;
     do {
+        showTable();
         if(playersTable[currentPosition].enabled == true) {
             if(currentPosition == USER_POSITION) {
                 showUserActions(round, currentPosition);
@@ -337,14 +338,16 @@ int nextPlayerPosition(int currentPos) {
     Exibe a representação da mesa.
 **/
 void showTable() {
-    cout << "Mesa aqui" << endl;
+    clearScreen();
+    printTable(playersTable, cardsTable, POT);
+    system("sleep 2s");
 }
 
 /**
     Exibe as ações que um usuário pode realizar em sua vez. lastBet round position qtd
 **/
 void showUserActions(int round, int playerPosition) {
-    clearScreen();
+    //clearScreen();
     
     cout << endl;
     cout << "-----------------------------     AÇÕES     -----------------------------";
@@ -497,14 +500,14 @@ void foldAction(int position) {
 }
 
 /**
-    Realiza a ação de 'Sair' da mesa.
+    Realiza a ação de 'Sair' da mesa.showTable
 **/
 void exitAction() {
 
 }
 
 int main(){
-    player play1;
+    /*player play1;
 
     play1.hand[0].value = 'T';
     play1.hand[1].value = '3';
@@ -520,8 +523,10 @@ int main(){
     cardsTable[3].value = 'A';
     cardsTable[3].naipe = 'E';
     cardsTable[4].value = 'K';
-    cardsTable[4].naipe = 'E';
+    cardsTable[4].naipe = 'E';*/
 
-    cout<<verifyHand(play1.hand,cardsTable,7).flag;
+    startGame();
+
+    //cout<<verifyHand(play1.hand,cardsTable,7).flag;
     return 0;
 }

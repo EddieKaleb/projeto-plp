@@ -1,5 +1,4 @@
-#include "deck.cpp"
-
+#include "table_output.cpp"
 
 void copyArrayCards(card current[], card* target, int quantCards){
   for(int i = 0; i < quantCards; i++){

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "./poker/table.cpp"
 using namespace std;
 
 void showMenu();
