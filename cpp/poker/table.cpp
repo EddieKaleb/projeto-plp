@@ -6,12 +6,9 @@
 
 void enablePlayers();
 void disablePlayer(int position);
-void setGame();
 void startGame();
-void setPlayers();
 void setPlayersChips();
 void setPlayersCards();
-void setInitialPlayersRoles();
 void setPlayersRoles(int dealerPosition);
 int nextPlayerPosition(int currentPos);
 void showTable();
@@ -32,12 +29,13 @@ void preFlopRound();
 void flopRound();
 void turnRound();
 void riverRound();
-void runRound(int beginPosition, int endPosition, int round);
+void runRound(int beginPosition, int round);
+void runPreFlopRound(int beginPosition, int endPosition, int round);
 
 /* Métodos que controlam o comportamento dos bots */
 void setPlayersPreFlopProb();
 void setPlayersFlopToTurnProb();
-void setPlayersTurnToRiverProb(); 
+void setPlayersTurnToRiverProb();
 void setPlayersRiverToShowDown();
 void botsPreFlop();
 void botsFlop();
@@ -53,14 +51,14 @@ int getActivePlayers();
 void wait(int time);
 
 void clearScreen() {
-    //system("cls");
+    system("clear");
 }
 
-void wait (int seconds) { 
-  clock_t endwait; 
-  endwait = clock () + seconds * CLOCKS_PER_SEC ; 
-  while (clock() < endwait) {} 
-} 
+void wait (int seconds) {
+  clock_t endwait;
+  endwait = clock () + seconds * CLOCKS_PER_SEC ;
+  while (clock() < endwait) {}
+}
 
 /**
     Quantidade de jogadores na mesa.
@@ -160,25 +158,22 @@ void startGame() {
         for(int i = 0; i < 4; i++) {
 
             lastBet = 0;
+            firstBetPlayerPosition = -1;
 
-            switch(i) {
-                case 0:
-                    preFlopRound();
-                    break;
-                case 1:
-                    flopRound();
-                    break;
-                case 2:
-                    turnRound();
-                    break;
-                case 3:
-                    riverRound();
-                default:
-                    break;
+            if(i == 0) {
+                preFlopRound();
+            }
+            else if(i == 1) {
+                flopRound();
+            }
+            else if(i == 2) {
+                turnRound();
+            }
+            else {
+                riverRound();
             }
 
-            wait(4);
-            cout << "ROUND: " << i << endl;        
+            cout << "ROUND: " << i << endl;
         }
     }
 
@@ -196,10 +191,13 @@ void preFlopRound() {
 
     botsPreFlop();
 
-    betAction(smallPosition, MINIMUM_BET);
-    raiseAction(bigPosition, MINIMUM_BET);
+    callAction(smallPosition);
 
-    runRound(nextPlayerPosition(bigPosition), bigPosition, 0);
+    MINIMUM_BET *= 2;
+
+    callAction(bigPosition);
+
+    runPreFlopRound(nextPlayerPosition(bigPosition), smallPosition, 0);
 }
 
 /**
@@ -214,7 +212,7 @@ void flopRound() {
 
     botsFlop();
 
-    runRound(smallPosition, DEALER_POSITION, 1);
+    runRound(smallPosition, 1);
 }
 
 /**
@@ -225,9 +223,11 @@ void turnRound() {
 
     cardsTable[3] = getCard();
 
+    MINIMUM_BET *= 2;
+
     botsTurn();
 
-    runRound(smallPosition, DEALER_POSITION, 2);
+    runRound(smallPosition, 2);
 }
 
 /**
@@ -240,7 +240,7 @@ void riverRound() {
 
     botsRiver();
 
-    runRound(smallPosition, DEALER_POSITION, 3);
+    runRound(smallPosition, 3);
 
     /** chamar método que compara as mãos e declarar o vencedor**/
 }
@@ -248,15 +248,18 @@ void riverRound() {
 /**
     Executa uma rodada permitindo que todos os jogadores ativos na mesa façam suas ações.
 **/
-void runRound(int beginPosition, int endPosition, int round) {
+void runRound(int beginPosition, int round) {
     int currentPosition = beginPosition;
 
-    // Verifica se ainda há jogador
     if (getActivePlayers() >= 2) {
-        do {
+
+        while(true) {
+
             showTable();
-            // se jogador ainda tem ações para realizar
+
             if (playersTable[currentPosition].active == true) {
+                cout << "Jogando: Jogador " << currentPosition + 1<< endl;
+                wait(1);
 
                 if (currentPosition == USER_POSITION) {
                     showUserActions(round, currentPosition);
@@ -265,7 +268,46 @@ void runRound(int beginPosition, int endPosition, int round) {
                 }
             }
             currentPosition = nextPlayerPosition(currentPosition);
-        } while(currentPosition == nextPlayerPosition(endPosition));
+            showTable();
+            wait(5);
+
+            if(currentPosition == firstBetPlayerPosition) {
+                break;
+            }
+        }
+    } else {
+        // fim de partida
+        // premiar o vencedor, checar quem tem maior mão
+        // se der empate divide
+        cout << "Fim de partida" << endl;
+    }
+}
+
+/**
+    Executa uma rodada permitindo que todos os jogadores ativos na mesa façam suas ações.
+**/
+void runPreFlopRound(int beginPosition, int endPosition, int round) {
+    int currentPosition = beginPosition;
+
+    if (getActivePlayers() >= 2) {
+        do {
+
+            showTable();
+
+            if (playersTable[currentPosition].active == true) {
+                cout << "Jogando: Jogador " << currentPosition + 1<< endl;
+                wait(1);
+
+                if (currentPosition == USER_POSITION) {
+                    showUserActions(round, currentPosition);
+                } else {
+                    botActions(round, currentPosition);
+                }
+            }
+            currentPosition = nextPlayerPosition(currentPosition);
+            showTable();
+            wait(5);
+        } while(currentPosition != nextPlayerPosition(endPosition));
     } else {
         // fim de partida
         // premiar o vencedor, checar quem tem maior mão
@@ -288,26 +330,6 @@ int getActivePlayers() {
 }
 
 /**
-    Configura inicialmente o jogo, com a criação e embaralhamento do deck,
-    e configuração dos jogadores da mesa.
-**/
-void setGame() {
-    buildDeck();
-    shuffleDeck();
-
-    setPlayers();
-}
-
-/**
-    Configura as fichas, as cartas dos jogadores e define a função inicial de cada jogador.
-**/
-void setPlayers() {
-    setPlayersChips();
-    setPlayersCards();
-    setInitialPlayersRoles();
-}
-
-/**
     Configura as fichas dos jogadores.
 **/
 void setPlayersChips() {
@@ -325,14 +347,6 @@ void setPlayersCards() {
             playersTable[i].hand[j] = getCard();
         }
     }
-}
-
-/**
-    Define as funções iniciais dos jogadores de forma aleatória.
-**/
-void setInitialPlayersRoles() {
-    setInitialDealerPosition();
-    setPlayersRoles(DEALER_POSITION);
 }
 
 /**
@@ -438,9 +452,9 @@ void botsRiver() {
 float getImproveHandProb(string hand) {
     int outs;
 
-    if (hand == "IS_ONE_PAIR"){ // TRINCA (2) OU DOIS PARES (3) 
+    if (hand == "IS_ONE_PAIR"){ // TRINCA (2) OU DOIS PARES (3)
         outs = 5;
-    } else if (hand == "IS_TWO_PAIR") { // FULL HOUSE (4) 
+    } else if (hand == "IS_TWO_PAIR") { // FULL HOUSE (4)
         outs = 4;
     } else if (hand == "IS_THREE") { // QUADRA (1) OU FULL HOUSE (7)
         outs = 8;
@@ -459,7 +473,7 @@ float getImproveHandProb(string hand) {
     } else { // HIGH CARD QUALQUER PAR (3 * 5)
         hand = "IS_HIGH_CARD";
         outs = 15;
-    } 
+    }
 
     cout << hand << " ";
 
@@ -476,7 +490,7 @@ float getRandomProb() {
 }
 
 /**
-    Calcula a probabilidade no flop (47 odds) até o river 
+    Calcula a probabilidade no flop (47 odds) até o river
 **/
 float getImproveProb(int outs) {
     return (outs * 4) - (outs - 8);
@@ -493,62 +507,43 @@ int nextPlayerPosition(int currentPos) {
 void showTable() {
     clearScreen();
     printTable(playersTable, cardsTable, POT);
-    system("sleep 2s");
 }
 
 /**
     Exibe as ações que um usuário pode realizar em sua vez. lastBet round position qtd
 **/
 void showUserActions(int round, int playerPosition) {
-    //clearScreen();
-    
+
     cout << endl;
     cout << "-----------------------------     AÇÕES     -----------------------------";
     cout << endl << endl;
 
     cout << "          1  -  Mesa" << endl;
     cout << "          2  -  Apostar" << endl;
-    cout << "          3  -  Pagar" << endl;
-    cout << "          5  -  Desistir" << endl;
-    cout << "          6  -  Sair da mesa" << endl;
+    cout << "          3  -  Desistir" << endl;
+    cout << "          4  -  Sair da mesa" << endl;
 
     selectActionOption(getOption(), round, playerPosition);
-}
-
-/**
-    Retorna a opção escolhida pelo usuário.
-**/
-int getOption() {
-    int option;
-
-    cout << endl << "           Digite o número da opção desejada: ";
-    cin >> option;
-
-    return option;
 }
 
 /**
     Interpreta a ação selecionada pelo usuário.
 **/
 void selectActionOption(int option, int round, int playerPosition) {
-    switch(option) {
-        case 1:
-            checkPlayerAction(round, playerPosition, bigBet);
-            break;
-        case 2:
-            betPlayerAction(playerPosition);
-            break;
-        case 3:
-            callPlayerAction(playerPosition);
-            break;
-        case 4:
-            foldAction(playerPosition);
-            break;
-        case 5:
-            exitAction();
-            break;
-        default:
-            break;
+    if(option == 1) {
+        checkPlayerAction(round);
+    }
+    else if(option == 2) {
+        callPlayerAction(playerPosition);
+    }
+    else if(option == 3) {
+        foldAction(playerPosition);
+    }
+    else if(option == 4) {
+        exitAction();
+    }
+    else {
+
     }
 }
 
@@ -556,31 +551,31 @@ void selectActionOption(int option, int round, int playerPosition) {
 
 **/
 void botActions(int round, int playerPosition) {
-    
+
     float win_prob;
 
     if (round == 0) {
         if(playersTable[playerPosition].role != 'B') {
-            win_prob = playersTable[i].preFlopProb;
+            win_prob = playersTable[playerPosition].preFlopProb;
             if(getRandomProb() > (win_prob * 10)) {
                 foldAction(playerPosition);
             }
             else {
                 if(!callAction(playerPosition)){
-                    pot += playersTable[playerPosition].chips;
+                    POT += playersTable[playerPosition].chips;
                     foldAction(playerPosition);
                 }
             }
         }
     } else if (round <= 3) {
-        win_prob = playersTable[i].flopToTurnProb;
+        win_prob = playersTable[playerPosition].flopToTurnProb;
 
         if(getRandomProb() > (win_prob * 10)) {
             foldAction(playerPosition);
         } else {
             if (lastBet != 0) {
                 if(!callAction(playerPosition)){
-                    pot += playersTable[playerPosition].chips;
+                    POT += playersTable[playerPosition].chips;
                     foldAction(playerPosition);
                 }
             } else {
@@ -591,8 +586,8 @@ void botActions(int round, int playerPosition) {
                 }
             }
         }
-    } 
-}   
+    }
+}
 
 /**
  * Ligações entre menu de seleção e métodos de ação
@@ -616,7 +611,7 @@ bool checkAction(int round) {
     if(round != 0 && lastBet == 0) {
         return true;
     }
-    
+
     return false;
 }
 
@@ -635,7 +630,7 @@ bool callAction(int position) {
 
         return true;
     }
-    
+
     return false;
 }
 
@@ -651,29 +646,4 @@ void foldAction(int position) {
 **/
 void exitAction() {
 
-}
-
-int main(){
-    /*player play1;
-
-    play1.hand[0].value = 'T';
-    play1.hand[1].value = '3';
-    play1.hand[0].naipe = 'E';
-    play1.hand[1].naipe = 'E';
-
-    cardsTable[0].value = '4';
-    cardsTable[0].naipe = 'E';
-    cardsTable[1].value = 'Q';
-    cardsTable[1].naipe = 'E';
-    cardsTable[2].value = 'J';
-    cardsTable[2].naipe = 'E';
-    cardsTable[3].value = 'A';
-    cardsTable[3].naipe = 'E';
-    cardsTable[4].value = 'K';
-    cardsTable[4].naipe = 'E';*/
-
-    startGame();
-
-    //cout<<verifyHand(play1.hand,cardsTable,7).flag;
-    return 0;
 }

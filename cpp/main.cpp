@@ -5,7 +5,6 @@ using namespace std;
 
 void showMenu();
 void showTitle();
-void clearScreen();
 int getOption();
 void selectMenuOption(int option);
 void showGameModesMenu();
@@ -14,10 +13,6 @@ void quit();
 void showRules();
 void pause();
 void showRanking();
-
-void clearScreen() {
-    system("clear");
-}
 
 void showTitle() {
     cout << endl;
@@ -91,6 +86,7 @@ void showGameModesMenu() {
 void selectGameModeOption(int option) {
     switch(option) {
         case 1:
+            startGame();
             break;
         case 2:
             break;
@@ -151,59 +147,4 @@ int main() {
     }
 
     return 0;
-}
-
-string getUserProfile() {
-
-    string profile = "\n\n        .------..------..------..------..------..------.\n";
-    profile += "        |P.--. ||E.--. ||R.--. ||F.--. ||I.--. ||L.--. |\n";
-    profile += "        | :/\134: || (\134/) || :(): || :(): || (\134/) || :/\134: |\n";
-    profile += "        | (__) || :\134/: || ()() || ()() || :\134/: || (__) |\n";
-    profile += "        | '--'P|| '--'E|| '--'R|| '--'F|| '--'I|| '--'L|\n";
-    profile += "        `------'`------'`------'`------'`------'`------'\n\n\n";
-
-    profile += "PERFIS POSSÍVEIS \n\n[-] MUITO AGRESSIVO [-] AGRESSIVO [+] MUITO MODERADO [+] MODERADO\n\n\n";
-
-    float average_prob = 45;
-
-    float average_pot = 190 / 4;
-
-    // MÃO NÃO MELHOROU AO LONGO DOS TURNOS
-    if (average_prob < 47) {
-    
-        // USUARIO COM POUCAS FICHAS 
-        if (40 < average_pot) {
-            profile += "Seu perfil é MUITO AGRESSIVO, no geral sua probabilidade\n";
-            profile += "de vitória não melhorou em relação a sua probabilidade no \nFLOP ";
-            profile += "e suas fichas estão abaixo da média do pote.";
-
-        } else {
-            profile += "Seu perfil é AGRESSIVO, no geral sua probabilidade\n";
-            profile += "de vitória não melhorou em relação a sua probabilidade \n no FLOP,\n";
-            profile += "mas suas fichas estão acima da média do pote.";
-        }
-
-    // MÃO MELHOROU AO LONGO DOS TURNOS    
-    } else {
-
-        // USUARIO COM POUCAS FICHAS 
-        if (40 < average_pot) {
-            profile += "Seu perfil é MUITO MODERADO, no geral sua probabilidade\n"; 
-            profile += "de vitória melhorou em relação a sua probabilidade no FLOP,\n";
-            profile += "mas suas fichas estão abaixo da média do pote"; 
-
-        } else {
-            profile += "Seu perfil é MODERADO, no geral sua probabilidade\n"; 
-            profile += "de vitória melhorou em relação a sua probabilidade no FLOP\n";  
-            profile += "e suas fichas estão acima da média do pote";
-        }
-    }
-
-    profile += "\n\nPROBABILIDADES \n\n";
-    profile += "* PRÉ-FLOP ---> 10%\n";
-    profile += "* FLOP -------> 20%\n";
-    profile += "* TURN -------> 30%\n";
-    profile += "* RIVER ------> 40%\n\n";
-
-  return profile;
 }
