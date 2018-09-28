@@ -380,16 +380,19 @@ void flopTurnRiver(card cards[]){
 
 }
 
-void printCentralPlayer(player p, int numPlayer){
+void printCentralPlayer(player p, int numPlayer, int actualPlayer){
     //printf("%c\n", 179);
     printf("│");
     spaces(39);
+    int numSpaces = 42;
     if(!p.active)
         printf("X");
-    else
+    else if(numPlayer == actualPlayer){
+        printf("*");
+    }else
         spaces(1);
     printf("Player %d", numPlayer);
-    int numSpaces = 42;
+    
     if(p.role != 'C'){
         printf("(%c)", p.role);
         numSpaces = numSpaces - 3;
@@ -418,12 +421,15 @@ void printCentralPlayer(player p, int numPlayer){
 
 }
 
-void printLateralPlayers(player p1, int numPlayer1, player p2, int numPlayer2){
+void printLateralPlayers(player p1, int numPlayer1, player p2, int numPlayer2, int actualPlayer){
     //printf("%c\n", 179);
     printf("│");
     if(!p1.active){
         spaces(2);
         printf("X");
+    }else if(numPlayer1 == actualPlayer){
+        spaces(2);
+        printf("*");
     }else
         lateralSpaces();
     printf("Player %d", numPlayer1);
@@ -441,6 +447,9 @@ void printLateralPlayers(player p1, int numPlayer1, player p2, int numPlayer2){
     printf("Player %d", numPlayer2);
     if(!p2.active){
         printf("X");
+        spaces(2);
+    }else if(numPlayer2 == actualPlayer){
+        printf("*");
         spaces(2);
     }else
         lateralSpaces();
@@ -477,20 +486,20 @@ void printPot(int pot){
     printf("│\n");
 }
 
-void printTable(player players[], card cards[], int pot){
+void printTable(player players[], card cards[], int pot, int actualPlayer){
     topBorder();
     centralCard(players[3]);
-    printCentralPlayer(players[3], 4);
+    printCentralPlayer(players[3], 4, actualPlayer);
     cardsLateral(players[2], players[4]);
-    printLateralPlayers(players[2], 3, players[4], 5);
+    printLateralPlayers(players[2], 3, players[4], 5, actualPlayer);
 
     flopTurnRiver(cards);
     printPot(pot);
 
     cardsLateral(players[1], players[5]);
-    printLateralPlayers(players[1], 2, players[5], 6);
+    printLateralPlayers(players[1], 2, players[5], 6, actualPlayer);
 
-    printCentralPlayer(players[0], 1);
+    printCentralPlayer(players[0], 1, actualPlayer);
     float prob = 0;
     if(cards[0].value == ' '){
         prob = players[0].preFlopProb;
@@ -540,7 +549,7 @@ int main(){
     p2.hand[1] = c4;
     p2.chips = 500;
     p2.role = 'C';
-    p2.active = false;
+    p2.active = true;
     p2.lastBet = 0;
     p2.showCards = false;
 
@@ -558,7 +567,7 @@ int main(){
     p4.hand[1] = c1;
     p4.chips = 50000;
     p4.role = 'B';
-    p4.active = false;
+    p4.active = true;
     p4.lastBet = 500;
     p4.lastBet = 8000;
     p4.showCards = false;
@@ -568,7 +577,7 @@ int main(){
     p5.hand[1] = c2;
     p5.chips = 500000;
     p5.role = 'S';
-    p5.active = false;
+    p5.active = true;
     p5.lastBet = 0;
     p5.showCards = true;
 
@@ -577,14 +586,14 @@ int main(){
     p6.hand[1] = c2;
     p6.chips = 500;
     p6.role = 'C';
-    p6.active = false;
+    p6.active = true;
     p6.lastBet = 0;
     p6.showCards = false;
 
     player players[] = {p1, p2, p3, p4, p5, p6};
     card cards[] = {c1, c2, c3, c4, c5};
 
-    printTable(players, cards, 50000);//p1, p2, p3, p4, p5, p6, c1, c2, c3, c4, c5, 500000);
+    printTable(players, cards, 50000, 6);//p1, p2, p3, p4, p5, p6, c1, c2, c3, c4, c5, 500000);
 }
 
 /*
