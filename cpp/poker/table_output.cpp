@@ -11,10 +11,10 @@ struct player {
   card hand[2];
   int chips;
   char role;
-  float preFlopProb;
-  float flopToTurnProb;
-  float turnToRiverProb;
-  float riverToShowDownProb;
+  float preFlopProb; // 2 cartas
+  float flopToTurnProb; // 5 cartas
+  float turnToRiverProb; // 6 cartas 
+  float riverToShowDownProb; // 7 cartas
   string action;
   bool active;
 };

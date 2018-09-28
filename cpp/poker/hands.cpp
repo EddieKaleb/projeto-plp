@@ -34,7 +34,7 @@ float getPreFlopProb(card pair[], int num_players) {
   }
   
   float prob = hand_probability(target_hand, num_players);
-  cout << target_hand << ": " << prob << endl;
+  cout << target_hand << ": " << prob << "%" << endl;
   return prob;
 }
 

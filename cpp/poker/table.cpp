@@ -57,7 +57,7 @@ int getActivePlayers();
 void wait(int time);
 
 void clearScreen() {
-    system("clear");
+    //system("cls");
 }
 
 void wait (int seconds) { 
@@ -65,21 +65,6 @@ void wait (int seconds) {
   endwait = clock () + seconds * CLOCKS_PER_SEC ; 
   while (clock() < endwait) {} 
 } 
-
-/**
-    Representação de um jogador.
-**//*
-struct player {
-  card hand[2];
-  int chips;
-  char role;
-  float preFlopProb;
-  float flopToTurnProb;
-  float turnToRiverProb;
-  float riverToShowDownProb;
-  string action;
-  bool active;
-};*/
 
 /**
     Quantidade de jogadores na mesa.
@@ -138,6 +123,7 @@ void enablePlayers(){
 **/
 void disablePlayer(int position){
     playersTable[position].active = false;
+    playersTable[position].action = "OUT";
 }
 
 /**
@@ -192,10 +178,12 @@ void startGame() {
                     break;
             }
 
-            wait(3);
+            wait(4);
             cout << "ROUND: " << i << endl;        
         }
     }
+
+    cout << "\n\n\n\n Novo Jogo \n";
 }
 
 /**
@@ -264,32 +252,34 @@ void riverRound() {
 void runRound(int beginPosition, int endPosition, int round) {
     int currentPosition = beginPosition;
 
+    // Verifica se ainda há jogador
     if (getActivePlayers() >= 2) {
         do {
             showTable();
-            if(playersTable[currentPosition].action != "OUT") {
-                if(currentPosition == USER_POSITION) {
-                    showUserActions(round, currentPosition);
-                }
-                else {
-                    if (playersTable[currentPosition].action != "OUT") {
-                        botActions(playersTable[currentPosition].action, round, currentPosition);
+            // se jogador ainda tem ações para realizar
+            if (playersTable[currentPosition].action != "OUT") {
 
-                        if (playersTable[currentPosition].action == "FOLD") {
-                            playersTable[currentPosition].action = "OUT";
-                        }
-                    }
+                if (currentPosition == USER_POSITION) {
+                    showUserActions(round, currentPosition);
+                } else {
+                    botActions(playersTable[currentPosition].action, round, currentPosition);                
+                }
+
+                if (playersTable[currentPosition].action == "FOLD") {
+                    playersTable[currentPosition].action = "OUT";
                 }
             }
             currentPosition = nextPlayerPosition(currentPosition);
         } while(currentPosition == nextPlayerPosition(endPosition));
     } else {
         // fim de partida
+        // premiar o vencedor, checar quem tem maior mão
+        // se der empate divide 
     }
 }
 
 /*
-
+    Retorna os players que ainda estão na partida
 */
 int getActivePlayers() {
     int count = 0;
@@ -393,50 +383,45 @@ void setPlayersRoles(int dealerPosition) {
     Define as probabilidades pré-flop de cada jogador.
 **/
 void setPlayersPreFlopProb() {
+    cout << "LOG: PROBABILIDADES PRÉ-FLOP" << endl;
     for (int i = 0; i < QTD_PLAYERS; i++) {
+        cout << "PLAYER " << i + 1 << " ";
         playersTable[i].preFlopProb = getPreFlopProb(playersTable[i].hand, QTD_PLAYERS);
     }
 }
 
 void setPlayersFlopToTurnProb() {
+    cout << "LOG: PROBABILIDADES TURN" << endl;
     for (int i = 0; i < QTD_PLAYERS; i++) {
+        cout << "PLAYER " << i + 1 << " ";
         handStatus hand = verifyHand(playersTable[i].hand, cardsTable, 5);
         playersTable[i].flopToTurnProb = playersTable[i].preFlopProb * (1 - getImproveHandProb(hand.flag));
+        cout << playersTable[i].flopToTurnProb << "%" << endl;
     }
 }
 
 void setPlayersTurnToRiverProb() {
+    cout << "LOG: PROBABILIDADES RIVER" << endl;
     for (int i = 0; i < QTD_PLAYERS; i++) {
+        cout << "PLAYER " << i + 1 << " ";
         handStatus hand = verifyHand(playersTable[i].hand, cardsTable, 6);
         playersTable[i].turnToRiverProb = playersTable[i].flopToTurnProb * (1 - getImproveHandProb(hand.flag));
+        cout << playersTable[i].turnToRiverProb << "%" << endl;
     }
 }
 
 void setPlayersRiverToShowDown() {
+    cout << "LOG: PROBABILIDADES SHOWDOWN" << endl;
     for (int i = 0; i < QTD_PLAYERS; i++) {
+        cout << "PLAYER " << i + 1 << " ";
         handStatus hand = verifyHand(playersTable[i].hand, cardsTable, 7);
         playersTable[i].riverToShowDownProb = playersTable[i].turnToRiverProb * (1 - getImproveHandProb(hand.flag));
+        cout << playersTable[i].riverToShowDownProb << "%" << endl;
     }
 }
 
 void botsPreFlop() {
     setPlayersPreFlopProb();
-
-    for (int i = 1; i < QTD_PLAYERS; i++) {
-
-        float win_prob = playersTable[i].preFlopProb;
-
-        if (getRandomProb() > (win_prob * 10)) {
-            playersTable[i].action = "FOLD";
-        } else {
-            
-            if (win_prob >= 75) {
-                setRaiseOtherwiseCall(playersTable[i], 0.5);
-            } else {
-                setRaiseOtherwiseCall(playersTable[i], 0.2);
-            }
-        }
-    }
 }
 
 void botsFlop() {
@@ -444,14 +429,14 @@ void botsFlop() {
     
     for (int i = 1; i < QTD_PLAYERS; i++) {
         float win_turn = playersTable[i].flopToTurnProb;
-
+        /*
         if (win_turn <= 25) {
             setFoldOtherwiseCall(playersTable[i], 0.75);
         } else if (win_turn <= 50) {
             setFoldOtherwiseCall(playersTable[i], 0.5);
         } else {
             setFoldOtherwiseCall(playersTable[i], 0.25);
-        }
+        }*/
     }
 }
 
@@ -461,13 +446,13 @@ void botsTurn() {
     for (int i = 1; i < QTD_PLAYERS; i++) {
         float win_river = playersTable[i].turnToRiverProb;
 
-        if (win_river <= 25) {
+       /* if (win_river <= 25) {
             setFoldOtherwiseCall(playersTable[i], 0.75);
         } else if (win_river <= 50) {
             setFoldOtherwiseCall(playersTable[i], 0.5);
         } else {
             setFoldOtherwiseCall(playersTable[i], 0.25);
-        }
+        } */
     }
 }
 
@@ -528,10 +513,15 @@ float getImproveHandProb(string hand) {
     } else if (hand == "IS_ROYAL_FLUSH") {
         outs = 0;
     } else { // HIGH CARD QUALQUER PAR (3 * 5)
+        hand = "IS_HIGH_CARD";
         outs = 15;
     } 
 
-    return getImproveProb(outs);
+    cout << hand << " ";
+
+    float prob = getImproveProb(outs) / 100;
+
+    return prob;
 }
 
 /**
@@ -575,7 +565,6 @@ void showUserActions(int round, int playerPosition) {
     cout << "          1  -  Mesa" << endl;
     cout << "          2  -  Apostar" << endl;
     cout << "          3  -  Pagar" << endl;
-    cout << "          4  -  Aumentar" << endl;
     cout << "          5  -  Desistir" << endl;
     cout << "          6  -  Sair da mesa" << endl;
 
@@ -601,25 +590,17 @@ void selectActionOption(int option, int round, int playerPosition) {
     switch(option) {
         case 1:
             checkPlayerAction(round, playerPosition, bigBet);
-            USER_ACTION = "CHECK";
             break;
         case 2:
             betPlayerAction(playerPosition);
-            USER_ACTION = "BET";
             break;
         case 3:
             callPlayerAction(playerPosition);
-            USER_ACTION = "CALL";
             break;
         case 4:
-            raisePlayerAction(playerPosition);
-            USER_ACTION = "RAISE";
+            foldAction(playerPosition);
             break;
         case 5:
-            foldAction(playerPosition);
-            USER_ACTION = "OUT";
-            break;
-        case 6:
             exitAction();
             break;
         default:
@@ -631,8 +612,35 @@ void selectActionOption(int option, int round, int playerPosition) {
 
 **/
 void botActions(string action, int round, int playerPosition) {
+    
+    if (round == 0) { // pre flop
+    
+    } else if (round == 1) { // flop
+    
+    } else if (round == 2) { // turn
+    
+    } else if (round == 3) { // river
+    
+    } 
+    
+    /*
+     float win_prob = playersTable[i].preFlopProb;
+                    
+                      if (getRandomProb() > (win_prob * 10) ) {
+                        playersTable[i].action = "FOLD";
+        } else {
+            
+            if (win_prob >= 75) {
+                setRaiseOtherwiseCall(playersTable[i], 0.5);
+            } else {
+                setRaiseOtherwiseCall(playersTable[i], 0.2);
+            }
+        }*/
+
+
+
     if (action == "CHECK") {
-        checkPlayerAction(round, playerPosition, bigBet);
+        checkBotAction(round, playerPosition, bigBet);
     } else if (action == "BET") {
         betPlayerAction(playerPosition);
     } else if (action == "CALL") {
@@ -686,7 +694,6 @@ bool checkAction(int round, int position, int bigBet) {
     if(!(round == 0 && playersTable[position].role == 'B' && bigBet == lastBet) || lastBet != 0) {
         return false;
     }
-
     return true;
 }
 
