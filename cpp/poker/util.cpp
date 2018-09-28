@@ -1,7 +1,5 @@
 #include "table_output.cpp"
 
-void swap(card* a, card* b);
-void shift(card arr,int posIni, int posFin);
 
 void copyArrayCards(card current[], card* target, int quantCards){
   for(int i = 0; i < quantCards; i++){
@@ -27,6 +25,12 @@ void agroupCards(card handPlayer[],card cTable[], card *agroup){
   }
 }
 
+void swap(card* a, card* b) { 
+  card t = *a; 
+  *a = *b; 
+  *b = t; 
+} 
+
 void shift(card arr[],int posIni, int posFin){
   for(int i = posIni; i<posFin;i++){
     swap(arr[i],arr[i+1]);
@@ -46,12 +50,6 @@ int map(char value){
 int compareTo(char value, char pivot){
     return map(value) >= map(pivot);
 }
-
-void swap(card* a, card* b) { 
-  card t = *a; 
-  *a = *b; 
-  *b = t; 
-} 
 
 int partition (card arr[], int low, int high) { 
   char pivot = arr[high].value; 

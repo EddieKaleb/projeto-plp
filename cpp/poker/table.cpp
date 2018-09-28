@@ -578,7 +578,7 @@ int nextPlayerPosition(int currentPos) {
 **/
 void showTable() {
     clearScreen();
-    printTable(playersTable, cardsTable, POT);
+    printTable(playersTable, cardsTable, POT,1);
 }
 
 /**
