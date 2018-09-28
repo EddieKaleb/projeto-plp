@@ -197,7 +197,9 @@ void preFlopRound() {
 
     callAction(smallPosition);
 
-    MINIMUM_BET *= 2;
+    MINIMUM_BET = MINIMUM_BET * 2;
+
+    lastBet = MINIMUM_BET;
 
     callAction(bigPosition);
 
@@ -227,7 +229,7 @@ void turnRound() {
 
     cardsTable[3] = getCard();
 
-    MINIMUM_BET *= 2;
+    MINIMUM_BET = MINIMUM_BET * 2;
 
     botsTurn();
 
@@ -254,6 +256,7 @@ void riverRound() {
 **/
 void runRound(int beginPosition, int round) {
     int currentPosition = beginPosition;
+    firstBetPlayerPosition = beginPosition;
 
     if (getActivePlayers() >= 2) {
 
@@ -263,7 +266,8 @@ void runRound(int beginPosition, int round) {
 
             if (playersTable[currentPosition].active == true) {
                 cout << "Jogando: Jogador " << currentPosition + 1<< endl;
-                wait(1);
+                cout << "Jogadores ativos: " << getActivePlayers() << endl;
+                wait(5);
 
                 if (currentPosition == USER_POSITION) {
                     showUserActions(round, currentPosition);
@@ -295,7 +299,10 @@ void runPreFlopRound(int beginPosition, int endPosition, int round) {
 
             if (playersTable[currentPosition].active == true) {
                 cout << "Jogando: Jogador " << currentPosition + 1<< endl;
-                wait(1);
+                cout << "Jogadores ativos: " << getActivePlayers() << endl;
+                cout << "LastBet: " << lastBet << endl;
+                cout << "Minimum: " << MINIMUM_BET << endl;
+                wait(2);
 
                 if (currentPosition == USER_POSITION) {
                     showUserActions(round, currentPosition);
@@ -661,8 +668,8 @@ bool checkAction(int round) {
 **/
 bool callAction(int position) {
     if(playersTable[position].chips >= MINIMUM_BET){
+        lastBet = MINIMUM_BET;
         if(lastBet = 0){
-            lastBet = MINIMUM_BET;
             firstBetPlayerPosition = position;
         }
 
