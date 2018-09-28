@@ -2,68 +2,8 @@
 #include <cstdlib>
 #include <string>
 #include <iostream> 
-#include <time.h> 
-
-void enablePlayers();
-void disablePlayer(int position);
-void startGame();
-void setPlayersChips();
-void setPlayersCards();
-void setPlayersCardsManual(card card1, card card2);
-void setPlayersRoles(int dealerPosition);
-int nextPlayerPosition(int currentPos);
-void showTable(int playerPosition);
-void showUserActions(int round, int currentPosition);
-bool selectActionOption(int option, int round, int playerPosition);
-bool checkAction(int round);
-bool callAction(int position);
-void foldAction(int position);
-void exitAction();
-void clearScreen();
-int getOption();
-void setInitialDealerPosition();
-void setNextDealerPosition();
-void setPlayersPreFlopProb();
-bool checkPlayerAction(int round);
-void callPlayerAction(int position);
-void preFlopRound();
-void flopRound();
-void turnRound();
-void riverRound();
-void flopRoundManual();
-void turnRoundManual();
-void riverRoundManual();
-void runRound(int beginPosition, int round);
-void runPreFlopRound(int beginPosition, int endPosition, int round);
-void startGameManualMatch();
-void flopRoundManual();
-void selectFlopCards();
-void selectCardHand();
-card configCardHand(string message);
-bool isValidCard(card card1);
-void cardInvalidMessage();
-void setCardsTable();
-
-/* Métodos que controlam o comportamento dos bots */
-void setPlayersPreFlopProb();
-void setPlayersFlopToTurnProb();
-void setPlayersTurnToRiverProb();
-void setPlayersRiverToShowDown();
-void botsPreFlop();
-void botsFlop();
-void botsTurn();
-void botsRiver();
-void setRaiseOtherwiseCall(player plyr, int prob);
-void setFoldOtherwiseCall(player plyr, int prob);
-float getImproveHandProb(string hand);
-float getImproveProb(int outs);
-float getRandomProb();
-void botActions(int round, int playerPosition);
-int getActivePlayers();
-void wait(int time);
-int mapHands(string value);
-void setRoundsWinners();
-void showUserProfile();
+#include <time.h>
+#include "table.h"
 
 void clearScreen() {
     system("clear");
