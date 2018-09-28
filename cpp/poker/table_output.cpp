@@ -403,7 +403,7 @@ void printCentralPlayer(player p, int numPlayer, int actualPlayer){
     spaces(43 - digits);
     //printf("%c\n", 179);
     printf("│\n");
-
+    /*
     digits = numDigits(p.lastBet);
     printf("│");
     spaces(40);
@@ -411,7 +411,7 @@ void printCentralPlayer(player p, int numPlayer, int actualPlayer){
     spaces(45 - digits);
     //printf("%c\n", 179);
     printf("│\n");
-
+    */
 
 }
 
@@ -459,7 +459,7 @@ void printLateralPlayers(player p1, int numPlayer1, player p2, int numPlayer2, i
     lateralSpaces();
     //printf("%c\n", 179);
     printf("│\n");
-
+    /*
     printf("│");
     lateralSpaces();
     printf("Bet: %d", p1.lastBet);
@@ -468,6 +468,7 @@ void printLateralPlayers(player p1, int numPlayer1, player p2, int numPlayer2, i
     lateralSpaces();
     //printf("%c\n", 179);
     printf("│\n");
+    */
 }
 
 void printPot(int pot){

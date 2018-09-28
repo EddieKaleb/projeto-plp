@@ -995,7 +995,10 @@ void foldAction(int position) {
     Realiza a ação de 'Sair' da mesa.showTable
 **/
 void exitAction() {
-    returnMenu = true;
+    clearScreen();
+
+    cout << endl << "Até a próxima !" << endl;
+    exit(1);
 }
 
 void showUserProfile() {
