@@ -16,7 +16,7 @@ const int MIN_PLAYERS = 2, MAX_PLAYERS = 10;
     players. 
 */
 float hand_probability(string target_hand, int num_players) {
-    ifstream ip(CSV_PATH);
+    ifstream ip(CSV_PATH.c_str());
 
     string result_prob = DEFAULT;
     string hand, probabilities;
