@@ -52,7 +52,7 @@ void setFoldOtherwiseCall(player plyr, int prob);
 float getImproveHandProb(string hand);
 float getImproveProb(int outs);
 float getRandomProb();
-void botActions(string action, int round, int playerPosition);
+void botActions(int round, int playerPosition);
 int getActivePlayers();
 void wait(int time);
 
@@ -114,7 +114,6 @@ int POT = 0;
 void enablePlayers(){
     for(int i = 0; i < QTD_PLAYERS; i++){
         playersTable[i].active = true;
-        playersTable[i].action = "NO_ACTION";
     }
 }
 
@@ -123,7 +122,6 @@ void enablePlayers(){
 **/
 void disablePlayer(int position){
     playersTable[position].active = false;
-    playersTable[position].action = "OUT";
 }
 
 /**
@@ -257,16 +255,12 @@ void runRound(int beginPosition, int endPosition, int round) {
         do {
             showTable();
             // se jogador ainda tem ações para realizar
-            if (playersTable[currentPosition].action != "OUT") {
+            if (playersTable[currentPosition].active == true) {
 
                 if (currentPosition == USER_POSITION) {
                     showUserActions(round, currentPosition);
                 } else {
-                    botActions(playersTable[currentPosition].action, round, currentPosition);                
-                }
-
-                if (playersTable[currentPosition].action == "FOLD") {
-                    playersTable[currentPosition].action = "OUT";
+                    botActions(round, currentPosition);
                 }
             }
             currentPosition = nextPlayerPosition(currentPosition);
@@ -274,7 +268,8 @@ void runRound(int beginPosition, int endPosition, int round) {
     } else {
         // fim de partida
         // premiar o vencedor, checar quem tem maior mão
-        // se der empate divide 
+        // se der empate divide
+        cout << "Fim de partida" << endl;
     }
 }
 
@@ -284,7 +279,7 @@ void runRound(int beginPosition, int endPosition, int round) {
 int getActivePlayers() {
     int count = 0;
     for (int i = 0; i < QTD_PLAYERS; i++) {
-        if (playersTable[i].action != "OUT") {
+        if (playersTable[i].active == true) {
             count++;
         }
     }
@@ -611,12 +606,24 @@ void selectActionOption(int option, int round, int playerPosition) {
 /**
 
 **/
-void botActions(string action, int round, int playerPosition) {
+void botActions(int round, int playerPosition) {
     
-    if (round == 0) { // pre flop
-    
-    } else if (round == 1) { // flop
-    
+    if (round == 0) {
+        if(playersTable[playerPosition].role != 'B') {
+            float win_prob = playersTable[i].preFlopProb;
+            if(getRandomProb() > (win_prob * 10)) {
+                foldAction(playerPosition);
+            }
+            else {
+                if(!callAction(playerPosition)){
+                    pot += playersTable[playerPosition].chips;
+                    foldAction(playerPosition);
+                }
+            }
+        }
+    } else if (round == 1) {
+        if() {
+        }
     } else if (round == 2) { // turn
     
     } else if (round == 3) { // river
