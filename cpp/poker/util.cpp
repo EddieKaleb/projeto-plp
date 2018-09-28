@@ -6,6 +6,12 @@ void copyArrayCards(card current[], card* target, int quantCards){
   }
 }
 
+void copyArrayPlayers(player current[], player* target, int quantPlayers){
+  for(int i = 0; i < quantPlayers; i++){
+    target[i] = current[i];
+  }
+}
+
 void agroupCards(card handPlayer[],card cTable[], card *agroup){
   for(int i =0; i<=6; i++){
     if(i<2){

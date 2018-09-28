@@ -49,6 +49,9 @@ float getRandomProb();
 void botActions(int round, int playerPosition);
 int getActivePlayers();
 void wait(int time);
+int mapHands(string value);
+void setRoundsWinners();
+void showUserProfile();
 
 void clearScreen() {
     system("clear");
@@ -60,9 +63,7 @@ void wait (int seconds) {
   while (clock() < endwait) {}
 }
 
-/**
-    Quantidade de jogadores na mesa.
-**/
+// Quantidade de jogadores na mesa
 int QTD_PLAYERS = 6;
 
 /**
@@ -175,6 +176,9 @@ void startGame() {
 
             cout << "ROUND: " << i << endl;
         }
+
+        setRoundsWinners();
+        showUserProfile();
     }
 
     cout << "\n\n\n\n Novo Jogo \n";
@@ -275,12 +279,7 @@ void runRound(int beginPosition, int round) {
                 break;
             }
         }
-    } else {
-        // fim de partida
-        // premiar o vencedor, checar quem tem maior mão
-        // se der empate divide
-        cout << "Fim de partida" << endl;
-    }
+    } 
 }
 
 /**
@@ -308,12 +307,7 @@ void runPreFlopRound(int beginPosition, int endPosition, int round) {
             showTable();
             wait(5);
         } while(currentPosition != nextPlayerPosition(endPosition));
-    } else {
-        // fim de partida
-        // premiar o vencedor, checar quem tem maior mão
-        // se der empate divide
-        cout << "Fim de partida" << endl;
-    }
+    } 
 }
 
 /*
@@ -327,6 +321,53 @@ int getActivePlayers() {
         }
     }
     return count;
+}
+
+void setRoundsWinners() {
+    
+    player winners[QTD_PLAYERS];
+    player empty[QTD_PLAYERS];
+    
+    int betterHand = -1;
+    int j = 0;
+
+    for (int i = 0; i < QTD_PLAYERS; i++) {
+        if (playersTable[i].active == true) {
+
+            handStatus hStatus = verifyHand(playersTable[i].hand, cardsTable, 7);
+
+            int handValue = mapHands(hStatus.flag);
+
+            if (handValue > betterHand) { 
+                betterHand = handValue;
+                copyArrayPlayers(empty, winners, QTD_PLAYERS);
+                winners[0] = playersTable[i];
+                j = 1;
+            } else if (handValue == betterHand) { // empate
+                winners[j] = playersTable[i];
+                j++;
+            }
+        }
+    }
+
+    for (int x = 0; x < j; x++) {
+        cout << winners[x].hand << endl;
+    }
+}
+
+int mapHands(string value){
+    string hands[] = {
+        "IS_HIGH_CARD","IS_ONE_PAIR","IS_TWO_PAIR","IS_THREE",
+        "IS_STRAIGHT","IS_FLUSH","IS_FULL_HOUSE","IS_FOUR",
+        "IS_STRAIGHT_FLUSH","IS_ROYAL_FLUSH"
+    };
+    
+    for(int i = 0; i < 10; i++){
+        if(hands[i] == value){
+            return i+1;
+        }
+    }
+    return 0;
 }
 
 /**
@@ -449,7 +490,7 @@ void botsRiver() {
 /**
     Probabilidade de melhorar a mão do flop ao river
 **/
-float getImproveHandProb(string hand) {
+float getImproveHandProb(string hand) { 
     int outs;
 
     if (hand == "IS_ONE_PAIR"){ // TRINCA (2) OU DOIS PARES (3)
@@ -569,7 +610,7 @@ void botActions(int round, int playerPosition) {
         }
     } else if (round <= 3) {
         win_prob = playersTable[playerPosition].flopToTurnProb;
-
+        
         if(getRandomProb() > (win_prob * 10)) {
             foldAction(playerPosition);
         } else {
@@ -647,3 +688,53 @@ void foldAction(int position) {
 void exitAction() {
 
 }
+
+void showUserProfile() {
+    string profile = "\n\n        .------..------..------..------..------..------.\n";
+    profile += "        |P.--. ||E.--. ||R.--. ||F.--. ||I.--. ||L.--. |\n";
+    profile += "        | :/\134: || (\134/) || :(): || :(): || (\134/) || :/\134: |\n";
+    profile += "        | (__) || :\134/: || ()() || ()() || :\134/: || (__) |\n";
+    profile += "        | '--'P|| '--'E|| '--'R|| '--'F|| '--'I|| '--'L|\n";
+    profile += "        `------'`------'`------'`------'`------'`------'\n\n\n";
+    profile += "PERFIS POSSÍVEIS \n\n[-] MUITO AGRESSIVO [-] AGRESSIVO [+] MUITO MODERADO [+] MODERADO\n\n\n";
+    float average_prob = 
+        (playersTable[0].preFlopProb + playersTable[0].flopToTurnProb + 
+        playersTable[0].turnToRiverProb + playersTable[0].riverToShowDownProb) / 4;
+    float average_pot = POT / 4;
+    // MÃO NÃO MELHOROU AO LONGO DOS TURNOS
+    if (average_prob < playersTable[0].flopToTurnProb) {
+    
+        // USUARIO COM POUCAS FICHAS 
+        if (playersTable[0].chips < average_pot) {
+            profile += "Seu perfil é MUITO AGRESSIVO, no geral sua probabilidade\n";
+            profile += "de vitória não melhorou em relação a sua probabilidade no \nFLOP ";
+            profile += "e suas fichas estão abaixo da média do pote.";
+        } else {
+            profile += "Seu perfil é AGRESSIVO, no geral sua probabilidade\n";
+            profile += "de vitória não melhorou em relação a sua probabilidade \n no FLOP,\n";
+            profile += "mas suas fichas estão acima da média do pote.";
+        }
+    // MÃO MELHOROU AO LONGO DOS TURNOS    
+    } else {
+        // USUARIO COM POUCAS FICHAS 
+        if (playersTable[0].chips < average_pot) {
+            profile += "Seu perfil é MUITO MODERADO, no geral sua probabilidade\n"; 
+            profile += "de vitória melhorou em relação a sua probabilidade no FLOP,\n";
+            profile += "mas suas fichas estão abaixo da média do pote"; 
+        } else {
+            profile += "Seu perfil é MODERADO, no geral sua probabilidade\n"; 
+            profile += "de vitória melhorou em relação a sua probabilidade no FLOP\n";  
+            profile += "e suas fichas estão acima da média do pote";
+        }
+    }
+
+
+    profile += "\n\nPROBABILIDADES \n\n";
+
+    cout << profile << endl;
+
+   cout << "* PRÉ-FLOP ---> " << playersTable[0].preFlopProb << "%\n";
+   cout << "* FLOP -------> " << playersTable[0].flopToTurnProb << "%\n";
+   cout << "* TURN -------> " << playersTable[0].turnToRiverProb << "%\n";
+   cout << "* RIVER ------> " << playersTable[0].riverToShowDownProb << "%\n\n";
+} 
