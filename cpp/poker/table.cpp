@@ -669,7 +669,7 @@ bool checkAction(int round) {
 bool callAction(int position) {
     if(playersTable[position].chips >= MINIMUM_BET){
         lastBet = MINIMUM_BET;
-        if(lastBet = 0){
+        if(lastBet == 0){
             firstBetPlayerPosition = position;
         }
 
