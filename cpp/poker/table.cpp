@@ -283,7 +283,7 @@ void startGameManualMatch() {
 
 void selectCardHand() {
     clearScreen();
-    
+
     int option;
 
     cout << endl << " --- SELEÇÃO DAS CARTAS DA SUA MÃO --- " << endl;
@@ -491,8 +491,8 @@ void runRound(int beginPosition, int round) {
                     botActions(round, currentPosition);
                 }
             }
-            currentPosition = nextPlayerPosition(currentPosition);
             showTable(currentPosition);
+            currentPosition = nextPlayerPosition(currentPosition);
             wait(5);
 
             if(currentPosition == firstBetPlayerPosition) {
@@ -526,8 +526,8 @@ void runPreFlopRound(int beginPosition, int endPosition, int round) {
                     botActions(round, currentPosition);
                 }
             }
-            currentPosition = nextPlayerPosition(currentPosition);
             showTable(currentPosition);
+            currentPosition = nextPlayerPosition(currentPosition);
             wait(3);
         } while(currentPosition != nextPlayerPosition(endPosition));
     } 
