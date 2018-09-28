@@ -10,6 +10,7 @@
 struct player {
   card hand[2];
   int chips;
+  int lastBet;
   char role;
   float preFlopProb; // 2 cartas
   float flopToTurnProb; // 5 cartas
@@ -189,7 +190,7 @@ void centralCard(player p){
     printf("│\n");
 }
 
-void centralCardWithProb(player p, int prob){      
+void centralCardWithProb(player p, float prob){
     printf("│");
 
     centralCardSpaces();
@@ -212,7 +213,7 @@ void centralCardWithProb(player p, int prob){
    
     printf("│");
 
-    printf(" WIN: %f.1%", prob);
+    printf(" WIN: %.1f ", prob);
     if(numDigits(prob) == 1){
         spaces(1);
     }
@@ -415,15 +416,15 @@ void printTable(player players[], card cards[], int pot){
     printLateralPlayers(players[1], 2, players[5], 6);
 
     printCentralPlayer(players[0], 1);
-    int prob = 0;
+    float prob = 0;
     if(cards[0].value == ' '){
-        prob = p1.preFlopProb;
-    }else if(cards[3].values == ' '){
-        prob = p1.flopToTurnProb;
-    }else if(cards[4] == ' '){
-        prob = p1.turnToRiverProb;
+        prob = players[0].preFlopProb;
+    }else if(cards[3].value == ' '){
+        prob = players[0].flopToTurnProb;
+    }else if(cards[4].value == ' '){
+        prob = players[0].turnToRiverProb;
     }else{
-        prob = p1.riverToShowDownProb;
+        prob = players[0].riverToShowDownProb;
     }
     centralCardWithProb(players[0], prob);
     bottomBorder();   
@@ -451,6 +452,10 @@ int main(){
     p1.hand[1] = c2;
     p1.chips = 50000;
     p1.role = 'C';
+    p1.preFlopProb = 3;
+    p1.flopToTurnProb = 5.5;
+    p1.turnToRiverProb = 7.2;
+    p1.riverToShowDownProb = 2.78;
     player p2;
     p2.hand[0] = c3;
     p2.hand[1] = c4;
