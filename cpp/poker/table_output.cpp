@@ -12,7 +12,11 @@ struct player {
   int chips;
   char role;
   float preFlopProb;
-  bool enabled;
+  float flopToTurnProb;
+  float turnToRiverProb;
+  float riverToShowDownProb;
+  string action;
+  bool active;
 };
 
 int numDigits(int num){
@@ -208,7 +212,7 @@ void centralCardWithProb(player p, int prob){
    
     printf("│");
 
-    printf(" WIN: %d%", prob);
+    printf(" WIN: %f.1%", prob);
     if(numDigits(prob) == 1){
         spaces(1);
     }
@@ -411,7 +415,17 @@ void printTable(player players[], card cards[], int pot){
     printLateralPlayers(players[1], 2, players[5], 6);
 
     printCentralPlayer(players[0], 1);
-    centralCardWithProb(players[0], 5);
+    int prob = 0;
+    if(cards[0].value == ' '){
+        prob = p1.preFlopProb;
+    }else if(cards[3].values == ' '){
+        prob = p1.flopToTurnProb;
+    }else if(cards[4] == ' '){
+        prob = p1.turnToRiverProb;
+    }else{
+        prob = p1.riverToShowDownProb;
+    }
+    centralCardWithProb(players[0], prob);
     bottomBorder();   
 }
 
