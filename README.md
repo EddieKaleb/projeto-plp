@@ -9,7 +9,7 @@ Um jogo de poker [limit texas hold’em](https://www.pokerstars.com/br/poker/gam
 com analisador que auxiliará jogadores na tomada de decisões, melhorando assim sua performance e desempenho. Para tal, 
 serão utilizados conceitos de probabilidade condicional para extrair os diferentes resultados. 
 
-* Modo de jogo: +2 jogadores (1 usuário + bots)
+* Modo de jogo: 6 jogadores (1 usuário + 5 bots)
 
 ### Requisitos Funcionais
 
