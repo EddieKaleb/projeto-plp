@@ -421,66 +421,14 @@ void botsPreFlop() {
 
 void botsFlop() {
     setPlayersFlopToTurnProb();
-    
-    for (int i = 1; i < QTD_PLAYERS; i++) {
-        float win_turn = playersTable[i].flopToTurnProb;
-        /*
-        if (win_turn <= 25) {
-            setFoldOtherwiseCall(playersTable[i], 0.75);
-        } else if (win_turn <= 50) {
-            setFoldOtherwiseCall(playersTable[i], 0.5);
-        } else {
-            setFoldOtherwiseCall(playersTable[i], 0.25);
-        }*/
-    }
 }
 
 void botsTurn() {
     setPlayersTurnToRiverProb();
-    
-    for (int i = 1; i < QTD_PLAYERS; i++) {
-        float win_river = playersTable[i].turnToRiverProb;
-
-       /* if (win_river <= 25) {
-            setFoldOtherwiseCall(playersTable[i], 0.75);
-        } else if (win_river <= 50) {
-            setFoldOtherwiseCall(playersTable[i], 0.5);
-        } else {
-            setFoldOtherwiseCall(playersTable[i], 0.25);
-        } */
-    }
 }
 
 void botsRiver() {
     setPlayersRiverToShowDown();
-
-    for (int i = 1; i < QTD_PLAYERS; i++) {
-        float win_show_down = playersTable[i].turnToRiverProb;
-
-        if (win_show_down <= 25) {
-            setFoldOtherwiseCall(playersTable[i], 0.95);
-        } else if (win_show_down <= 50) {
-            setFoldOtherwiseCall(playersTable[i], 0.50);
-        } else {
-            setFoldOtherwiseCall(playersTable[i], 0.05);
-        }
-    }
-}
-
-void setRaiseOtherwiseCall(player plyr, int prob) {
-    if (getRandomProb() <= prob) {
-        plyr.action = "RAISE";
-    } else {
-        plyr.action = "CALL";
-    }
-}
-
-void setFoldOtherwiseCall(player plyr, int prob) {
-    if (getRandomProb() <= prob) {
-       plyr.action = "FOLD";
-    } else {
-       setRaiseOtherwiseCall(plyr, 0.5);    
-    }
 }
 
 /**
@@ -608,9 +556,11 @@ void selectActionOption(int option, int round, int playerPosition) {
 **/
 void botActions(int round, int playerPosition) {
     
+    float win_prob;
+
     if (round == 0) {
         if(playersTable[playerPosition].role != 'B') {
-            float win_prob = playersTable[i].preFlopProb;
+            win_prob = playersTable[i].preFlopProb;
             if(getRandomProb() > (win_prob * 10)) {
                 foldAction(playerPosition);
             }
@@ -621,43 +571,27 @@ void botActions(int round, int playerPosition) {
                 }
             }
         }
-    } else if (round == 1) {
-        if() {
-        }
-    } else if (round == 2) { // turn
-    
-    } else if (round == 3) { // river
-    
-    } 
-    
-    /*
-     float win_prob = playersTable[i].preFlopProb;
-                    
-                      if (getRandomProb() > (win_prob * 10) ) {
-                        playersTable[i].action = "FOLD";
+    } else if (round <= 3) {
+        win_prob = playersTable[i].flopToTurnProb;
+
+        if(getRandomProb() > (win_prob * 10)) {
+            foldAction(playerPosition);
         } else {
-            
-            if (win_prob >= 75) {
-                setRaiseOtherwiseCall(playersTable[i], 0.5);
+            if (lastBet != 0) {
+                if(!callAction(playerPosition)){
+                    pot += playersTable[playerPosition].chips;
+                    foldAction(playerPosition);
+                }
             } else {
-                setRaiseOtherwiseCall(playersTable[i], 0.2);
+                if (getRandomProb() > (win_prob * 10)) {
+                    callAction(playerPosition);
+                } else {
+                    checkAction(playerPosition);
+                }
             }
-        }*/
-
-
-
-    if (action == "CHECK") {
-        checkBotAction(round, playerPosition, bigBet);
-    } else if (action == "BET") {
-        betPlayerAction(playerPosition);
-    } else if (action == "CALL") {
-        callPlayerAction(playerPosition);
-    } else if (action == "RAISE") {
-        raisePlayerAction(playerPosition);
-    } else if (action == "FOLD") {
-        foldAction(playerPosition);
-    }
-}
+        }
+    } 
+}   
 
 /**
  * Ligações entre menu de seleção e métodos de ação
