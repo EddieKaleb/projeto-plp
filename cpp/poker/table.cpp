@@ -17,10 +17,8 @@ int nextPlayerPosition(int currentPos);
 void showTable();
 void showUserActions(int round, int currentPosition);
 void selectActionOption(int option, int round, int playerPosition);
-bool checkAction(int round, int position, int bigBet);
-bool betAction(int position, int bet);
+bool checkAction(int round);
 bool callAction(int position);
-bool raiseAction(int position, int raise);
 void foldAction(int position);
 void exitAction();
 void clearScreen();
@@ -28,10 +26,8 @@ int getOption();
 void setInitialDealerPosition();
 void setNextDealerPosition();
 void setPlayersPreFlopProb();
-void checkPlayerAction(int round, int position, int bigBet);
-void betPlayerAction(int position);
+void checkPlayerAction(int round);
 void callPlayerAction(int position);
-void raisePlayerAction(int position);
 void preFlopRound();
 void flopRound();
 void turnRound();
@@ -107,6 +103,11 @@ int bigBet = 0;
     Valor do pot da partida.
 **/
 int POT = 0;
+
+/**
+    Posição do primeiro jogador a apostar.
+**/
+int firstBetPlayerPosition = 0;
 
 /**
     Ativa todos os usuários.
@@ -596,18 +597,8 @@ void botActions(int round, int playerPosition) {
 /**
  * Ligações entre menu de seleção e métodos de ação
 **/
-void checkPlayerAction(int round, int position, int bigBet){
-    if(!checkAction(round, position, bigBet)){
-        cout << "Ação inválida!";
-    }
-}
-
-void betPlayerAction(int position){
-    int value;
-    cout << "Digite a quantia que você deseja apostar: ";
-    cin >> value;
-
-    if(!raiseAction(position, value)){
+void checkPlayerAction(int round){
+    if(!checkAction(round)){
         cout << "Ação inválida!";
     }
 }
@@ -618,35 +609,11 @@ void callPlayerAction(int position){
     }
 }
 
-void raisePlayerAction(int position){
-    int value;
-    cout << "Digite a quantia que você deseja aumentar na aposta: ";
-    cin >> value;
-
-    if(!raiseAction(position, value)){
-        cout << "Ação inválida!";
-    }
-}
-
 /**
     Realiza a ação de 'Mesa' (Passar a vez).
 **/
-bool checkAction(int round, int position, int bigBet) {
-    if(!(round == 0 && playersTable[position].role == 'B' && bigBet == lastBet) || lastBet != 0) {
-        return false;
-    }
-    return true;
-}
-
-/**
-    Realiza a ação de 'Apostar'.
-**/
-bool betAction(int position, int bet) {
-    if(lastBet == 0){
-        playersTable[position].chips -= bet;
-        POT += bet;
-        lastBet = bet;
-
+bool checkAction(int round) {
+    if(round != 0 && lastBet == 0) {
         return true;
     }
     
@@ -657,23 +624,14 @@ bool betAction(int position, int bet) {
     Realiza a ação de 'Pagar'.
 **/
 bool callAction(int position) {
-    if(playersTable[position].chips >= lastBet){
-        playersTable[position].chips -= lastBet;
-        POT += lastBet;
-        return true;
-    }
-    
-    return false;
-}
+    if(playersTable[position].chips >= MINIMUM_BET){
+        if(lastBet = 0){
+            lastBet = MINIMUM_BET;
+            firstBetPlayerPosition = position;
+        }
 
-/**
-    Realiza a ação de 'Aumentar' a aposta.
-**/
-bool raiseAction(int position, int raise) {
-    if(playersTable[position].chips >= lastBet + raise){
-        playersTable[position].chips -= lastBet + raise;
-        POT += lastBet + raise;
-        lastBet += raise;
+        playersTable[position].chips -= MINIMUM_BET;
+        POT += MINIMUM_BET;
 
         return true;
     }
