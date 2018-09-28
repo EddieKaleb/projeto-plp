@@ -42,6 +42,7 @@ void selectCardHand();
 card configCardHand(card card1, string message);
 bool isValidCard(card card1);
 void cardInvalidMessage();
+void setCardsTable();
 
 /* Métodos que controlam o comportamento dos bots */
 void setPlayersPreFlopProb();
@@ -124,6 +125,13 @@ int firstBetPlayerPosition = 0;
 **/
 bool returnMenu = false;
 
+void setCardsTable() {
+    for(int i = 0; i < 5; i++){
+        cardsTable[i].value = ' ';
+        cardsTable[i].naipe = ' ';
+    }
+}
+
 /**
     Verifica se foi possivel achar e dá shift na carta desejada
 **/
@@ -176,6 +184,7 @@ void startGame() {
     while(true) {
 
         buildDeck();
+        setCardsTable();
         shuffleDeck();
         setPlayersCards();
 
@@ -231,11 +240,8 @@ void startGameManualMatch() {
     while(true) {
 
         buildDeck();
+        setCardsTable();
         shuffleDeck();
-
-        for(int i = 0; i <= contCard; i++){
-                cout << deck[i].value << " " << deck[i].naipe << endl;
-            }
 
         selectCardHand();
         setNextDealerPosition();
@@ -276,6 +282,8 @@ void startGameManualMatch() {
 }
 
 void selectCardHand() {
+    clearScreen();
+    
     int option;
 
     cout << endl << " --- SELEÇÃO DAS CARTAS DA SUA MÃO --- " << endl;
