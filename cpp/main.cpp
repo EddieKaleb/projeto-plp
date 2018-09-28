@@ -13,6 +13,12 @@ void quit();
 void showRules();
 void pause();
 void showRanking();
+void showGameWillStartMsg();
+void casualMatch();
+void manualMatch();
+card configCardHand(card card1, string message);
+bool isValidCard(card card1);
+void cardInvalidMessage();
 
 void showTitle() {
     cout << endl;
@@ -86,15 +92,34 @@ void showGameModesMenu() {
 void selectGameModeOption(int option) {
     switch(option) {
         case 1:
-            startGame();
+            casualMatch();
             break;
         case 2:
+            manualMatch();
             break;
         case 3:
             break;
         default:
             break;
     }
+}
+
+void casualMatch() {
+    showGameWillStartMsg();
+    startGame();
+}
+
+void manualMatch() {
+    showGameWillStartMsg();
+    startGameManualMatch();
+}
+
+void showGameWillStartMsg() {
+    clearScreen();
+    cout << endl << endl;
+    cout << "          ---- O JOGO VAI COMEÇAR !!!! ----" << endl << endl;
+    cout << "          * você jogará como o player 1 *" << endl;
+    wait(4);
 }
 
 void showRules() {

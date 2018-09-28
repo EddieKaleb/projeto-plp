@@ -9,9 +9,10 @@ void disablePlayer(int position);
 void startGame();
 void setPlayersChips();
 void setPlayersCards();
+void setPlayersCardsManual(card card1, card card2);
 void setPlayersRoles(int dealerPosition);
 int nextPlayerPosition(int currentPos);
-void showTable();
+void showTable(int playerPosition);
 void showUserActions(int round, int currentPosition);
 void selectActionOption(int option, int round, int playerPosition);
 bool checkAction(int round);
@@ -29,8 +30,18 @@ void preFlopRound();
 void flopRound();
 void turnRound();
 void riverRound();
+void flopRoundManual();
+void turnRoundManual();
+void riverRoundManual();
 void runRound(int beginPosition, int round);
 void runPreFlopRound(int beginPosition, int endPosition, int round);
+void startGameManualMatch();
+void flopRoundManual();
+void selectFlopCards();
+void selectCardHand();
+card configCardHand(card card1, string message);
+bool isValidCard(card card1);
+void cardInvalidMessage();
 
 /* Métodos que controlam o comportamento dos bots */
 void setPlayersPreFlopProb();
@@ -114,7 +125,7 @@ int firstBetPlayerPosition = 0;
 bool returnMenu = false;
 
 /**
-    Verifica se foi possivel achar e dar shift na carta desejada
+    Verifica se foi possivel achar e dá shift na carta desejada
 **/
 bool getCardPlayer(card cardPlayer){
     bool verify = false;
@@ -123,6 +134,7 @@ bool getCardPlayer(card cardPlayer){
             shift(cardsTable, i, 51);
             contCard--;
             verify = true;
+            break;
         }
     }
     return verify;
@@ -208,6 +220,103 @@ void startGame() {
     cout << "\n\n\n\n Novo Jogo \n";
 }
 
+void startGameManualMatch() {
+    setPlayersChips();
+    setInitialDealerPosition();
+
+    /**
+        Controlar a passagem do dealer, e executar enquanto o usuário não desiste, ou
+        perde todas as fichas.
+    **/
+    while(true) {
+
+        buildDeck();
+        shuffleDeck();
+
+        for(int i = 0; i <= contCard; i++){
+                cout << deck[i].value << " " << deck[i].naipe << endl;
+            }
+
+        selectCardHand();
+        setNextDealerPosition();
+        setPlayersRoles(DEALER_POSITION);
+        enablePlayers();
+
+        POT = 0;
+
+        /**
+            Controla os quartro turnos do jogo: pre-flop, flop, turn e river.
+        **/
+        for(int i = 0; i < 4; i++) {
+
+            lastBet = 0;
+            firstBetPlayerPosition = -1;
+
+            if(i == 0) {
+                preFlopRound();
+            }
+            else if(i == 1) {
+                flopRoundManual();
+            }
+            else if(i == 2) {
+                turnRoundManual();
+            }
+            else {
+                riverRoundManual();
+            }
+
+            cout << "ROUND: " << i << endl;
+        }
+
+        setRoundsWinners();
+        showUserProfile();
+    }
+
+    cout << "\n\n\n\n Novo Jogo \n";
+}
+
+void selectCardHand() {
+    int option;
+
+    cout << endl << " --- SELEÇÃO DAS CARTAS DA SUA MÃO --- " << endl;
+
+    card card1 = configCardHand(card1, "primeira");
+    card card2 = configCardHand(card2, "segunda");
+
+    setPlayersCardsManual(card1, card2);
+}
+
+card configCardHand(card card1, string message) {
+    bool validCard;
+    do {
+        cout << endl << "Digite o valor da " + message + " carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): " << endl;
+        cin >> card1.value;
+
+        cout << endl << "Digite o naipe da " + message + " carta (O, C, P, E): " << endl;
+        cin >> card1.naipe;
+
+        validCard = isValidCard(card1);
+    } while(!validCard);
+
+    cout << "Carta: " << card1.value << "  " << card1.naipe << endl;
+    wait(2);
+
+    return card1;
+}
+
+bool isValidCard(card card1) {
+    if(!getCardPlayer(card1)) {
+        cardInvalidMessage();
+        return false;
+    }
+    return true;
+}
+
+void cardInvalidMessage() {
+    cout << "                       Carta inválida... Selecione outra !" << endl;
+    system("sleep 1s");
+}
+
 /**
     Realiza as operações necessárias do turno de pre-flop.
 **/
@@ -245,6 +354,58 @@ void flopRound() {
     runRound(smallPosition, 1);
 }
 
+void flopRoundManual() {
+    int smallPosition = nextPlayerPosition(DEALER_POSITION);
+
+    selectFlopCards();
+
+    botsFlop();
+
+    runRound(smallPosition, 1);
+}
+
+void selectFlopCards() {
+    clearScreen();
+
+    cout << endl << " --- SELEÇÃO DAS TRÊS PRIMEIRAS CARTAS DA MESA --- " << endl;
+
+    card card1, card2, card3;
+
+    card1 = configCardHand(card1, "primeira");
+    card2 = configCardHand(card2, "segunda");
+    card3 = configCardHand(card3, "terceira");
+
+    cardsTable[0] = card1;
+    cardsTable[1] = card2;
+    cardsTable[2] = card3;
+}
+
+void selectTurnCard() {
+    clearScreen();
+
+    cout << endl << " --- SELEÇÃO DA CARTA DE TURN --- " << endl;
+
+    card card;
+
+    card = configCardHand(card, "");
+
+
+    cardsTable[3] = card;
+}
+
+void selectRiverCard() {
+    clearScreen();
+
+    cout << endl << " --- SELEÇÃO DA CARTA DE RIVER --- " << endl;
+    
+    card card;
+    
+    card = configCardHand(card, "");
+
+    cardsTable[4] = card;
+}
+
+
 /**
     Realiza as operações necessárias do turno de turn.
 **/
@@ -259,6 +420,19 @@ void turnRound() {
 
     runRound(smallPosition, 2);
 }
+
+void turnRoundManual() {
+    int smallPosition = nextPlayerPosition(DEALER_POSITION);
+
+    selectTurnCard();
+
+    MINIMUM_BET = MINIMUM_BET * 2;
+
+    botsTurn();
+
+    runRound(smallPosition, 2);
+}
+
 
 /**
     Realiza as operações necessárias do turno de river.
@@ -275,6 +449,16 @@ void riverRound() {
     /** chamar método que compara as mãos e declarar o vencedor**/
 }
 
+void riverRoundManual() {
+    int smallPosition = nextPlayerPosition(DEALER_POSITION);
+    
+    selectRiverCard();
+
+    botsRiver();
+    
+    runRound(smallPosition, 3);
+}
+
 /**
     Executa uma rodada permitindo que todos os jogadores ativos na mesa façam suas ações.
 **/
@@ -286,7 +470,7 @@ void runRound(int beginPosition, int round) {
 
         while(true) {
 
-            showTable();
+            showTable(currentPosition);
 
             if (playersTable[currentPosition].active == true) {
                 cout << "Jogando: Jogador " << currentPosition + 1<< endl;
@@ -300,7 +484,7 @@ void runRound(int beginPosition, int round) {
                 }
             }
             currentPosition = nextPlayerPosition(currentPosition);
-            showTable();
+            showTable(currentPosition);
             wait(5);
 
             if(currentPosition == firstBetPlayerPosition) {
@@ -319,13 +503,13 @@ void runPreFlopRound(int beginPosition, int endPosition, int round) {
     if (getActivePlayers() >= 2) {
         do {
 
-            showTable();
+            showTable(currentPosition);
 
             if (playersTable[currentPosition].active == true) {
-                cout << "Jogando: Jogador " << currentPosition + 1<< endl;
+                cout << "Jogando: Player " << currentPosition + 1 << endl;
                 cout << "Jogadores ativos: " << getActivePlayers() << endl;
-                cout << "LastBet: " << lastBet << endl;
-                cout << "Minimum: " << MINIMUM_BET << endl;
+                cout << "Última aposta: " << lastBet << endl;
+                cout << "Aposta mínima: " << MINIMUM_BET << endl;
                 wait(2);
 
                 if (currentPosition == USER_POSITION) {
@@ -335,8 +519,8 @@ void runPreFlopRound(int beginPosition, int endPosition, int round) {
                 }
             }
             currentPosition = nextPlayerPosition(currentPosition);
-            showTable();
-            wait(5);
+            showTable(currentPosition);
+            wait(3);
         } while(currentPosition != nextPlayerPosition(endPosition));
     } 
 }
@@ -415,6 +599,16 @@ void setPlayersChips() {
 **/
 void setPlayersCards() {
     for(int i = 0; i < QTD_PLAYERS; i++) {
+        for(int j = 0; j < 2; j++) {
+            playersTable[i].hand[j] = getCard();
+        }
+    }
+}
+
+void setPlayersCardsManual(card card1, card card2) {
+    playersTable[0].hand[0] = card1;
+    playersTable[0].hand[1] = card2;
+    for(int i = 1; i < QTD_PLAYERS; i++) {
         for(int j = 0; j < 2; j++) {
             playersTable[i].hand[j] = getCard();
         }
@@ -576,9 +770,9 @@ int nextPlayerPosition(int currentPos) {
 /**
     Exibe a representação da mesa.
 **/
-void showTable() {
+void showTable(int playerPosition) {
     clearScreen();
-    printTable(playersTable, cardsTable, POT,1);
+    printTable(playersTable, cardsTable, POT, playerPosition);
 }
 
 /**
