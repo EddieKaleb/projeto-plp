@@ -16,6 +16,8 @@ handStatus verifyStraight(card agroup[], int quantCards);
 handStatus verifyFullHouse(card agroup[], int quantCards);
 handStatus verifyStraightFlush(card agroup[], int quantCards);
 handStatus verifyRoyalFlush(card agroup[], int quantCards);
+void copyArrayHandStatus (handStatus current[], handStatus* target, int quantHands);
+
 
 float getPreFlopProb(card pair[], int num_players) {
   string target_hand;

@@ -193,7 +193,7 @@ void startGame() {
         enablePlayers();
 
         POT = 0;
-
+         
         /**
             Controla os quartro turnos do jogo: pre-flop, flop, turn e river.
         **/
@@ -223,10 +223,10 @@ void startGame() {
         }
 
         setRoundsWinners();
+        wait(10);
         showUserProfile();
+        wait(20);        
     }
-
-    cout << "\n\n\n\n Novo Jogo \n";
 }
 
 void startGameManualMatch() {
@@ -483,11 +483,11 @@ void runRound(int beginPosition, int round) {
             if (playersTable[currentPosition].active == true) {
                 cout << "Jogando: Jogador " << currentPosition + 1<< endl;
                 cout << "Jogadores ativos: " << getActivePlayers() << endl;
-                wait(5);
 
                 if (currentPosition == USER_POSITION) {
                     showUserActions(round, currentPosition);
                 } else {
+                    // modo automatico
                     botActions(round, currentPosition);
                 }
             }
@@ -550,13 +550,16 @@ void setRoundsWinners() {
     
     player winners[QTD_PLAYERS];
     player empty[QTD_PLAYERS];
-    
+    handStatus handWinners[QTD_PLAYERS];
+    handStatus emptyHands[QTD_PLAYERS];
+
+    int posWinners[QTD_PLAYERS];
+
     int betterHand = -1;
     int j = 0;
 
     for (int i = 0; i < QTD_PLAYERS; i++) {
         if (playersTable[i].active == true) {
-
             handStatus hStatus = verifyHand(playersTable[i].hand, cardsTable, 7);
 
             int handValue = mapHands(hStatus.flag);
@@ -564,17 +567,59 @@ void setRoundsWinners() {
             if (handValue > betterHand) { 
                 betterHand = handValue;
                 copyArrayPlayers(empty, winners, QTD_PLAYERS);
+                copyArrayHandStatus(emptyHands, handWinners, QTD_PLAYERS);
                 winners[0] = playersTable[i];
+                handWinners[0] = hStatus;
+                posWinners[0] = i;
                 j = 1;
-            } else if (handValue == betterHand) { // empate
+            } else if (handValue == betterHand) { 
                 winners[j] = playersTable[i];
+                posWinners[j] = i;                
+                handWinners[j] = hStatus;                
                 j++;
             }
         }
     }
 
+    cout << "\n***********************" << endl;
+    cout << "*      FINALISTAS     *" << endl;
+    cout << "***********************\n" << endl;
+
+    for (int i = 0; i < QTD_PLAYERS; i++) {
+        if (playersTable[i].active == true) {
+            cout << "- JOGADOR " << i + 1 << ":-> HAND: ";
+            cout << playersTable[i].hand[0].value << playersTable[i].hand[0].naipe << " ";
+            cout << playersTable[i].hand[1].value << playersTable[i].hand[1].naipe << endl << endl;
+        }
+    }
+
+    cout << "\n***********************" << endl;
+    cout << "*      VENCEDORES     *" << endl;
+    cout << "***********************\n" << endl;
+    
+    int countCards = 0;
+
+    int newChips = POT / j;
     for (int x = 0; x < j; x++) {
-        cout << winners[x].hand << endl;
+
+        playersTable[posWinners[x]].chips += newChips;
+
+        cout << "- JOGADOR " << posWinners[x] + 1 << " " << handWinners[x].flag << " -> GAME: ";
+
+        if (handWinners[x].flag == "HIGH_CARD") {
+            countCards = 5;
+        } else if (handWinners[x].flag == "IS_ONE_PAIR") {
+            countCards = 2;
+        } else if (handWinners[x].flag == "IS_TWO_PAIR" && handWinners[x].flag == "IS_FOUR") {
+            countCards = 4;
+        } else {
+            countCards = 5;
+        }
+        for (int i = 0; i <= countCards; i++) {
+            cout << handWinners[x].agroupCards[i].value << handWinners[x].agroupCards[i].naipe << " ";
+        }   
+
+        cout << endl;
     }
 }
 
@@ -671,6 +716,7 @@ void setPlayersPreFlopProb() {
     for (int i = 0; i < QTD_PLAYERS; i++) {
         cout << "PLAYER " << i + 1 << " ";
         playersTable[i].preFlopProb = getPreFlopProb(playersTable[i].hand, QTD_PLAYERS);
+        cout << playersTable[i].preFlopProb << endl;
     }
 }
 
@@ -760,7 +806,7 @@ float getImproveHandProb(string hand) {
     Gera uma probabilidade aleatória
 **/
 float getRandomProb() {
-    return (rand() % 11) / 100;
+    return rand() % 3;
 }
 
 /**
@@ -827,40 +873,70 @@ void selectActionOption(int option, int round, int playerPosition) {
 void botActions(int round, int playerPosition) {
 
     float win_prob;
+    int r1 = getRandomProb();
+    int r2 = getRandomProb();
+    
+    cout << "RANDOM PROB 1: " << r1 << "%" << endl;
+    cout << "RANDOM PROB 2: " << r2 << "%" << endl;
 
     if (round == 0) {
+        cout << "ROUND: 0" << endl;
+
         if(playersTable[playerPosition].role != 'B') {
-            win_prob = playersTable[playerPosition].preFlopProb;
-            if(getRandomProb() > (win_prob * 10)) {
+            win_prob = playersTable[playerPosition].preFlopProb * 1.15;
+
+            cout << "WIN PROB: " << win_prob << "%" << endl;
+            if(r1 > ((win_prob / 10) * 1.15)) {
                 foldAction(playerPosition);
+                cout << "ACTION: FOLD" << endl;
             }
             else {
                 if(!callAction(playerPosition)){
                     POT += playersTable[playerPosition].chips;
                     foldAction(playerPosition);
+                    cout << "ACTION: FOLD" << endl;
+                } else {
+                    cout << "ACTION: CALL" << endl;
                 }
             }
         }
     } else if (round <= 3) {
+        cout << "ROUND: " << round << endl;
+
         win_prob = playersTable[playerPosition].flopToTurnProb;
         
-        if(getRandomProb() > (win_prob * 10)) {
+        cout << "WIN PROB: " << win_prob << "%" << endl;
+        if(r1 > ((win_prob / 10) * 1.15)) {
             foldAction(playerPosition);
+            cout << "ACTION: FOLD" << endl;
         } else {
             if (lastBet != 0) {
-                if(!callAction(playerPosition)){
+                if(!callAction(playerPosition)) {
                     POT += playersTable[playerPosition].chips;
                     foldAction(playerPosition);
+                    cout << "ACTION: FOLD" << endl;
+                } else {
+                    cout << "ACTION: CALL" << endl;
                 }
             } else {
-                if (getRandomProb() > (win_prob * 10)) {
-                    callAction(playerPosition);
+                
+                if (r2 > ((win_prob / 10) * 1.15)) {
+                    if (!callAction(playerPosition)) {
+                        POT += playersTable[playerPosition].chips;
+                        foldAction(playerPosition);
+                        cout << "ACTION: FOLD" << endl;
+                    } else {
+                        cout << "ACTION: CALL" << endl;
+                    }
                 } else {
                     checkAction(playerPosition);
+                    cout << "ACTION: CHECK" << endl;                    
                 }
             }
         }
     }
+
+    wait(5);
 }
 
 /**
@@ -971,3 +1047,9 @@ void showUserProfile() {
    cout << "* TURN -------> " << playersTable[0].turnToRiverProb << "%\n";
    cout << "* RIVER ------> " << playersTable[0].riverToShowDownProb << "%\n\n";
 } 
+
+void copyArrayHandStatus (handStatus current[], handStatus* target, int quantHands){
+  for(int i = 0; i < quantHands; i++){
+    target[i] = current[i];
+  }
+}

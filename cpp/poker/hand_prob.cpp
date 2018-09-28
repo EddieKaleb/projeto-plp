@@ -7,7 +7,7 @@ using namespace std;
 string get_probability(string probs, int num_players);
 float hand_probability(string target_hand, int num_players);
 
-const string CSV_PATH = "../data/hands.csv";
+const string CSV_PATH = "./data/hands.csv";
 const string DEFAULT = "0.0";
 const int MIN_PLAYERS = 2, MAX_PLAYERS = 10;
 
