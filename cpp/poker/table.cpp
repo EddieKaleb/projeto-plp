@@ -109,6 +109,26 @@ int POT = 0;
 int firstBetPlayerPosition = 0;
 
 /**
+    Indica a escolha do jogador para sair da partida
+**/
+bool returnMenu = false;
+
+/**
+    Verifica se foi possivel achar e dar shift na carta desejada
+**/
+bool getCardPlayer(card cardPlayer){
+    bool verify = false;
+    for(int i = 0; i <= contCard; i++){
+        if(deck[i].value == cardPlayer.value && deck[i].naipe == cardPlayer.naipe){
+            shift(cardsTable, i, 51);
+            contCard--;
+            verify = true;
+        }
+    }
+    return verify;
+}
+
+/**
     Ativa todos os usuários.
 **/
 void enablePlayers(){
@@ -174,6 +194,10 @@ void startGame() {
                 riverRound();
             }
 
+            if(returnMenu) {
+                returnMenu = false;
+                return;
+            }
             cout << "ROUND: " << i << endl;
         }
 
@@ -693,7 +717,7 @@ void foldAction(int position) {
     Realiza a ação de 'Sair' da mesa.showTable
 **/
 void exitAction() {
-
+    returnMenu = true;
 }
 
 void showUserProfile() {

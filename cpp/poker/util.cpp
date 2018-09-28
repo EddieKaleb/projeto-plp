@@ -1,5 +1,8 @@
 #include "table_output.cpp"
 
+void swap(card* a, card* b);
+void shift(card arr,int posIni, int posFin);
+
 void copyArrayCards(card current[], card* target, int quantCards){
   for(int i = 0; i < quantCards; i++){
     target[i] = current[i];
@@ -24,7 +27,7 @@ void agroupCards(card handPlayer[],card cTable[], card *agroup){
   }
 }
 
-void shift(card* arr,int posIni, int posFin){
+void shift(card arr[],int posIni, int posFin){
   for(int i = posIni; i<posFin;i++){
     swap(arr[i],arr[i+1]);
   }
