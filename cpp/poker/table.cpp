@@ -14,7 +14,7 @@ void setPlayersRoles(int dealerPosition);
 int nextPlayerPosition(int currentPos);
 void showTable(int playerPosition);
 void showUserActions(int round, int currentPosition);
-void selectActionOption(int option, int round, int playerPosition);
+bool selectActionOption(int option, int round, int playerPosition);
 bool checkAction(int round);
 bool callAction(int position);
 void foldAction(int position);
@@ -24,7 +24,7 @@ int getOption();
 void setInitialDealerPosition();
 void setNextDealerPosition();
 void setPlayersPreFlopProb();
-void checkPlayerAction(int round);
+bool checkPlayerAction(int round);
 void callPlayerAction(int position);
 void preFlopRound();
 void flopRound();
@@ -39,7 +39,7 @@ void startGameManualMatch();
 void flopRoundManual();
 void selectFlopCards();
 void selectCardHand();
-card configCardHand(card card1, string message);
+card configCardHand(string message);
 bool isValidCard(card card1);
 void cardInvalidMessage();
 void setCardsTable();
@@ -223,11 +223,21 @@ void startGame() {
         }
 
         setRoundsWinners();
-        wait(10);
+        wait(3);
         showUserProfile();
-        wait(20);        
+        cout << endl << "Tecle para continuar..." << endl;
+        cin.ignore();
+        getchar();  
+        char op;
+        cout << endl << "Sair do jogo? (s/n)" << endl;
+        cin >> op;
+
+        if (op == 's'){
+            return;
+        }        
     }
 }
+
 
 void startGameManualMatch() {
     setPlayersChips();
@@ -275,10 +285,14 @@ void startGameManualMatch() {
         }
 
         setRoundsWinners();
+        wait(3);
         showUserProfile();
+        cout << endl << "Tecle para continuar..." << endl;
+        cin.ignore();
+        getchar();
     }
 
-    cout << "\n\n\n\n Novo Jogo \n";
+    
 }
 
 void selectCardHand() {
@@ -288,14 +302,17 @@ void selectCardHand() {
 
     cout << endl << " --- SELEÇÃO DAS CARTAS DA SUA MÃO --- " << endl;
 
-    card card1 = configCardHand(card1, "primeira");
-    card card2 = configCardHand(card2, "segunda");
+    card card1, card2;
+    
+    card1 = configCardHand("primeira");
+    card2 = configCardHand("segunda");
 
     setPlayersCardsManual(card1, card2);
 }
 
-card configCardHand(card card1, string message) {
+card configCardHand(string message) {
     bool validCard;
+    card card1;
     do {
         cout << endl << "Digite o valor da " + message + " carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): " << endl;
         cin >> card1.value;
@@ -379,9 +396,9 @@ void selectFlopCards() {
 
     card card1, card2, card3;
 
-    card1 = configCardHand(card1, "primeira");
-    card2 = configCardHand(card2, "segunda");
-    card3 = configCardHand(card3, "terceira");
+    card1 = configCardHand("primeira");
+    card2 = configCardHand("segunda");
+    card3 = configCardHand("terceira");
 
     cardsTable[0] = card1;
     cardsTable[1] = card2;
@@ -395,8 +412,7 @@ void selectTurnCard() {
 
     card card;
 
-    card = configCardHand(card, "");
-
+    card = configCardHand("");
 
     cardsTable[3] = card;
 }
@@ -408,7 +424,7 @@ void selectRiverCard() {
     
     card card;
     
-    card = configCardHand(card, "");
+    card = configCardHand("");
 
     cardsTable[4] = card;
 }
@@ -493,7 +509,7 @@ void runRound(int beginPosition, int round) {
             }
             showTable(currentPosition);
             currentPosition = nextPlayerPosition(currentPosition);
-            wait(5);
+            wait(3);
 
             if(currentPosition == firstBetPlayerPosition) {
                 break;
@@ -528,7 +544,7 @@ void runPreFlopRound(int beginPosition, int endPosition, int round) {
             }
             showTable(currentPosition);
             currentPosition = nextPlayerPosition(currentPosition);
-            wait(3);
+            wait(2);
         } while(currentPosition != nextPlayerPosition(endPosition));
     } 
 }
@@ -834,24 +850,30 @@ void showTable(int playerPosition) {
 **/
 void showUserActions(int round, int playerPosition) {
 
-    cout << endl;
-    cout << "-----------------------------     AÇÕES     -----------------------------";
-    cout << endl << endl;
+    do{
+        clearScreen();
+        showTable(playerPosition);
 
-    cout << "          1  -  Mesa" << endl;
-    cout << "          2  -  Apostar" << endl;
-    cout << "          3  -  Desistir" << endl;
-    cout << "          4  -  Sair da mesa" << endl;
+        cout << endl;
+        cout << "-----------------------------     AÇÕES     -----------------------------";
+        cout << endl << endl;
 
-    selectActionOption(getOption(), round, playerPosition);
+        cout << "          1  -  Mesa" << endl;
+        cout << "          2  -  Apostar" << endl;
+        cout << "          3  -  Desistir" << endl;
+        cout << "          4  -  Sair da mesa" << endl;
+
+        
+    }while(!selectActionOption(getOption(), round, playerPosition));
 }
 
 /**
     Interpreta a ação selecionada pelo usuário.
 **/
-void selectActionOption(int option, int round, int playerPosition) {
+bool selectActionOption(int option, int round, int playerPosition) {
+    bool valid = true;
     if(option == 1) {
-        checkPlayerAction(round);
+        valid = checkPlayerAction(round);
     }
     else if(option == 2) {
         callPlayerAction(playerPosition);
@@ -865,6 +887,7 @@ void selectActionOption(int option, int round, int playerPosition) {
     else {
 
     }
+    return valid;
 }
 
 /**
@@ -942,15 +965,19 @@ void botActions(int round, int playerPosition) {
 /**
  * Ligações entre menu de seleção e métodos de ação
 **/
-void checkPlayerAction(int round){
+bool checkPlayerAction(int round){
+    bool action = true;
     if(!checkAction(round)){
-        cout << "Ação inválida!";
+        cout << "Ação inválida!" << endl;
+        action = false;
+        wait(1);
     }
+    return action;
 }
 
 void callPlayerAction(int position){
     if(!callAction(position)){
-        cout << "Ação inválida!";
+        cout << "Ação inválida!" << endl;
     }
 }
 

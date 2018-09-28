@@ -484,17 +484,17 @@ void printPot(int pot){
 void printTable(player players[], card cards[], int pot, int actualPlayer){
     topBorder();
     centralCard(players[3]);
-    printCentralPlayer(players[3], 4, actualPlayer);
+    printCentralPlayer(players[3], 4, actualPlayer + 1);
     cardsLateral(players[2], players[4]);
-    printLateralPlayers(players[2], 3, players[4], 5, actualPlayer);
+    printLateralPlayers(players[2], 3, players[4], 5, actualPlayer + 1);
 
     flopTurnRiver(cards);
     printPot(pot);
 
     cardsLateral(players[1], players[5]);
-    printLateralPlayers(players[1], 2, players[5], 6, actualPlayer);
+    printLateralPlayers(players[1], 2, players[5], 6, actualPlayer + 1);
 
-    printCentralPlayer(players[0], 1, actualPlayer);
+    printCentralPlayer(players[0], 1, actualPlayer + 1);
     float prob = 0;
     if(cards[0].value == ' '){
         prob = players[0].preFlopProb;
