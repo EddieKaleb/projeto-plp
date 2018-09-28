@@ -49,16 +49,7 @@ handStatus verifyHand(card handPlayer[],card cTable[], int quantCards){
     if(status.flag == "null"){status = verifyThree(agroup,quantCards);}
     if(status.flag == "null"){status = verifyPair(agroup,quantCards);}
   }
-  
-   
-  // cout<<" "<<verifyThree(agroup,quantCards).agroupCards[2].value<<" ";
-  // cout<<verifyPair(agroup,quantCards).flag;
-  // cout<<agroup[0].value<<agroup[1].value<<agroup[2].value<<agroup[3].value<<agroup[4].value<<agroup[5].value<<agroup[6].value;
-  // cout<<verifyFullHouse(agroup, quantCards).flag;
-  // cout<<verifyFour(agroup, quantCards).flag;
-  // cout<<verifyFlush(agroup, quantCards).flag;
-  // cout<<verifyStraight(agroup, quantCards).flag;
-  // cout<<verifyFullHouse(agroup, quantCards).flag;
+
   return status;
 }
 
