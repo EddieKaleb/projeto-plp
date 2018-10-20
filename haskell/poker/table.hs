@@ -1,4 +1,5 @@
 import System.IO
+import Data.Char
 import qualified System.Process
 
 clearScreen :: IO()
@@ -6,15 +7,16 @@ clearScreen = do
     _ <- System.Process.system "clear"
     return ()
 
--- sleep :: Int -> IO()
--- sleep seg = do
---     _ <- System.Process.system ("sleep " ++ seg ++ "s")
---     return ()
+sleep :: Int -> IO()
+sleep seg = do
+    _ <- System.Process.system ("sleep " ++ ((intToDigit seg) : "s"))
+    return ()
+
+qtd_players :: Int
+qtd_players = 6	
 
 lastBet :: Int
-lastBet = 2
-
--- Int QTD_PLAYERS = 6
+lastBet = 2 -- Teste
 
 -- setNextDealerPosition :: Int -> Int
 -- setNextDealerPosition DEALER_POSITION = do
@@ -27,20 +29,18 @@ invalidAction = putStrLn("Ação inválida")
 checkPlayerAction :: Int -> Bool
 checkPlayerAction round = (checkAction round)
 
--- callPlayerAction :: Int -> IO()
--- callPlayerAction position = do
--- 	if not(callAction position)
--- 		then invalidAction
--- 		else putStrLn("")
+callPlayerAction :: Int -> IO()
+callPlayerAction position 
+ 	| not(callAction position) = invalidAction
+ 	| otherwise = putStrLn("")
 
 -- Realiza a ação de 'Mesa' (Passar a vez).
 checkAction :: Int -> Bool
 checkAction round = (round /= 0)
 
 -- Realiza a ação de 'Pagar'.
--- callAction :: Int -> Bool
--- callAction position = do
--- 	if ((playersTable !!position))
+callAction :: Int -> Bool
+callAction position = False
 --     if(playersTable[position].chips >= MINIMUM_BET){
 --         lastBet = MINIMUM_BET;
 --         if(lastBet == 0){
