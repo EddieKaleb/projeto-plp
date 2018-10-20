@@ -25,9 +25,9 @@ invalidAction = putStrLn("Ação inválida")
 
 -- Ligações entre menu de seleção e métodos de ação
 checkPlayerAction :: Int -> Bool
-checkPlayerAction round = if not(checkAction round)
-							then return False -- Falta wait
-							else return True
+checkPlayerAction round
+	| not(checkAction round) = False
+	| otherwise = True
 
 -- callPlayerAction :: Int -> IO()
 -- callPlayerAction position = do
@@ -37,9 +37,9 @@ checkPlayerAction round = if not(checkAction round)
 
 -- Realiza a ação de 'Mesa' (Passar a vez).
 checkAction :: Int -> Bool
-checkAction round = if (round /= 0)-- && lastBet == 0)
-						then return True
-						else return False
+checkAction round
+	| (round /= 0) = True
+	| otherwise = False
 
 -- Realiza a ação de 'Pagar'.
 -- callAction :: Int -> Bool
