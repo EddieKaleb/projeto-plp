@@ -4,6 +4,16 @@ printNTimes string num | num == 1 = putStr(string)
                     putStr(string)
                     printNTimes string (num - 1)
 
+numberOfDigits :: Float -> Float -> Float -> Float
+numberOfDigits num digits base 
+    | division >= 1 = numberOfDigits num (digits + 1) (base * 10)
+    | otherwise = digits
+    where division = (num / base)
+
+
+numDigits :: Float -> Float
+numDigits num = numberOfDigits num 1 10
+
 
 topBorder :: IO()
 topBorder = do
@@ -235,16 +245,55 @@ flopTurnRiver = do
         cardBottom
         spaces 31
         putStr("│\n")
- 
+
+centralPlayer :: Int -> Int -> Int -> IO()
+centralPlayer player chips playing = do
+    putStr("│")
+    spaces 39
+    spaces 1
+    putStr("Player " ++ show(player))
+    spaces 42
+    putStr("│\n")
+
+    putStr("│")
+    spaces 40
+    putStr("Chips: " ++ show(chips))
+    spaces (43 - truncate (numDigits (fromIntegral chips)))
+    putStr("│\n")
+
+lateralPlayers :: Int -> Int -> Int -> Int -> Int -> IO()
+lateralPlayers player1 chips1 player2 chips2 playing = do
+    putStr("│")
+    lateralSpaces
+    putStr("Player " ++ show(player1))
+    spaces 65
+    spaces 3
+    putStr("Player " ++ show(player2))
+    lateralSpaces
+    putStr("│\n")
+
+    putStr("│")
+    lateralSpaces
+    putStr("Chips: " ++ show(chips1))
+    spaces (70 - truncate(numDigits (fromIntegral chips1)) - truncate(numDigits (fromIntegral chips2)))
+    putStr("Chips: " ++ show(chips2))
+    lateralSpaces
+    putStr("│\n")
+
 printTable :: IO()
 printTable = do
     topBorder
     centralCards
+    centralPlayer 4 500 4
     lateralCards
+    lateralPlayers 3 0 5 30 3
     flopTurnRiver
     lateralCards
+    lateralPlayers 2 800 6 0 2
+    centralPlayer 1 6000 1
     centralCardsWithProb 10
     bottomBorder
+   
     
 
 main :: IO()
