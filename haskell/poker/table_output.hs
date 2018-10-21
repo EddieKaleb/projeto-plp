@@ -1,3 +1,15 @@
+data Card = Card {
+    naipe :: String,
+    value :: String
+} deriving (Show)
+
+data Player = Player {
+    hand :: [Card],
+    chips :: Int,
+    active :: Bool
+} deriving (Show)
+
+
 printNTimes :: String -> Int -> IO()
 printNTimes string num | num == 1 = putStr(string)
                  | otherwise = do
@@ -67,17 +79,23 @@ nCardTops n | n == 1 = cardTop
             | otherwise = do
                 cardTop
                 nCardTops (n - 1)
-            
+ {-           
 cardLateral :: IO()
 cardLateral = do
     putStr("│")
     spaces 3
+    putStr("│")-}
+
+cardLateral :: String -> IO()
+cardLateral info = do
+    putStr("│")
+    putStr(formatedInfo info)
     putStr("│")
 
 nCardLaterals :: Int -> IO()
-nCardLaterals n | n == 1 = cardLateral
+nCardLaterals n | n == 1 = cardLateral " "
                 | otherwise = do
-                    cardLateral
+                    cardLateral " "
                     nCardLaterals (n - 1)
 
 formatedInfo :: String -> String
@@ -132,8 +150,8 @@ centralCards = do
     centralCardSpaces
     putStr("│\n")
 
-centralCardsWithProb :: Float -> IO()
-centralCardsWithProb prob = do
+centralCardsWithProb :: Player -> Float -> IO()
+centralCardsWithProb (Player {hand = h, chips = c, active = a}) prob = do
     putStr("│")
 
     centralCardSpaces
@@ -141,12 +159,11 @@ centralCardsWithProb prob = do
     centralCardSpaces
 
     putStr("│\n")
-    
-    -- Inserir Logica para mostrar carta do jogador 1
-    
+      
     putStr("│")
     centralCardSpaces
-    nCardLaterals 2
+    cardLateral (getValue (h!!0))
+    cardLateral (getValue (h!!1))
     centralCardSpaces
     putStr("│\n")
 
@@ -155,7 +172,8 @@ centralCardsWithProb prob = do
     putStr("┐")
     
     spaces 27
-    nCardLaterals 2
+    cardLateral (getNaipe (h!!0))
+    cardLateral (getNaipe (h!!1))
     centralCardSpaces
     putStr("│\n")
 
@@ -220,9 +238,9 @@ flopTurnRiver = do
         spaces 30
         nCardLaterals 3
         spaces 2
-        cardLateral
+        cardLateral " "
         spaces 2
-        cardLateral 
+        cardLateral " " 
         spaces 31
         putStr("│\n")
     
@@ -230,9 +248,9 @@ flopTurnRiver = do
         spaces 30
         nCardLaterals 3
         spaces 2
-        cardLateral
+        cardLateral " "
         spaces 2
-        cardLateral 
+        cardLateral " "
         spaces 31
         putStr("│\n")
     
@@ -246,8 +264,8 @@ flopTurnRiver = do
         spaces 31
         putStr("│\n")
 
-centralPlayer :: Int -> Int -> Int -> IO()
-centralPlayer player chips playing = do
+centralPlayer :: Int -> Player -> Int -> IO()
+centralPlayer player (Player {hand = h, chips = c, active = a}) playing = do
     putStr("│")
     spaces 39
     spaces 1
@@ -257,12 +275,12 @@ centralPlayer player chips playing = do
 
     putStr("│")
     spaces 40
-    putStr("Chips: " ++ show(chips))
-    spaces (43 - truncate (numDigits (fromIntegral chips)))
+    putStr("Chips: " ++ show(c))
+    spaces (43 - truncate (numDigits (fromIntegral c)))
     putStr("│\n")
 
-lateralPlayers :: Int -> Int -> Int -> Int -> Int -> IO()
-lateralPlayers player1 chips1 player2 chips2 playing = do
+lateralPlayers :: Int -> Player -> Int -> Player -> Int -> IO()
+lateralPlayers player1 (Player {hand = h1, chips = c1, active = a1})  player2 (Player {hand = h2, chips = c2, active = a2})  playing = do
     putStr("│")
     lateralSpaces
     putStr("Player " ++ show(player1))
@@ -274,9 +292,9 @@ lateralPlayers player1 chips1 player2 chips2 playing = do
 
     putStr("│")
     lateralSpaces
-    putStr("Chips: " ++ show(chips1))
-    spaces (70 - truncate(numDigits (fromIntegral chips1)) - truncate(numDigits (fromIntegral chips2)))
-    putStr("Chips: " ++ show(chips2))
+    putStr("Chips: " ++ show(c1))
+    spaces (70 - truncate(numDigits (fromIntegral c1)) - truncate(numDigits (fromIntegral c2)))
+    putStr("Chips: " ++ show(c2))
     lateralSpaces
     putStr("│\n")
 
@@ -288,23 +306,54 @@ pot chips = do
     spaces (45 - truncate(numDigits (fromIntegral chips)))
     putStr("│\n")
 
-printTable :: IO()
-printTable = do
+printTable :: [Player] -> Int -> Int -> IO()
+printTable players actualPlayer potChips = do
+    
     topBorder
     centralCards
-    centralPlayer 4 500 4
+    centralPlayer 4 (players !! 3) actualPlayer
     lateralCards
-    lateralPlayers 3 0 5 30 3
+    lateralPlayers 3 (players !! 2) 5 (players !! 4) actualPlayer
     flopTurnRiver
     pot 5000
     lateralCards
-    lateralPlayers 2 800 6 0 2
-    centralPlayer 1 6000 1
-    centralCardsWithProb 10
+    lateralPlayers 2 (players !! 1) 6 (players !! 5) actualPlayer
+    centralPlayer 1 (players !! 0) actualPlayer
+    centralCardsWithProb (players!!0) 10
     bottomBorder
    
+
+getValue :: Card -> String
+getValue (Card {naipe = n, value = v}) = v
+
+getNaipe :: Card -> String
+getNaipe (Card {naipe = n, value = v}) = n
+
+printPlayer :: Player -> IO()
+printPlayer (Player {hand = h, chips = c, active = a}) = do
+    printCard (h!!0)
+    printCard (h!!1)
+    putStrLn(show c)
+    putStrLn(show a)
     
+
+printCard :: Card -> IO()
+printCard (Card {naipe = n, value = v}) = do
+    putStrLn(n)
+    putStrLn(v)
+
 
 main :: IO()
 main = do
-    printTable
+    let card1 = Card "O" "T"
+    let card2 = Card "P" "K"
+    let player1 = Player [card1, card2] 500 True
+    let player2 = Player [card1, card2] 500 True
+    let player3 = Player [card1, card2] 500 True
+    let player4 = Player [card1, card2] 500 True
+    let player5 = Player [card1, card2] 500 True
+    let player6 = Player [card1, card2] 500 True
+    printTable [player1, player2, player3, player4, player5, player6] 1 500
+    
+
+    
