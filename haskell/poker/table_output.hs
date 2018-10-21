@@ -280,6 +280,14 @@ lateralPlayers player1 chips1 player2 chips2 playing = do
     lateralSpaces
     putStr("│\n")
 
+pot :: Int -> IO()
+pot chips = do
+    putStr("│")
+    spaces 40
+    putStr("Pot: " ++ show(chips))
+    spaces (45 - truncate(numDigits (fromIntegral chips)))
+    putStr("│\n")
+
 printTable :: IO()
 printTable = do
     topBorder
@@ -288,6 +296,7 @@ printTable = do
     lateralCards
     lateralPlayers 3 0 5 30 3
     flopTurnRiver
+    pot 5000
     lateralCards
     lateralPlayers 2 800 6 0 2
     centralPlayer 1 6000 1
