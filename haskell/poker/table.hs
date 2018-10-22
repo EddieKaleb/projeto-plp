@@ -1,7 +1,6 @@
 import System.IO
 import Data.Char
 import qualified System.Process
-import GameStatusUtil.Card
 
 {-
     Representação de uma carta.
@@ -42,7 +41,7 @@ data GameStatus = GameStatus {
     activePlayers :: Int,
     currentRound :: Int,
     userPosition :: Int
-} deriving (Show)-}
+} deriving (Show)
 
 
 {-
