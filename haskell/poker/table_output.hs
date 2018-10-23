@@ -264,11 +264,17 @@ flopTurnRiver = do
         spaces 31
         putStr("│\n")
 
+activePlayer :: Bool -> Int -> Int -> IO()
+activePlayer active playerNum actualPlayer
+    | (not active) = putStr("X")
+    | playerNum == actualPlayer = putStr("*")
+    | otherwise = putStr(" ")
+
 centralPlayer :: Int -> Player -> Int -> IO()
 centralPlayer player (Player {hand = h, chips = c, active = a}) playing = do
     putStr("│")
     spaces 39
-    spaces 1
+    activePlayer a player playing
     putStr("Player " ++ show(player))
     spaces 42
     putStr("│\n")
@@ -282,12 +288,14 @@ centralPlayer player (Player {hand = h, chips = c, active = a}) playing = do
 lateralPlayers :: Int -> Player -> Int -> Player -> Int -> IO()
 lateralPlayers player1 (Player {hand = h1, chips = c1, active = a1})  player2 (Player {hand = h2, chips = c2, active = a2})  playing = do
     putStr("│")
-    lateralSpaces
+    spaces 2
+    activePlayer a1 player1 playing
     putStr("Player " ++ show(player1))
     spaces 65
     spaces 3
     putStr("Player " ++ show(player2))
-    lateralSpaces
+    activePlayer a2 player2 playing
+    spaces 2
     putStr("│\n")
 
     putStr("│")
@@ -315,7 +323,7 @@ printTable players actualPlayer potChips = do
     lateralCards
     lateralPlayers 3 (players !! 2) 5 (players !! 4) actualPlayer
     flopTurnRiver
-    pot 5000
+    pot potChips
     lateralCards
     lateralPlayers 2 (players !! 1) 6 (players !! 5) actualPlayer
     centralPlayer 1 (players !! 0) actualPlayer
@@ -347,13 +355,13 @@ main :: IO()
 main = do
     let card1 = Card "O" "T"
     let card2 = Card "P" "K"
-    let player1 = Player [card1, card2] 500 True
-    let player2 = Player [card1, card2] 500 True
-    let player3 = Player [card1, card2] 500 True
-    let player4 = Player [card1, card2] 500 True
-    let player5 = Player [card1, card2] 500 True
-    let player6 = Player [card1, card2] 500 True
-    printTable [player1, player2, player3, player4, player5, player6] 1 500
+    let player1 = Player [card1, card2] 500 False
+    let player2 = Player [card1, card2] 1800 True
+    let player3 = Player [card1, card2] 0 True
+    let player4 = Player [card1, card2] 23 True
+    let player5 = Player [card1, card2] 65 False
+    let player6 = Player [card1, card2] 1000 True
+    printTable [player1, player2, player3, player4, player5, player6] 4 9000
     
 
     
