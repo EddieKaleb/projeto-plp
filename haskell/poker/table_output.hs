@@ -9,6 +9,18 @@ data Player = Player {
     active :: Bool
 } deriving (Show)
 
+data GameStatus = GameStatus {
+    cardsTable :: [Card],
+    playersTable :: [Player],
+    dealerPosition :: Int,
+    lastBet :: Int,
+    minimumBet :: Int,
+    activePlayers :: Int,
+    currentRound :: Int,
+    userPosition :: Int,
+    pot :: Int,
+    actualPlayer :: Int
+} deriving (Show)
 
 printNTimes :: String -> Int -> IO()
 printNTimes string num | num == 1 = putStr(string)
@@ -162,8 +174,8 @@ centralCardsWithProb (Player {hand = h, chips = c, active = a}) prob = do
       
     putStr("│")
     centralCardSpaces
-    cardLateral (getValue (h!!0))
-    cardLateral (getValue (h!!1))
+    cardLateral (value (h!!0))
+    cardLateral (value (h!!1))
     centralCardSpaces
     putStr("│\n")
 
@@ -172,8 +184,8 @@ centralCardsWithProb (Player {hand = h, chips = c, active = a}) prob = do
     putStr("┐")
     
     spaces 27
-    cardLateral (getNaipe (h!!0))
-    cardLateral (getNaipe (h!!1))
+    cardLateral (naipe (h!!0))
+    cardLateral (naipe (h!!1))
     centralCardSpaces
     putStr("│\n")
 
@@ -222,8 +234,8 @@ lateralCards = do
     lateralSpaces
     putStr("│\n")
     
-flopTurnRiver :: IO()
-flopTurnRiver = do
+flopTurnRiver :: [Card] -> IO()
+flopTurnRiver cards = do
         putStr("│")
         spaces 30
         nCardTops 3
@@ -236,21 +248,25 @@ flopTurnRiver = do
     
         putStr("│")
         spaces 30
-        nCardLaterals 3
+        cardLateral (value (cards !! 0))
+        cardLateral (value (cards !! 1))
+        cardLateral (value (cards !! 2))
         spaces 2
-        cardLateral " "
+        cardLateral (value (cards !! 3))
         spaces 2
-        cardLateral " " 
+        cardLateral (value (cards !! 4))
         spaces 31
         putStr("│\n")
     
         putStr("│")
         spaces 30
-        nCardLaterals 3
+        cardLateral (naipe (cards !! 0))
+        cardLateral (naipe (cards !! 1))
+        cardLateral (naipe (cards !! 2))
         spaces 2
-        cardLateral " "
+        cardLateral (naipe (cards !! 3))
         spaces 2
-        cardLateral " "
+        cardLateral (naipe (cards !! 4))
         spaces 31
         putStr("│\n")
     
@@ -306,30 +322,31 @@ lateralPlayers player1 (Player {hand = h1, chips = c1, active = a1})  player2 (P
     lateralSpaces
     putStr("│\n")
 
-pot :: Int -> IO()
-pot chips = do
+printPot :: Int -> IO()
+printPot chips = do
     putStr("│")
     spaces 40
     putStr("Pot: " ++ show(chips))
     spaces (45 - truncate(numDigits (fromIntegral chips)))
     putStr("│\n")
-
-printTable :: [Player] -> Int -> Int -> IO()
-printTable players actualPlayer potChips = do
+ 
+printTable :: GameStatus -> IO()
+printTable (GameStatus {cardsTable = cards, playersTable = players, 
+            dealerPosition = dealer, lastBet = lBet, minimumBet = minBet, 
+            activePlayers = aPlayers, currentRound = round, userPosition = user, pot = potChips, actualPlayer = actualPlayer}) = do
     
     topBorder
     centralCards
     centralPlayer 4 (players !! 3) actualPlayer
     lateralCards
     lateralPlayers 3 (players !! 2) 5 (players !! 4) actualPlayer
-    flopTurnRiver
-    pot potChips
+    flopTurnRiver cards
+    printPot potChips
     lateralCards
     lateralPlayers 2 (players !! 1) 6 (players !! 5) actualPlayer
     centralPlayer 1 (players !! 0) actualPlayer
     centralCardsWithProb (players!!0) 10
     bottomBorder
-   
 
 getValue :: Card -> String
 getValue (Card {naipe = n, value = v}) = v
@@ -361,7 +378,9 @@ main = do
     let player4 = Player [card1, card2] 23 True
     let player5 = Player [card1, card2] 65 False
     let player6 = Player [card1, card2] 1000 True
-    printTable [player1, player2, player3, player4, player5, player6] 4 9000
+    
+    let gameStatus = GameStatus [card1, card2, card1, card2, card2] [player1, player2, player3, player4, player5, player6] 0 2 2 6 0 0 500 3
+    printTable gameStatus
     
 
     
