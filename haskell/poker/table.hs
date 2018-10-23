@@ -212,30 +212,38 @@ sleep seg = do
     return ()
 
 
--- setNextDealerPosition :: Int -> Int
--- setNextDealerPosition DEALER_POSITION = do
---     return nextPlayerPosition DEALER_POSITION
+setNextDealerPosition :: GameStatus -> GameStatus
+setNextDealerPosition gs = do
+    let newDealer = nextPlayerPosition (dealerPosition gs)
+    GameStatus (cardsTable gs) (playersTable gs) (newDealer) (lastBet gs) (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs)
+
 	
 invalidAction :: IO()
 invalidAction = putStrLn("Ação inválida")
 
 -- Ligações entre menu de seleção e métodos de ação
-checkPlayerAction :: Int -> Bool
-checkPlayerAction round = (checkAction round)
+checkPlayerAction :: GameStatus -> IO GameStatus
+checkPlayerAction gs
+    | not(checkAction (currentRound gs)) = do
+        invalidAction
+        showUserActions gs
+        return gs
+    | otherwise = gs
 
-callPlayerAction :: Int -> IO()
-callPlayerAction position 
- 	| not(callAction position) = invalidAction
+callPlayerAction :: GameStatus -> IO()
+callPlayerAction gs 
+ 	| not(callAction (position)) = invalidAction
  	| otherwise = putStrLn("")
 
 -- Realiza a ação de 'Mesa' (Passar a vez).
-checkAction :: Int -> Bool
-checkAction round = (round /= 0)
+checkAction :: GameStatus -> Bool
+checkAction gs = ((currentRound gs) /= 0 && (lastBet gs) == 0)
 
 -- Realiza a ação de 'Pagar'.
-callAction :: Int -> Bool
-callAction position = False
---     if(playersTable[position].chips >= MINIMUM_BET){
+callAction :: GameStatus -> Bool
+callAction gs 
+    | (chips ((playersTable gs) !! position)) >= (minimumBet gs)) = do
+        GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs) (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs)
 --         lastBet = MINIMUM_BET;
 --         if(lastBet == 0){
 --             firstBetPlayerPosition = position;
