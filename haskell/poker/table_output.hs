@@ -286,13 +286,21 @@ activePlayer active playerNum actualPlayer
     | playerNum == actualPlayer = putStr("*")
     | otherwise = putStr(" ")
 
-centralPlayer :: Int -> Player -> Int -> IO()
-centralPlayer player (Player {hand = h, chips = c, active = a}) playing = do
+role :: Int -> Int -> IO()
+role playerNum dealerPos
+    | playerNum == dealerPos = putStr("(D)")
+    | playerNum == (1 + (mod (dealerPos) 6)) = putStr("(S)")
+    | playerNum == (1 + (mod (dealerPos + 1) 6)) = putStr("(B)")
+    | otherwise = putStr("   ")
+
+centralPlayer :: Int -> Player -> Int -> Int-> IO()
+centralPlayer player (Player {hand = h, chips = c, active = a}) playing dealer = do
     putStr("│")
     spaces 39
     activePlayer a player playing
     putStr("Player " ++ show(player))
-    spaces 42
+    role player dealer
+    spaces 39
     putStr("│\n")
 
     putStr("│")
@@ -301,14 +309,15 @@ centralPlayer player (Player {hand = h, chips = c, active = a}) playing = do
     spaces (43 - truncate (numDigits (fromIntegral c)))
     putStr("│\n")
 
-lateralPlayers :: Int -> Player -> Int -> Player -> Int -> IO()
-lateralPlayers player1 (Player {hand = h1, chips = c1, active = a1})  player2 (Player {hand = h2, chips = c2, active = a2})  playing = do
+lateralPlayers :: Int -> Player -> Int -> Player -> Int -> Int -> IO()
+lateralPlayers player1 (Player {hand = h1, chips = c1, active = a1})  player2 (Player {hand = h2, chips = c2, active = a2})  playing dealer = do
     putStr("│")
     spaces 2
     activePlayer a1 player1 playing
     putStr("Player " ++ show(player1))
-    spaces 65
-    spaces 3
+    role player1 dealer
+    spaces 62
+    role player2 dealer
     putStr("Player " ++ show(player2))
     activePlayer a2 player2 playing
     spaces 2
@@ -337,14 +346,14 @@ printTable (GameStatus {cardsTable = cards, playersTable = players,
     
     topBorder
     centralCards
-    centralPlayer 4 (players !! 3) actualPlayer
+    centralPlayer 4 (players !! 3) actualPlayer dealer
     lateralCards
-    lateralPlayers 3 (players !! 2) 5 (players !! 4) actualPlayer
+    lateralPlayers 3 (players !! 2) 5 (players !! 4) actualPlayer dealer
     flopTurnRiver cards
     printPot potChips
     lateralCards
-    lateralPlayers 2 (players !! 1) 6 (players !! 5) actualPlayer
-    centralPlayer 1 (players !! 0) actualPlayer
+    lateralPlayers 2 (players !! 1) 6 (players !! 5) actualPlayer dealer
+    centralPlayer 1 (players !! 0) actualPlayer dealer
     centralCardsWithProb (players!!0) 10
     bottomBorder
 
@@ -379,8 +388,9 @@ main = do
     let player5 = Player [card1, card2] 65 False
     let player6 = Player [card1, card2] 1000 True
     
-    let gameStatus = GameStatus [card1, card2, card1, card2, card2] [player1, player2, player3, player4, player5, player6] 0 2 2 6 0 0 500 3
+    let gameStatus = GameStatus [card1, card2, card1, card2, card2] [player1, player2, player3, player4, player5, player6] 6 2 2 6 0 0 500 3
     printTable gameStatus
+    
     
 
     
