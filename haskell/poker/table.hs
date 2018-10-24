@@ -40,7 +40,8 @@ data GameStatus = GameStatus {
     minimumBet :: Int,
     activePlayers :: Int,
     currentRound :: Int,
-    userPosition :: Int
+    userPosition :: Int,
+    pot :: Int
 } deriving (Show)
 
 
@@ -56,13 +57,14 @@ setInitialGameStatus = do
     let players = [player, player, player, player, player, player]
 
     let dealerPos = 0
-    let lastBet = 2
+    let lastBet = 2 -- Acho que deve ser 0
     let minimumBet = 2
     let activePlayers = 6
     let currentRound = 0
     let userPosition = 0
+    let valPot = 0
 
-    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound userPosition
+    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound userPosition valPot
 
 
 {-
@@ -185,12 +187,10 @@ qtdPlayers :: Int
 qtdPlayers = 6 
 
 
-{-
-    Retorna a posição do próximo jogador com base na posição do jogador atual.
-    @param position Posição do jogador atual.
--}
+-- Retorna a posição do próximo jogador com base na posição do jogador atual.
+
 nextPlayerPosition :: Int -> Int
-nextPlayerPosition position = mod (position + 1) qtdPlayers
+nextPlayerPosition pos = (mod (pos + 1) qtdPlayers)
 
 
 {-
@@ -215,7 +215,7 @@ sleep seg = do
 setNextDealerPosition :: GameStatus -> GameStatus
 setNextDealerPosition gs = do
     let newDealer = nextPlayerPosition (dealerPosition gs)
-    GameStatus (cardsTable gs) (playersTable gs) (newDealer) (lastBet gs) (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs)
+    GameStatus (cardsTable gs) (playersTable gs) (newDealer) (lastBet gs) (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) (pot gs)
 
 	
 invalidAction :: IO()
@@ -224,30 +224,31 @@ invalidAction = putStrLn("Ação inválida")
 -- Ligações entre menu de seleção e métodos de ação
 checkPlayerAction :: GameStatus -> IO GameStatus
 checkPlayerAction gs
-    | not(checkAction (currentRound gs)) = do
+    | not(checkAction gs) = do
         invalidAction
         showUserActions gs
         return gs
-    | otherwise = gs
+    | otherwise = return gs
 
 callPlayerAction :: GameStatus -> IO()
 callPlayerAction gs 
- 	| not(callAction (position)) = invalidAction
- 	| otherwise = putStrLn("")
+    | not(callAction (userPosition gs)) = invalidAction
+    | otherwise = putStrLn("")
 
 -- Realiza a ação de 'Mesa' (Passar a vez).
 checkAction :: GameStatus -> Bool
 checkAction gs = ((currentRound gs) /= 0 && (lastBet gs) == 0)
 
 -- Realiza a ação de 'Pagar'.
-callAction :: GameStatus -> Bool
-callAction gs 
-    | (chips ((playersTable gs) !! position)) >= (minimumBet gs)) = do
-        GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs) (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs)
---         lastBet = MINIMUM_BET;
---         if(lastBet == 0){
---             firstBetPlayerPosition = position;
---         }
+callAction :: Int -> Bool
+callAction gs = False
+--     | (chips ((playersTable gs) !! (userPosition gs))) >= (minimumBet gs)) = do
+--         | ((lastBet gs) == 0) = do
+--             let firstBetPlayerPosition = (userPosition gs)
+--             let newGs = GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs) (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) (pot gs)
+--         | otherwise = (newGs = GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs) (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) (pot gs))
+
+--     | otherwise = gs
 
 --         playersTable[position].chips -= MINIMUM_BET;
 --         POT += MINIMUM_BET;
@@ -258,9 +259,14 @@ callAction gs
 --     return false;
 -- }
 
+disablePlayer :: Player -> Player
+disablePlayer player = do
+    let newStatus = False
+    Player (hand player) (chips player) (newStatus)
+
 -- Realiza a ação de 'Desistir' (Encerrar o jogo).
--- foldAction :: Int -> IO()
--- foldAction position = disablePlayer position
+-- foldAction :: GameStatus -> Player
+-- foldAction gs = (disablePlayer ((playersTable gs) !! (userPosition gs)))
 
 -- Realiza a ação de 'Sair' da mesa.showTable
 exitAction :: IO()
