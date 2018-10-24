@@ -19,8 +19,8 @@ split (c:cs) | c == ','  = "" : rest
              | otherwise = (c : head rest) : tail rest
                 where rest = split cs
                
---extract_prob :: String -> Int -> String
---extract_prob hand numPlayers = extract hand numPlayers getHands
+extract_prob :: Prob -> Int -> String
+extract_prob handProbs numPlayers = extract (hand handProbs) numPlayers (probs handProbs) 
 
 setProbabilities :: IO [Prob]
 setProbabilities = do
