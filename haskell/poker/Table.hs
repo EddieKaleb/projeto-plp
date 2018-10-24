@@ -22,8 +22,9 @@ setInitialGameStatus = do
     let userPosition = 0
     let valPot = 0
     let firstBetPlayerPosition = -1
+    let actualPlayer = 0
 
-    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound userPosition valPot firstBetPlayerPosition
+    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound userPosition valPot firstBetPlayerPosition actualPlayer
 
 
 {-
