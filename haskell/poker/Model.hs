@@ -111,4 +111,23 @@ setPlayersTable value gameStatus = do
          (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
 
     gm
----------- FIM DOS MÉTODOS AUXILIARES DE MANIPULAÇÃO DA GAMESTATUS
+
+---------- FIM DOS MÉTODOS AUXILIARES DE MANIPULAÇÃO DA GAMESTATUS ----------
+
+
+---------- MÉTODOS AUXILIARES DE MANIPULAÇÃO DA PLAYER
+
+setHand :: [Card] -> Player -> Player
+setHand value player = do
+	let p = Player value (chips player) (active player)
+	p
+
+setChips :: Int -> Player -> Player
+setChips value player = do
+	let p = Player (hand player) value (active player)
+	p
+
+setActive :: Bool -> Player -> Player
+setActive value player = do
+	let p = Player (hand player) (chips player) value
+	p
