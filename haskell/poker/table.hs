@@ -100,9 +100,15 @@ preFlopRound gameStatus = do
 
     let isValidA = callAction smallPos
     let isValidB = callAction bigPos
-    preFlopActions (nextPlayerPosition bigPos) bigPos gameStatus
+    let newGameStatus = preFlopActions (nextPlayerPosition bigPos) bigPos gameStatus
+    flopRound newGameStatus
 
+flopRound :: GameStatus -> IO GameStatus
+flopRound gameStatus = do
 
+    -- Configura as 3 cartas da mesa (Implementar)
+
+    runRound gameStatus -- (Implementar)
 
 {-
     Executa as ações de turno para cada jogador.
@@ -150,12 +156,17 @@ getOption = do
 
 
 {-
-    Interpreta a ação escolhida pelo jogador.    
+    Interpreta a ação escolhida pelo jogador.
+-}
+{- Adicionar:
+    selectAction 3 gameStatus = foldAction gameStatus
+    selectAction 1 gameStatus = checkPlayerAction gameStatus
+    selectAction 2 gameStatus = callPlayerAction gameStatus
+    selectAction 4 gameStatus = exitAction gameStatus
 -}
 selectAction :: Int -> GameStatus -> IO GameStatus
 selectAction option gameStatus = do
     return setInitialGameStatus
-
 
 {-
     Executa as ações de um jogador bot.
