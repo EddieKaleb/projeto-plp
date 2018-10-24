@@ -52,31 +52,36 @@ data GameStatus = GameStatus {
     activePlayers :: Int,
     currentRound :: Int,
     userPosition :: Int,
-    pot :: Int
+    pot :: Int,
+    firstBetPlayerPosition :: Int
 } deriving (Show);
 
 
 ---------- MÉTODOS AUXILIARES DE MANIPULAÇÃO DA GAMESTATUS  ----------
+
 setPot :: Int -> GameStatus -> GameStatus
 setPot value gameStatus = do
     let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus) (lastBet gameStatus)
-         (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) value
+         (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) value 
+         (firstBetPlayerPosition gameStatus)
 
     gm
 
 
 setDealerPosition :: Int -> GameStatus -> GameStatus
 setDealerPosition value gameStatus = do
-    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) value (lastBet gameStatus)
-    	 (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) value (lastBet gameStatus) (minimumBet gameStatus) 
+    	 (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus) 
+    	 (firstBetPlayerPosition gameStatus)
 
     gm
 
 
 setLastBet :: Int -> GameStatus -> GameStatus
 setLastBet value gameStatus = do
-    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus) value
-         (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus) value 
+    	 (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus) 
+    	 (firstBetPlayerPosition gameStatus)
 
     gm
 
@@ -84,7 +89,8 @@ setLastBet value gameStatus = do
 setCurrentRound :: Int -> GameStatus -> GameStatus
 setCurrentRound value gameStatus = do
     let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus) (lastBet gameStatus)
-         (minimumBet gameStatus) (activePlayers gameStatus) value (userPosition gameStatus) (pot gameStatus)
+         (minimumBet gameStatus) (activePlayers gameStatus) value (userPosition gameStatus) (pot gameStatus) 
+         (firstBetPlayerPosition gameStatus)
 
     gm
 
@@ -92,23 +98,35 @@ setCurrentRound value gameStatus = do
 setMinimumBet :: Int -> GameStatus -> GameStatus
 setMinimumBet value gameStatus = do
     let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus) (lastBet gameStatus)
-         value (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+         value (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus) 
+         (firstBetPlayerPosition gameStatus)
 
     gm
 
 
 setCardsTable :: [Card] -> GameStatus -> GameStatus
 setCardsTable value gameStatus = do
-    let gm = GameStatus value (playersTable gameStatus) (dealerPosition gameStatus) (lastBet gameStatus)
-         (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+    let gm = GameStatus value (playersTable gameStatus) (dealerPosition gameStatus) (lastBet gameStatus) 
+    	 (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus) 
+    	 (firstBetPlayerPosition gameStatus)
 
     gm
 
 
 setPlayersTable :: [Player] -> GameStatus -> GameStatus
 setPlayersTable value gameStatus = do
-    let gm = GameStatus (cardsTable gameStatus) value (dealerPosition gameStatus) (lastBet gameStatus)
-         (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+    let gm = GameStatus (cardsTable gameStatus) value (dealerPosition gameStatus) (lastBet gameStatus) 
+    	 (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus) 
+    	 (firstBetPlayerPosition gameStatus)
+
+    gm
+
+
+setFirstBetPlayerPosition :: Int -> GameStatus -> GameStatus
+setFirstBetPlayerPosition value gameStatus = do
+    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus) (lastBet gameStatus)
+         (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus) 
+         value
 
     gm
 
