@@ -3,8 +3,6 @@ import Data.Char
 import qualified System.Process
 import Model
 
-
-
 {-
     Configura o estado inicial do jogo.
 -}
@@ -17,14 +15,15 @@ setInitialGameStatus = do
     let players = [player, player, player, player, player, player]
 
     let dealerPos = 0
-    let lastBet = 2 -- Acho que deve ser 0
+    let lastBet = 0
     let minimumBet = 2
     let activePlayers = 6
     let currentRound = 0
     let userPosition = 0
     let valPot = 0
+    let firstBetPlayerPosition = -1
 
-    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound userPosition valPot
+    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound userPosition valPot firstBetPlayerPosition
 
 
 {-
@@ -63,12 +62,6 @@ preFlopRound gameStatus = do
     newGameStatus <- preFlopActions (nextPlayerPosition bigPos) bigPos gameStatus
     flopRound newGameStatus
 
-flopRound :: GameStatus -> IO GameStatus
-flopRound gameStatus = do
-
-    -- Configura as 3 cartas da mesa (Implementar)
-
-    runRound gameStatus -- (Implementar)
 
 {-
     Executa as ações de turno para cada jogador.
@@ -84,6 +77,47 @@ preFlopActions currentPosition endPosition gameStatus
     | otherwise = do
         gm <- botActions gameStatus
         preFlopActions (nextPlayerPosition currentPosition) endPosition gm
+
+
+flopRound :: GameStatus -> IO GameStatus
+flopRound gameStatus = do
+
+    -- Configura as 3 cartas da mesa (Implementar)
+
+    gm <- runRound (smallPosition gameStatus) gameStatus -- (Implementar)
+    turnRound gm
+
+
+
+turnRound :: GameStatus -> IO GameStatus
+turnRound gameStatus = do
+
+    -- Configura a quarta carta da mesa (Implementar)
+
+    gm <- runRound (smallPosition gameStatus) gameStatus
+    riverRound gm
+
+
+riverRound :: GameStatus -> IO GameStatus
+riverRound gameStatus = do
+
+    -- Configura a quinta carta da mesa (Implementar)
+
+    runRound (smallPosition gameStatus) gameStatus
+
+
+runRound :: Int -> GameStatus -> IO GameStatus
+runRound currentPosition gameStatus
+    | currentPosition == (firstBetPlayerPosition gameStatus) = return gameStatus
+    | not(active((playersTable gameStatus) !! currentPosition)) = do
+        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gameStatus) gameStatus
+    | currentPosition == (userPosition gameStatus) = do
+        gm <- showUserActions gameStatus
+        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gameStatus) gm
+    | otherwise = do
+        gm <- botActions gameStatus
+        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gameStatus) gm
+
 
 
 {-
@@ -244,6 +278,8 @@ exitAction = do
 	clearScreen
 	putStrLn("Até a próxima!")
 	-- Faltou exit
+
+
 
 
 
