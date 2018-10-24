@@ -275,6 +275,67 @@ exitAction = do
 	putStrLn("Até a próxima!")
 	-- Faltou exit
 
+
+---------- MÉTODOS AUXILIARES DE MANIPULAÇÃO DA GAMESTATUS  ----------
+
+setPot :: Int -> GameStatus -> GameStatus
+setPot value gameStatus = do
+    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus)
+         (lastBet gameStatus) (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) value
+
+    gm
+
+
+setDealerPosition :: Int -> GameStatus -> GameStatus
+setDealerPosition value gameStatus = do
+    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) value
+         (lastBet gameStatus) (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+
+    gm
+
+
+setLastBet :: Int -> GameStatus -> GameStatus
+setLastBet value gameStatus = do
+    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus)
+         value (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+
+    gm
+
+
+setCurrentRound :: Int -> GameStatus -> GameStatus
+setCurrentRound value gameStatus = do
+    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus)
+         (lastBet gameStatus) (minimumBet gameStatus) (activePlayers gameStatus) value (userPosition gameStatus) (pot gameStatus)
+
+    gm
+
+
+setMinimumBet :: Int -> GameStatus -> GameStatus
+setMinimumBet value gameStatus = do
+    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus)
+         (lastBet gameStatus) value (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+
+    gm
+
+
+setCardsTable :: [Card] -> GameStatus -> GameStatus
+setCardsTable value gameStatus = do
+    let gm = GameStatus value (playersTable gameStatus) (dealerPosition gameStatus)
+         (lastBet gameStatus) (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+
+    gm
+
+
+setPlayersTable :: [Player] -> GameStatus -> GameStatus
+setPlayersTable value gameStatus = do
+    let gm = GameStatus (cardsTable gameStatus) value (dealerPosition gameStatus)
+         (lastBet gameStatus) (minimumBet gameStatus) (activePlayers gameStatus) (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus)
+
+    gm
+
+
+---------- FIM DOS MÉTODOS AUXILIARES DE MANIPULAÇÃO DA GAMESTATUS
+
 main :: IO ()
 main = do
     startGame
