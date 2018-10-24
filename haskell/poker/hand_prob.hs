@@ -33,3 +33,17 @@ setProbabilities = do
           createList [] = []
           createList (head:tail) = [createProb $ split head] ++ createList tail
             where createProb (hand:probs) = Prob hand probs
+
+find_prob :: String -> [Prob] -> [String]
+find_prob _ [] = []
+find_prob playerHand (x:xs) | (playerHand == (hand x)) = (probs x)
+                              | otherwise = find_prob playerHand xs
+
+main :: IO()
+main = do
+    let hand = "22"
+    all_probs <- setProbabilities
+    putStrLn all_probs
+    --let prob = find_prob hand all_probs 
+    --show (extract_prob prob 2)
+    --putStrLn ""
