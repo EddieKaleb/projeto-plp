@@ -277,34 +277,36 @@ checkPlayerAction gs
         return gs
     | otherwise = return gs
 
-callPlayerAction :: GameStatus -> IO()
+callPlayerAction :: GameStatus -> IO GameStatus
 callPlayerAction gs 
-    | not(callAction (userPosition gs)) = invalidAction
-    | otherwise = putStrLn("")
+    | not(callAction (actualPlayer gs)) = do
+        invalidAction
+        return gs
+    | otherwise = do
+        putStrLn("")
+        return gs
 
 -- Realiza a ação de 'Mesa' (Passar a vez).
 checkAction :: GameStatus -> Bool
 checkAction gs = ((currentRound gs) /= 0 && (lastBet gs) == 0)
 
 -- Realiza a ação de 'Pagar'.
-callAction :: Int -> Bool
-callAction gs = False
---     | (chips ((playersTable gs) !! (userPosition gs))) >= (minimumBet gs)) = do
---         | ((lastBet gs) == 0) = do
---             let firstBetPlayerPosition = (userPosition gs)
---             let newGs = GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs) (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) (pot gs)
---         | otherwise = (newGs = GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs) (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) (pot gs))
+callAction :: GameStatus -> Bool
+callAction gs = do
+    | (chips ((playersTable gs) !! (actualPlayer gs))) >= (minimumBet gs)) = do
+        | ((lastBet gs) == 0) = do
+            let firstBet = (actualPlayer gs)
+            let newLastBet = (minimumBet gs)
+            let newValue = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
+            let newPlayer = (setChips newValue ((playersTable gs) !! (actualPlayer gs)))
+            let newPot = (minimumBet gs)
 
---     | otherwise = gs
+            newGS firstBet newLastBet newPlayer (actualPlayer gs) newPot
 
---         playersTable[position].chips -= MINIMUM_BET;
---         POT += MINIMUM_BET;
-
---         return true;
---     }
-
---     return false;
--- }
+            return True
+        | otherwise = (newGs = GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs)
+                 (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) (pot gs))
+    | otherwise = False
 
 disablePlayer :: Player -> Player
 disablePlayer player = do
