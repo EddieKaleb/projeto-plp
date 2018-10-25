@@ -3,6 +3,7 @@ import Data.Char
 import qualified System.Process
 import Model
 
+
 {-
     Configura o estado inicial do jogo.
 -}
@@ -60,8 +61,8 @@ preFlopRound gameStatus = do
 
     let isValidA = callAction smallPos
     let isValidB = callAction bigPos
-    newGameStatus <- preFlopActions (nextPlayerPosition bigPos) bigPos gameStatus
-    flopRound newGameStatus
+    gs <- preFlopActions (nextPlayerPosition bigPos) bigPos gameStatus
+    flopRound gs
 
 
 {-
@@ -71,58 +72,86 @@ preFlopActions :: Int -> Int -> GameStatus -> IO GameStatus
 preFlopActions currentPosition endPosition gameStatus 
     | currentPosition == endPosition = return gameStatus
     | not(active((playersTable gameStatus) !! currentPosition)) = do
-        preFlopActions (nextPlayerPosition currentPosition) endPosition gameStatus
+        showTable newGameStatus
+        preFlopActions (nextPlayerPosition currentPosition) endPosition newGameStatus
     | currentPosition == (userPosition gameStatus) = do
-        gm <- showUserActions gameStatus
+        gm <- showUserActions newGameStatus
+        showTable newGameStatus
         preFlopActions (nextPlayerPosition currentPosition) endPosition gm
     | otherwise = do
-        gm <- botActions gameStatus
+        gm <- botActions newGameStatus
+        showTable newGameStatus
         preFlopActions (nextPlayerPosition currentPosition) endPosition gm
+    where newGameStatus = setActualPlayer currentPosition gameStatus
 
 
+{-
+    Executa o turno de flop.
+    @param GameStatus Estado atual do jogo. 
+-}
 flopRound :: GameStatus -> IO GameStatus
 flopRound gameStatus = do
 
     -- Configura as 3 cartas da mesa (Implementar)
 
-    gm <- runRound (smallPosition gameStatus) gameStatus -- (Implementar)
-    turnRound gm
+    let newGameStatus = setCurrentRound 1 gameStatus
+    gs <- runRound (smallPosition newGameStatus) newGameStatus
+    turnRound gs
 
 
-
+{-
+    Executa o turno de round.
+    @param GameStatus Estado atual do jogo. 
+-}
 turnRound :: GameStatus -> IO GameStatus
 turnRound gameStatus = do
 
     -- Configura a quarta carta da mesa (Implementar)
 
-    gm <- runRound (smallPosition gameStatus) gameStatus
-    riverRound gm
+    let newGameStatus = setCurrentRound 2 gameStatus
+    gs <- runRound (smallPosition newGameStatus) newGameStatus
+    riverRound gs
 
 
+{-
+    Executa o turno de river.
+    @param GameStatus Estado atual do jogo. 
+-}
 riverRound :: GameStatus -> IO GameStatus
 riverRound gameStatus = do
 
     -- Configura a quinta carta da mesa (Implementar)
 
-    runRound (smallPosition gameStatus) gameStatus
+    let newGameStatus = setCurrentRound 3 gameStatus
+    gs <- runRound (smallPosition newGameStatus) newGameStatus
+    return gs
 
 
+{-
+    Executa um round.
+    @param currentPosition Posição do jogador atual.
+    @param gameStatus Estado atual do jogo.
+-}
 runRound :: Int -> GameStatus -> IO GameStatus
 runRound currentPosition gameStatus
     | currentPosition == (firstBetPlayerPosition gameStatus) = return gameStatus
     | not(active((playersTable gameStatus) !! currentPosition)) = do
-        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gameStatus) gameStatus
+        showTable newGameStatus
+        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition newGameStatus) newGameStatus
     | currentPosition == (userPosition gameStatus) = do
-        gm <- showUserActions gameStatus
-        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gameStatus) gm
+        gm <- showUserActions newGameStatus
+        showTable newGameStatus
+        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gm) gm
     | otherwise = do
-        gm <- botActions gameStatus
-        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gameStatus) gm
-
+        gm <- botActions newGameStatus
+        showTable newGameStatus
+        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gm) gm
+    where newGameStatus = setActualPlayer currentPosition gameStatus
 
 
 {-
     Exibe o menu de ações do jogador.
+    @param gameStatus Estado atual do jogo.
 -}
 showUserActions :: GameStatus -> IO GameStatus
 showUserActions gameStatus = do
@@ -163,6 +192,7 @@ selectAction :: Int -> GameStatus -> IO GameStatus
 selectAction option gameStatus = do
     return setInitialGameStatus
 
+
 {-
     Executa as ações de um jogador bot.
 -}
@@ -179,6 +209,7 @@ botActions gameStatus = do
 smallPosition :: GameStatus -> Int
 smallPosition gameStatus = nextPlayerPosition(dealerPosition gameStatus)
 
+
 {-
     Retorna a posição do big.
 -}
@@ -193,8 +224,9 @@ qtdPlayers :: Int
 qtdPlayers = 6 
 
 
--- Retorna a posição do próximo jogador com base na posição do jogador atual.
-
+{-
+    Retorna a posição do próximo jogador com base na posição do jogador atual.
+-}
 nextPlayerPosition :: Int -> Int
 nextPlayerPosition pos = (mod (pos + 1) qtdPlayers)
 
@@ -281,7 +313,12 @@ exitAction = do
 	-- Faltou exit
 
 
-
+showTable :: GameStatus -> IO()
+showTable gs = do
+    putStrLn("Player: " ++ show(actualPlayer gs))
+    putStrLn("Turno: " ++ show(currentRound gs))
+    sleep 5
+    putStrLn("Exibe a tabela")
 
 
 
