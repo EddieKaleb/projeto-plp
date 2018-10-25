@@ -1,3 +1,7 @@
+module TableOutput(
+    printTable
+)where
+    
 import Model
 import Text.Printf
 
@@ -73,12 +77,6 @@ nCardTops n | n == 1 = cardTop
             | otherwise = do
                 cardTop
                 nCardTops (n - 1)
- {-           
-cardLateral :: IO()
-cardLateral = do
-    putStr("│")
-    spaces 3
-    putStr("│")-}
 
 cardLateral :: String -> IO()
 cardLateral info = do
