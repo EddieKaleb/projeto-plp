@@ -105,7 +105,7 @@ flopRound gameStatus = do
     let newGs2 = setFirstBetPlayerPosition -1 newGs1
     let newGs3 = setLastBet 0 newGs2
 
-    gs <- runRound smallPos newGs4
+    gs <- runRound smallPos newGs3
     turnRound gs
 
 
@@ -321,22 +321,49 @@ checkAction :: GameStatus -> Bool
 checkAction gs = ((currentRound gs) /= 0 && (lastBet gs) == 0)
 
 -- Realiza a ação de 'Pagar'.
-callAction :: GameStatus -> Bool
-callAction gs = do
-    | (chips ((playersTable gs) !! (actualPlayer gs))) >= (minimumBet gs)) = do
-         | ((lastBet gs) == 0) = do
-            let firstBet = (actualPlayer gs)
-            let newLastBet = (minimumBet gs)
-            let newValue = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
-            let newPlayer = (setChips newValue ((playersTable gs) !! (actualPlayer gs)))
-            let newPot = (minimumBet gs)
+callAction :: GameStatus -> (Bool, GameStatus)
+callAction gs
+    | ((chips ((playersTable gs) !! (actualPlayer gs))) >= (minimumBet gs)) = do
+        let newGs = callAux gs
+        return (True, newGs)
+    | otherwise = (False, gs)
 
-            newGS firstBet newLastBet newPlayer (actualPlayer gs) newPot
+callAux :: GameStatus -> GameStatus
+callAux gs 
+    | ((lastBet gs) == 0) = do
+        let firstBet = (actualPlayer gs)
+        let newLastBet = (minimumBet gs)
+        let newChips = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
+        let newPlayer = setChips newChips ((playersTable gs) !! (actualPlayer gs))
+        let newPot = setPot ((pot gs) + (minimumBet gs)) gs
+        --newGS firstBet newLastBet newPlayer (actualPlayer gs) newPot
+        
+        return gs
+    | otherwise = do
+        let newLastBet = (minimumBet gs)
+        let newChips = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
+        let newPlayer = setChips newChips ((playersTable gs) !! (actualPlayer gs))
+        let newPot = setPot ((pot gs) + (minimumBet gs)) gs
+        --newGS firstBet newLastBet newPlayer (actualPlayer gs) newPot
+        return gs
 
-            return True
-        z| otherwise = (newGs = GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs)
-                 (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) (pot gs))
-    | otherwise = False
+{-
+bool callAction(int position) {
+    if(playersTable[position].chips >= MINIMUM_BET){
+        lastBet = MINIMUM_BET;
+        if(lastBet == 0){
+            firstBetPlayerPosition = position;
+        }
+
+        playersTable[position].chips -= MINIMUM_BET;
+        POT += MINIMUM_BET;
+
+        return true;
+    }
+
+    return false;
+}
+-}
 
 disablePlayer :: Player -> Player
 disablePlayer player = do
@@ -352,7 +379,7 @@ exitAction :: IO()
 exitAction = do
 	clearScreen
 	putStrLn("Até a próxima!")
-	-- Faltou exit
+	-- Falta exit
 
 
 showTable :: GameStatus -> IO()
