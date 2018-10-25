@@ -1,5 +1,7 @@
 import System.IO
 import Data.Char
+import Data.Time.Clock.POSIX
+import Control.Monad
 import qualified System.Process
 import Model
 
@@ -12,10 +14,11 @@ setInitialGameStatus = do
     let card = Card " " " "
     let cards = [card, card, card, card, card]
 
-    let player = Player [card, card] 200 True 0 0 0 0
+    let player = Player [card, card] 100 True 0 0 0 0
     let players = [player, player, player, player, player, player]
 
-    let dealerPos = 0
+    position <- getRandomPosition
+    let dealerPos = position
     let lastBet = 0
     let minimumBet = 2
     let activePlayers = 6
@@ -57,9 +60,10 @@ preFlopRound gameStatus = do
     let smallPos = smallPosition gameStatus
     let bigPos = bigPosition gameStatus
 
-    let isValidA = callAction smallPos
-    let isValidB = callAction bigPos
-    gs <- preFlopActions (nextPlayerPosition bigPos) bigPos gameStatus
+    let newGs1 = callAction (setActualPlayer smallPos gameStatus)
+    let newGs2 = setMinimumBet ((minimumBet newGs1) * 2) newGs1
+    let newGs3 = callAction (setActualPlayer bigPos newGs2)
+    gs <- preFlopActions (nextPlayerPosition bigPos) bigPos newGs3
     flopRound gs
 
 
@@ -71,17 +75,17 @@ preFlopRound gameStatus = do
 -}
 preFlopActions :: Int -> Int -> GameStatus -> IO GameStatus
 preFlopActions currentPosition endPosition gameStatus 
-    | currentPosition == endPosition = return gameStatus
+    | currentPosition == endPosition = return newGameStatus
     | not(active((playersTable gameStatus) !! currentPosition)) = do
         showTable newGameStatus
         preFlopActions (nextPlayerPosition currentPosition) endPosition newGameStatus
     | currentPosition == (userPosition gameStatus) = do
         gs <- showUserActions newGameStatus
-        showTable newGameStatus
+        showTable gs
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     | otherwise = do
         gs <- botActions newGameStatus
-        showTable newGameStatus
+        showTable gs
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
 
@@ -95,8 +99,13 @@ flopRound gameStatus = do
 
     -- Configura as 3 cartas da mesa (Implementar)
 
-    let newGameStatus = setCurrentRound 1 gameStatus
-    gs <- runRound (smallPosition newGameStatus) newGameStatus
+    let smallPos = smallPosition gameStatus
+
+    let newGs1 = setCurrentRound 1 (setActualPlayer smallPos gameStatus)
+    let newGs2 = setFirstBetPlayerPosition -1 newGs1
+    let newGs3 = setLastBet 0 newGs2
+
+    gs <- runRound smallPos newGs4
     turnRound gs
 
 
@@ -109,8 +118,14 @@ turnRound gameStatus = do
 
     -- Configura a quarta carta da mesa (Implementar)
 
-    let newGameStatus = setCurrentRound 2 gameStatus
-    gs <- runRound (smallPosition newGameStatus) newGameStatus
+    let smallPos = smallPosition gameStatus
+
+    let newGs1 = setCurrentRound 2 (setActualPlayer smallPos gameStatus)
+    let newGs2 = setFirstBetPlayerPosition -1 newGs1
+    let newGs3 = setLastBet 0 newGs2
+    let newGs4 = setMinimumBet ((minimumBet newGs3) * 2) newGs3
+
+    gs <- runRound smallPos newGs4
     riverRound gs
 
 
@@ -123,8 +138,13 @@ riverRound gameStatus = do
 
     -- Configura a quinta carta da mesa (Implementar)
 
-    let newGameStatus = setCurrentRound 3 gameStatus
-    gs <- runRound (smallPosition newGameStatus) newGameStatus
+    let smallPos = smallPosition gameStatus
+
+    let newGs1 = setCurrentRound 3 (setActualPlayer smallPos gameStatus)
+    let newGs2 = setFirstBetPlayerPosition -1 newGs1
+    let newGs3 = setLastBet 0 newGs2
+
+    gs <- runRound smallPos newGs3
     return gs
 
 
@@ -135,18 +155,18 @@ riverRound gameStatus = do
 -}
 runRound :: Int -> GameStatus -> IO GameStatus
 runRound currentPosition gameStatus
-    | currentPosition == (firstBetPlayerPosition gameStatus) = return gameStatus
+    | currentPosition == (firstBetPlayerPosition gameStatus) = return newGameStatus
     | not(active((playersTable gameStatus) !! currentPosition)) = do
         showTable newGameStatus
-        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition newGameStatus) newGameStatus
+        runRound (nextPlayerPosition currentPosition) newGameStatus
     | currentPosition == (userPosition gameStatus) = do
         gs <- showUserActions newGameStatus
-        showTable newGameStatus
-        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gs) gs
+        showTable gs
+        runRound (nextPlayerPosition currentPosition) gs
     | otherwise = do
         gs <- botActions newGameStatus
-        showTable newGameStatus
-        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gs) gs
+        showTable gs
+        runRound (nextPlayerPosition currentPosition) gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
 
 
@@ -257,6 +277,16 @@ sleep seg = do
     return ()
 
 {-
+    Gera uma posição aleatória.
+-}
+getRandomPosition :: IO Int
+getRandomPosition = do
+    currentTime <- getPOSIXTime
+    let currTimestamp = mod (floor currentTime) 6
+    return currTimestamp
+
+
+{-
     Configura a próxima posição do dealer.
     @param gs Estado atual do jogo.
 -}
@@ -294,7 +324,7 @@ checkAction gs = ((currentRound gs) /= 0 && (lastBet gs) == 0)
 callAction :: GameStatus -> Bool
 callAction gs = do
     | (chips ((playersTable gs) !! (actualPlayer gs))) >= (minimumBet gs)) = do
-        | ((lastBet gs) == 0) = do
+         | ((lastBet gs) == 0) = do
             let firstBet = (actualPlayer gs)
             let newLastBet = (minimumBet gs)
             let newValue = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
@@ -304,7 +334,7 @@ callAction gs = do
             newGS firstBet newLastBet newPlayer (actualPlayer gs) newPot
 
             return True
-        | otherwise = (newGs = GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs)
+        z| otherwise = (newGs = GameStatus (cardsTable gs) (playersTable gs) (dealerPosition gs) (minimumBet gs)
                  (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) (pot gs))
     | otherwise = False
 
@@ -336,4 +366,4 @@ showTable gs = do
 
 main :: IO ()
 main = do
-    startGame
+    putStrLn(show(randomRIO (1, 6)))
