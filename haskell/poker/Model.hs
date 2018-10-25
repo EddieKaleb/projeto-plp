@@ -29,7 +29,11 @@ data Card = Card {
 data Player = Player {
     hand :: [Card],
     chips :: Int,
-    active :: Bool
+    active :: Bool,
+    preFlopProb :: Float,
+    flopToTurnProb :: Float,
+    turnToRiverProb :: Float,
+    riverToShowDownProb :: Float
 } deriving (Show);
 
 
@@ -147,15 +151,46 @@ setActualPlayer value gameStatus = do
 
 setHand :: [Card] -> Player -> Player
 setHand value player = do
-	let p = Player value (chips player) (active player)
+	let p = Player value (chips player) (active player) (preFlopProb player) (flopToTurnProb player) (turnToRiverProb player) (riverToShowDownProb player)
+
 	p
 
 setChips :: Int -> Player -> Player
 setChips value player = do
-	let p = Player (hand player) value (active player)
+	let p = Player (hand player) value (active player) (preFlopProb player) (flopToTurnProb player) (turnToRiverProb player) (riverToShowDownProb player)
+
 	p
 
 setActive :: Bool -> Player -> Player
 setActive value player = do
-	let p = Player (hand player) (chips player) value
+	let p = Player (hand player) (chips player) value (preFlopProb player) (flopToTurnProb player) (turnToRiverProb player) (riverToShowDownProb player)
+
 	p
+
+
+setPreFlopProb :: Float -> Player -> Player
+setPreFlopProb value player = do
+    let p = Player (hand player) (chips player) (active player) value (flopToTurnProb player) (turnToRiverProb player) (riverToShowDownProb player)
+
+    p
+
+
+setFlopToTurnProb :: Float -> Player -> Player
+setFlopToTurnProb value player = do
+    let p = Player (hand player) (chips player) (active player) (preFlopProb player) value (turnToRiverProb player) (riverToShowDownProb player)
+
+    p
+
+
+setTurnToRiverProb :: Float -> Player -> Player
+setTurnToRiverProb value player = do
+    let p = Player (hand player) (chips player) (active player) (preFlopProb player) (flopToTurnProb player) value (riverToShowDownProb player)
+
+    p
+
+
+setRiverToShowDownProb :: Float -> Player -> Player
+setRiverToShowDownProb value player = do
+    let p = Player (hand player) (chips player) (active player) (preFlopProb player) (flopToTurnProb player) (turnToRiverProb player) value
+
+    p

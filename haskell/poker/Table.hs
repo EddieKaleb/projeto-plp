@@ -12,7 +12,7 @@ setInitialGameStatus = do
     let card = Card " " " "
     let cards = [card, card, card, card, card]
 
-    let player = Player [card, card] 200 True
+    let player = Player [card, card] 200 True 0 0 0 0
     let players = [player, player, player, player, player, player]
 
     let dealerPos = 0
@@ -25,7 +25,8 @@ setInitialGameStatus = do
     let firstBetPlayerPosition = -1
     let actualPlayer = 0
 
-    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound userPosition valPot firstBetPlayerPosition actualPlayer
+    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound userPosition valPot 
+         firstBetPlayerPosition actualPlayer
 
 
 {-
@@ -33,8 +34,6 @@ setInitialGameStatus = do
 -}
 startGame :: IO()
 startGame = do
-    -- playersTable = setPlayers (Configura os jogadores da partida, com um valor default de chips)
-    -- dealer_position = setInitialDealerPosition (Configura a posição inicial do dealer de forma aleatória)
 
     runMatch
     putStrLn("O jogo acabou.")
@@ -51,11 +50,10 @@ runMatch = do
 
 {-
     Executa o turno de pre flop.
-    @param GameStatus Estado atual do jogo.
+    @param gameStatus Estado atual do jogo.
 -}
 preFlopRound :: GameStatus -> IO GameStatus
 preFlopRound gameStatus = do
-    --putStrLn (show gameStatus)
     let smallPos = smallPosition gameStatus
     let bigPos = bigPosition gameStatus
 
@@ -67,6 +65,9 @@ preFlopRound gameStatus = do
 
 {-
     Executa as ações de turno para cada jogador.
+    @param currenPosition Posição atual do jogador.
+    @param endPosition Posição final de parada das ações do pre flop.
+    @param gameStatus Estado atual do jogo.
 -}
 preFlopActions :: Int -> Int -> GameStatus -> IO GameStatus
 preFlopActions currentPosition endPosition gameStatus 
@@ -75,19 +76,19 @@ preFlopActions currentPosition endPosition gameStatus
         showTable newGameStatus
         preFlopActions (nextPlayerPosition currentPosition) endPosition newGameStatus
     | currentPosition == (userPosition gameStatus) = do
-        gm <- showUserActions newGameStatus
+        gs <- showUserActions newGameStatus
         showTable newGameStatus
-        preFlopActions (nextPlayerPosition currentPosition) endPosition gm
+        preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     | otherwise = do
-        gm <- botActions newGameStatus
+        gs <- botActions newGameStatus
         showTable newGameStatus
-        preFlopActions (nextPlayerPosition currentPosition) endPosition gm
+        preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
 
 
 {-
     Executa o turno de flop.
-    @param GameStatus Estado atual do jogo. 
+    @param gameStatus Estado atual do jogo. 
 -}
 flopRound :: GameStatus -> IO GameStatus
 flopRound gameStatus = do
@@ -101,7 +102,7 @@ flopRound gameStatus = do
 
 {-
     Executa o turno de round.
-    @param GameStatus Estado atual do jogo. 
+    @param gameStatus Estado atual do jogo. 
 -}
 turnRound :: GameStatus -> IO GameStatus
 turnRound gameStatus = do
@@ -115,7 +116,7 @@ turnRound gameStatus = do
 
 {-
     Executa o turno de river.
-    @param GameStatus Estado atual do jogo. 
+    @param gameStatus Estado atual do jogo. 
 -}
 riverRound :: GameStatus -> IO GameStatus
 riverRound gameStatus = do
@@ -139,13 +140,13 @@ runRound currentPosition gameStatus
         showTable newGameStatus
         preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition newGameStatus) newGameStatus
     | currentPosition == (userPosition gameStatus) = do
-        gm <- showUserActions newGameStatus
+        gs <- showUserActions newGameStatus
         showTable newGameStatus
-        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gm) gm
+        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gs) gs
     | otherwise = do
-        gm <- botActions newGameStatus
+        gs <- botActions newGameStatus
         showTable newGameStatus
-        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gm) gm
+        preFlopActions (nextPlayerPosition currentPosition) (firstBetPlayerPosition gs) gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
 
 
@@ -181,6 +182,8 @@ getOption = do
 
 {-
     Interpreta a ação escolhida pelo jogador.
+    @param option Opção escolhida pelo jogador.
+    @param gameStatus Estado atual do jogo.
 -}
 {- Adicionar:
     selectAction 3 gameStatus = foldAction gameStatus
@@ -195,6 +198,7 @@ selectAction option gameStatus = do
 
 {-
     Executa as ações de um jogador bot.
+    @param gameStatus Estado atual do jogo.
 -}
 botActions :: GameStatus -> IO GameStatus
 botActions gameStatus = do
@@ -205,6 +209,7 @@ botActions gameStatus = do
 
 {-
     Retorna a posição do small.
+    @param gameStatus Estado atual do jogo.
 -}
 smallPosition :: GameStatus -> Int
 smallPosition gameStatus = nextPlayerPosition(dealerPosition gameStatus)
@@ -212,6 +217,7 @@ smallPosition gameStatus = nextPlayerPosition(dealerPosition gameStatus)
 
 {-
     Retorna a posição do big.
+    @param gameStatus Estado atual do jogo.
 -}
 bigPosition :: GameStatus -> Int
 bigPosition gameStatus = nextPlayerPosition(smallPosition gameStatus)
@@ -226,6 +232,7 @@ qtdPlayers = 6
 
 {-
     Retorna a posição do próximo jogador com base na posição do jogador atual.
+    @param pos Posição do jogador.
 -}
 nextPlayerPosition :: Int -> Int
 nextPlayerPosition pos = (mod (pos + 1) qtdPlayers)
@@ -249,7 +256,10 @@ sleep seg = do
     _ <- System.Process.system ("sleep " ++ ((intToDigit seg) : "s"))
     return ()
 
-
+{-
+    Configura a próxima posição do dealer.
+    @param gs Estado atual do jogo.
+-}
 setNextDealerPosition :: GameStatus -> GameStatus
 setNextDealerPosition gs = do
     let newDealer = nextPlayerPosition (dealerPosition gs)
