@@ -1,29 +1,10 @@
-data Card = Card {
-    naipe :: String,
-    value :: String
-} deriving (Show)
-
-data Player = Player {
-    hand :: [Card],
-    chips :: Int,
-    active :: Bool
-} deriving (Show)
-
-data GameStatus = GameStatus {
-    cardsTable :: [Card],
-    playersTable :: [Player],
-    dealerPosition :: Int,
-    lastBet :: Int,
-    minimumBet :: Int,
-    activePlayers :: Int,
-    currentRound :: Int,
-    userPosition :: Int,
-    pot :: Int,
-    actualPlayer :: Int
-} deriving (Show)
+import Model
+import Text.Printf
 
 printNTimes :: String -> Int -> IO()
 printNTimes string num | num == 1 = putStr(string)
+                 | num == 0 = putStr("")
+                 | num < 0 = putStr("")
                  | otherwise = do
                     putStr(string)
                     printNTimes string (num - 1)
@@ -67,6 +48,7 @@ nLateralBorders n | n == 1 = lateralBorder
 
 spaces :: Int -> IO()
 spaces n  | n == 1 = putStr(" ")
+          | n == 0 = putStr("")
           | otherwise = do 
                 putStr(" ")
                 spaces (n - 1)
@@ -190,7 +172,10 @@ centralCardsWithProb (Player {hand = h, chips = c, active = a}) prob = do
     putStr("│\n")
 
     putStr("│")
-    putStr(" WIN: " ++ show(100.0) ++ "%")
+    putStr(" WIN: ")
+    printf "%.1f" (prob :: Float) -- ++ show(100.0) ++ "%")
+    putStr("%")
+    spaces (3 - truncate(numDigits prob))
     putStr("│")
     spaces 27
     nCardBottoms 2
@@ -338,11 +323,19 @@ printPot chips = do
     putStr("Pot: " ++ show(chips))
     spaces (45 - truncate(numDigits (fromIntegral chips)))
     putStr("│\n")
- 
+    
+getProb :: Player -> Int -> Float
+getProb player currentRound
+    | currentRound == 0 = preFlopProb player
+    | currentRound == 1 = flopToTurnProb player
+    | currentRound == 2 = turnToRiverProb player
+    | currentRound == 3 = riverToShowDownProb player
+    | otherwise = 0
+
 printTable :: GameStatus -> IO()
 printTable (GameStatus {cardsTable = cards, playersTable = players, 
-            dealerPosition = dealer, lastBet = lBet, minimumBet = minBet, 
-            activePlayers = aPlayers, currentRound = round, userPosition = user, pot = potChips, actualPlayer = actualPlayer}) = do
+            dealerPosition = dealer, currentRound = round, pot = potChips, 
+            actualPlayer = actualPlayer}) = do
     
     topBorder
     centralCards
@@ -354,7 +347,7 @@ printTable (GameStatus {cardsTable = cards, playersTable = players,
     lateralCards
     lateralPlayers 2 (players !! 1) 6 (players !! 5) actualPlayer dealer
     centralPlayer 1 (players !! 0) actualPlayer dealer
-    centralCardsWithProb (players!!0) 10
+    centralCardsWithProb (players!!0) (getProb (players!!0) round)
     bottomBorder
 
 getValue :: Card -> String
@@ -381,15 +374,16 @@ main :: IO()
 main = do
     let card1 = Card "O" "T"
     let card2 = Card "P" "K"
-    let player1 = Player [card1, card2] 500 False
-    let player2 = Player [card1, card2] 1800 True
-    let player3 = Player [card1, card2] 0 True
-    let player4 = Player [card1, card2] 23 True
-    let player5 = Player [card1, card2] 65 False
-    let player6 = Player [card1, card2] 1000 True
+    let player1 = Player [card1, card2] 500 False 100 90 80 70 
+    let player2 = Player [card1, card2] 1800 True 100 100 100 100
+    let player3 = Player [card1, card2] 0 True 100 100 100 100
+    let player4 = Player [card1, card2] 23 True 100 100 100 100
+    let player5 = Player [card1, card2] 65 False 100 100 100 100
+    let player6 = Player [card1, card2] 1000 True 100 100 100 100
     
-    let gameStatus = GameStatus [card1, card2, card1, card2, card2] [player1, player2, player3, player4, player5, player6] 6 2 2 6 0 0 500 3
+    let gameStatus = GameStatus [card1, card2, card1, card2, card2] [player1, player2, player3, player4, player5, player6] 6 2 2 6 1 0 500 0 3
     printTable gameStatus
+
     
     
 
