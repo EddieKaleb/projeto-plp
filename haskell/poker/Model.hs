@@ -9,8 +9,11 @@ module Model (
 	setCurrentRound,
 	setMinimumBet,
 	setCardsTable,
-	setPlayersTable,
-	setActualPlayer
+    setPlayersTable,
+    setFirstBetPlayerPosition,
+	setActualPlayer,
+    setChips,
+    setActive
 ) where
 
 

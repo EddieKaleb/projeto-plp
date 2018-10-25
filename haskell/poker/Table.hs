@@ -335,44 +335,46 @@ callAux gs
         let newLastBet = (minimumBet gs)
         let newChips = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
         let newPlayer = setChips newChips ((playersTable gs) !! (actualPlayer gs))
-        let newPot = setPot ((pot gs) + (minimumBet gs)) gs
-        --newGS firstBet newLastBet newPlayer (actualPlayer gs) newPot
-        
+        let newPot = (pot gs) + (minimumBet gs)
+        let newPlayers1 = players [] gs 0 newPlayer
+        let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
+        let newGS = GameStatus (cardsTable gs) newPlayers2 (dealerPosition gs) newLastBet
+             (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot
+             (firstBetPlayerPosition gs) (actualPlayer gs)
+
         return gs
     | otherwise = do
         let newLastBet = (minimumBet gs)
         let newChips = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
         let newPlayer = setChips newChips ((playersTable gs) !! (actualPlayer gs))
-        let newPot = setPot ((pot gs) + (minimumBet gs)) gs
-        --newGS firstBet newLastBet newPlayer (actualPlayer gs) newPot
+        let newPot = (pot gs) + (minimumBet gs)
+        let newPlayers1 = players [] gs 0 newPlayer
+        let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
+        let newGS = GameStatus (cardsTable gs) newPlayers2 (dealerPosition gs) newLastBet
+             (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot
+             (firstBetPlayerPosition gs) (actualPlayer gs)
+
         return gs
 
-{-
-bool callAction(int position) {
-    if(playersTable[position].chips >= MINIMUM_BET){
-        lastBet = MINIMUM_BET;
-        if(lastBet == 0){
-            firstBetPlayerPosition = position;
-        }
+players :: [Player] -> GameStatus -> Int -> Player -> [Player]
+players newPlayers gs i newPlayer
+    | (i == (actualPlayer gs)) = newPlayers++[newPlayer]
+    | otherwise = players (newPlayers++[((playersTable gs) !! i)]) gs (i + 1) newPlayer
 
-        playersTable[position].chips -= MINIMUM_BET;
-        POT += MINIMUM_BET;
-
-        return true;
-    }
-
-    return false;
-}
--}
-
-disablePlayer :: Player -> Player
-disablePlayer player = do
-    let newStatus = False
-    Player (hand player) (chips player) (newStatus)
+auxPlayers :: [Player] -> GameStatus -> Int -> [Player]
+auxPlayers newPlayers gs i
+    | (i == qtdPlayers) = newPlayers++[((playersTable gs) !! i)]
+    | otherwise = auxPlayers (newPlayers++[((playersTable gs) !! i)]) gs (i + 1)
 
 -- Realiza a ação de 'Desistir' (Encerrar o jogo).
--- foldAction :: GameStatus -> Player
--- foldAction gs = (disablePlayer ((playersTable gs) !! (userPosition gs)))
+foldAction :: GameStatus -> GameStatus
+foldAction gs = do
+    let newPlayer = setActive False ((playersTable gs) !! (userPosition gs))
+    let newPlayers1 = players [] gs 0 newPlayer
+    let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
+    let newGs = setPlayersTable newPlayers2 gs
+    
+    return newGs
 
 -- Realiza a ação de 'Sair' da mesa.showTable
 exitAction :: IO()
