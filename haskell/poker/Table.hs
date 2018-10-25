@@ -60,9 +60,9 @@ preFlopRound gameStatus = do
     let smallPos = smallPosition gameStatus
     let bigPos = bigPosition gameStatus
 
-    let newGs1 = callAction (setActualPlayer smallPos gameStatus)
+    let newGs1 = snd (callAction (setActualPlayer smallPos gameStatus))
     let newGs2 = setMinimumBet ((minimumBet newGs1) * 2) newGs1
-    let newGs3 = callAction (setActualPlayer bigPos newGs2)
+    let newGs3 = snd (callAction (setActualPlayer bigPos newGs2))
     gs <- preFlopActions (nextPlayerPosition bigPos) bigPos newGs3
     flopRound gs
 
@@ -102,7 +102,7 @@ flopRound gameStatus = do
     let smallPos = smallPosition gameStatus
 
     let newGs1 = setCurrentRound 1 (setActualPlayer smallPos gameStatus)
-    let newGs2 = setFirstBetPlayerPosition -1 newGs1
+    let newGs2 = setFirstBetPlayerPosition 0 newGs1
     let newGs3 = setLastBet 0 newGs2
 
     gs <- runRound smallPos newGs3
@@ -121,7 +121,7 @@ turnRound gameStatus = do
     let smallPos = smallPosition gameStatus
 
     let newGs1 = setCurrentRound 2 (setActualPlayer smallPos gameStatus)
-    let newGs2 = setFirstBetPlayerPosition -1 newGs1
+    let newGs2 = setFirstBetPlayerPosition 0 newGs1
     let newGs3 = setLastBet 0 newGs2
     let newGs4 = setMinimumBet ((minimumBet newGs3) * 2) newGs3
 
@@ -141,7 +141,7 @@ riverRound gameStatus = do
     let smallPos = smallPosition gameStatus
 
     let newGs1 = setCurrentRound 3 (setActualPlayer smallPos gameStatus)
-    let newGs2 = setFirstBetPlayerPosition -1 newGs1
+    let newGs2 = setFirstBetPlayerPosition 0 newGs1
     let newGs3 = setLastBet 0 newGs2
 
     gs <- runRound smallPos newGs3
@@ -309,7 +309,7 @@ checkPlayerAction gs
 
 callPlayerAction :: GameStatus -> IO GameStatus
 callPlayerAction gs 
-    | not(callAction (actualPlayer gs)) = do
+    | not(fst (callAction gs)) = do
         invalidAction
         return gs
     | otherwise = do
@@ -393,6 +393,6 @@ showTable gs = do
 
 
 
-main :: IO ()
-main = do
-    putStrLn(show(randomRIO (1, 6)))
+--main :: IO ()
+--main = do
+--    putStrLn(show(randomRIO (1, 6)))
