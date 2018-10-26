@@ -20,7 +20,11 @@ module Model (
     nextPlayerPosition,
     setHandsPlayers,
     setActivePlayers,
-    setExit
+    setExit,
+    setPreFlopProb,
+    setFlopToTurnProb,
+    setTurnToRiverProb,
+    setRiverToShowDownProb
 ) where
 
 

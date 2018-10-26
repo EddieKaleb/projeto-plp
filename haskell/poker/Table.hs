@@ -10,6 +10,7 @@ import qualified System.Process
 import Model
 import Deck
 import Hands
+import HandProb
 import System.IO.Unsafe
 import System.Random
 import TableOutput
@@ -516,4 +517,30 @@ showFinalists (x:xs) pos total | (pos == (total - 1)) =  putStrLn  ("- JOGADOR "
     | otherwise = do 
         putStrLn  ("- JOGADOR " ++ show(pos) ++ " -> HAND: " ++ (value ((hand x) !! 0)) ++ (naipe ((hand x) !! 0)) ++ " " ++ (value ((hand x) !! 1)) ++ (naipe ((hand x) !! 1)))
         showFinalists xs (pos+1) total
-        
+
+setPlayersPreFlopProb :: [Player] -> [Player]
+setPlayersPreFlopProb [] = []
+setPlayersPreFlopProb (x:xs) = do
+    let prob = unsafePerformIO((get_prob ((hand x) !! 0) ((hand x) !! 1) 6))
+    setPreFlopProb prob x : setPlayersPreFlopProb xs
+
+setPlayersFlopToTurnProb :: GameStatus -> [Player] -> [Player]
+setPlayersFlopToTurnProb _ [] = []
+setPlayersFlopToTurnProb gs (x:xs) = do
+    let playerHand = verifyHand (hand x) (cardsTable gs) 5
+    let prob = (preFlopProb x) * (1 - (getImproveHandProb playerHand))
+    setFlopToTurnProb prob x : setPlayersPreFlopProb xs
+
+setPlayersTurnToRiverProb :: GameStatus -> [Player] -> [Player]
+setPlayersTurnToRiverProb _ [] = []
+setPlayersTurnToRiverProb gs (x:xs) = do
+    let playerHand = verifyHand (hand x) (cardsTable gs) 5
+    let prob = (flopToTurnProb x) * (1 - (getImproveHandProb playerHand))
+    setTurnToRiverProb prob x : setPlayersPreFlopProb xs
+
+setPlayersRiverToShowDown :: GameStatus -> [Player] -> [Player]
+setPlayersRiverToShowDown _ [] = []
+setPlayersRiverToShowDown gs (x:xs) = do
+    let playerHand = verifyHand (hand x) (cardsTable gs) 5
+    let prob = (turnToRiverProb x) * (1 - (getImproveHandProb playerHand))
+    setRiverToShowDownProb prob x : setPlayersPreFlopProb xs
