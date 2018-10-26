@@ -422,12 +422,39 @@ mapHands flag | (flag == "IS_HIGH_CARD") = 1
 
 setWinners :: GameStatus -> IO()
 setWinners gs = do 
-    print gs 
+   putStrLn "\n***********************"
+   putStrLn "*      FINALISTAS     *"
+   putStrLn "***********************\n"
+   let finalists = getFinalists gs (playersTable gs) []
+   let sFin = showFinalists finalists 0 (length finalists)
+   putStrLn "\n***********************"
+   putStrLn "*      VENCEDORES     *" 
+   putStrLn "***********************\n"
+   let winners = getWinners gs (playersTable gs) [] 0
+   let sWin = showFinalists winners 0 (length finalists)
+   let val = (pot gs) `div` length winners
+   let result = shareChips winners [] val
+   putStrLn ""
 
-getFinalists :: GameStatus -> [Player] -> [Player] -> Int -> [Player]
-getFinalists _ [] winners _  = winners
-getFinalists gs (x:xs) winners bigger | (mapHands (verifyHand (hand x) (cardsTable gs) 7) > bigger) && ((active x) == True) = getFinalists gs xs [x] (mapHands (verifyHand (hand x) (cardsTable gs) 7))
-                                      | (mapHands (verifyHand (hand x) (cardsTable gs) 7) == bigger) && ((active x) == True)= getFinalists gs xs (winners++[x]) bigger
-                                      | otherwise = getFinalists gs xs winners bigger
 
-            
+shareChips :: [Player] -> [Player] -> Int -> [Player]
+shareChips [] players _ = players 
+shareChips (x:xs) players bonus = shareChips xs (players++[setChips bonus x]) bonus
+
+getFinalists :: GameStatus -> [Player] -> [Player] -> [Player]
+getFinalists _ [] finalists = finalists 
+getFinalists gs (x:xs) finalists | (active x) == True = getFinalists gs xs (finalists++[x]) 
+                                 | otherwise = getFinalists gs xs finalists
+
+getWinners :: GameStatus -> [Player] -> [Player] -> Int -> [Player]
+getWinners _ [] winners _  = winners
+getWinners gs (x:xs) winners bigger | (mapHands (verifyHand (hand x) (cardsTable gs) 7) > bigger) && ((active x) == True) = getWinners gs xs [x] (mapHands (verifyHand (hand x) (cardsTable gs) 7))
+                                      | (mapHands (verifyHand (hand x) (cardsTable gs) 7) == bigger) && ((active x) == True)= getWinners gs xs (winners++[x]) bigger
+                                      | otherwise = getWinners gs xs winners bigger
+
+showFinalists :: [Player] -> Int -> Int -> IO()
+showFinalists (x:xs) pos total | (pos == (total - 1)) =  putStrLn  ("- JOGADOR " ++ show(pos) ++ " -> HAND: " ++ (value ((hand x) !! 0)) ++ (naipe ((hand x) !! 0)) ++ " " ++ (value ((hand x) !! 1)) ++ (naipe ((hand x) !! 1)))
+    | otherwise = do 
+        putStrLn  ("- JOGADOR " ++ show(pos) ++ " -> HAND: " ++ (value ((hand x) !! 0)) ++ (naipe ((hand x) !! 0)) ++ " " ++ (value ((hand x) !! 1)) ++ (naipe ((hand x) !! 1)))
+        showFinalists xs (pos+1) total
+        
