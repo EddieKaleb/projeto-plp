@@ -175,7 +175,7 @@ runRound currentPosition gameStatus
         showTable gs
         runRound (nextPlayerPosition currentPosition) gs
     | otherwise = do
-        gs <- botActionsIO newGameStatus
+        gs <- botActions newGameStatus currentPosition
         showTable gs
         runRound (nextPlayerPosition currentPosition) gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
@@ -379,11 +379,11 @@ getImproveHandProb hand | (hand == "IS_ONE_PAIR") = (getImproveProb 5) / 100
                         | (hand == "IS_HIGH_CARD") = (getImproveProb 15) / 100
                         | otherwise = (getImproveProb 0) / 100
 
-botActions :: GameStatus -> Int -> Int -> GameStatus
-botActions gs round pos | round == 0 && (bigPosition gs /= pos) && getRandomInteger (0,3) > floor(preFlopProb ((playersTable gs) !! pos) /10 * 1.15) = foldAction gs
-    | round == 0 && fst (callAction gs) == False = foldAction gs
-    | round <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) = foldAction gs
-    | round <= 3 && (lastBet gs) /= 0 && not(fst (callAction gs)) = foldAction gs
-    | round <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) && not(fst (callAction gs)) = foldAction gs
-    | (checkAction gs == True) = gs
-    | otherwise = gs
+botActions :: GameStatus -> Int -> IO GameStatus
+botActions gs pos | (currentRound gs) == 0 && (bigPosition gs /= pos) && getRandomInteger (0,3) > floor(preFlopProb ((playersTable gs) !! pos) /10 * 1.15) = return (foldAction gs)
+    | (currentRound gs) == 0 && fst (callAction gs) == False = return (foldAction gs)
+    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) = return (foldAction gs)
+    | (currentRound gs) <= 3 && (lastBet gs) /= 0 && not(fst (callAction gs)) = return (foldAction gs)
+    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) && not(fst (callAction gs)) = return (foldAction gs)
+    | (checkAction gs == True) = return gs
+    | otherwise = return gs
