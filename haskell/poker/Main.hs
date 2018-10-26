@@ -5,6 +5,7 @@ import Data.Ord
 import Data.Time.Clock.POSIX
 import qualified System.Process
 import Control.Monad
+import Table
 
 sleep3s :: IO()
 sleep3s = do
