@@ -1,6 +1,6 @@
-module TableOutput(
+{-module TableOutput(
     printTable
-)where
+)where-}
     
 import Model
 import Text.Printf
@@ -269,20 +269,20 @@ activePlayer active playerNum actualPlayer
     | playerNum == actualPlayer = putStr("*")
     | otherwise = putStr(" ")
 
-role :: Int -> Int -> IO()
-role playerNum dealerPos
-    | playerNum == dealerPos = putStr("(D)")
-    | playerNum == (1 + (mod (dealerPos) 6)) = putStr("(S)")
-    | playerNum == (1 + (mod (dealerPos + 1) 6)) = putStr("(B)")
+role :: Int -> [Int] -> IO()
+role playerNum blinds
+    | playerNum == (blinds !! 0) + 1 = putStr("(D)")
+    | playerNum == (blinds !! 1) + 1 = putStr("(S)")
+    | playerNum == (blinds !! 2) + 1 = putStr("(B)")
     | otherwise = putStr("   ")
 
-centralPlayer :: Int -> Player -> Int -> Int-> IO()
-centralPlayer player (Player {hand = h, chips = c, active = a}) playing dealer = do
+centralPlayer :: Int -> Player -> Int -> [Int] -> IO()
+centralPlayer player (Player {hand = h, chips = c, active = a}) playing blinds = do
     putStr("│")
     spaces 39
     activePlayer a player playing
     putStr("Player " ++ show(player))
-    role player dealer
+    role player blinds
     spaces 39
     putStr("│\n")
 
@@ -292,15 +292,15 @@ centralPlayer player (Player {hand = h, chips = c, active = a}) playing dealer =
     spaces (43 - truncate (numDigits (fromIntegral c)))
     putStr("│\n")
 
-lateralPlayers :: Int -> Player -> Int -> Player -> Int -> Int -> IO()
-lateralPlayers player1 (Player {hand = h1, chips = c1, active = a1})  player2 (Player {hand = h2, chips = c2, active = a2})  playing dealer = do
+lateralPlayers :: Int -> Player -> Int -> Player -> Int -> [Int] -> IO()
+lateralPlayers player1 (Player {hand = h1, chips = c1, active = a1})  player2 (Player {hand = h2, chips = c2, active = a2})  playing blinds = do
     putStr("│")
     spaces 2
     activePlayer a1 player1 playing
     putStr("Player " ++ show(player1))
-    role player1 dealer
+    role player1 blinds
     spaces 62
-    role player2 dealer
+    role player2 blinds
     putStr("Player " ++ show(player2))
     activePlayer a2 player2 playing
     spaces 2
@@ -331,20 +331,26 @@ getProb player currentRound
     | otherwise = 0
 
 printTable :: GameStatus -> IO()
-printTable (GameStatus {cardsTable = cards, playersTable = players, 
-            dealerPosition = dealer, currentRound = round, pot = potChips, 
-            actualPlayer = actualPlayer}) = do
-    
+printTable gameStatus = do
+
+    let cards = cardsTable gameStatus
+    let players = playersTable gameStatus
+    let round = currentRound gameStatus
+    let potChips = pot gameStatus
+    let playing = (actualPlayer gameStatus) + 1
+    let dealer = dealerPosition gameStatus
+    let blinds = [dealer, smallPosition gameStatus, bigPosition gameStatus]
+
     topBorder
     centralCards
-    centralPlayer 4 (players !! 3) actualPlayer dealer
+    centralPlayer 4 (players !! 3) playing blinds
     lateralCards
-    lateralPlayers 3 (players !! 2) 5 (players !! 4) actualPlayer dealer
+    lateralPlayers 3 (players !! 2) 5 (players !! 4) playing blinds
     flopTurnRiver cards
     printPot potChips
     lateralCards
-    lateralPlayers 2 (players !! 1) 6 (players !! 5) actualPlayer dealer
-    centralPlayer 1 (players !! 0) actualPlayer dealer
+    lateralPlayers 2 (players !! 1) 6 (players !! 5) playing blinds
+    centralPlayer 1 (players !! 0) playing blinds
     centralCardsWithProb (players!!0) (getProb (players!!0) round)
     bottomBorder
 
@@ -372,14 +378,15 @@ main :: IO()
 main = do
     let card1 = Card "O" "T"
     let card2 = Card "P" "K"
-    let player1 = Player [card1, card2] 500 False 100 90 80 70 
-    let player2 = Player [card1, card2] 1800 True 100 100 100 100
+    let card3 = Card " " " "
+    let player1 = Player [card1, card2] 500 True 100 90 80 70 
+    let player2 = Player [card1, card2] 1800 False 100 100 100 100
     let player3 = Player [card1, card2] 0 True 100 100 100 100
     let player4 = Player [card1, card2] 23 True 100 100 100 100
     let player5 = Player [card1, card2] 65 False 100 100 100 100
     let player6 = Player [card1, card2] 1000 True 100 100 100 100
     
-    let gameStatus = GameStatus [card1, card2, card1, card2, card2] [player1, player2, player3, player4, player5, player6] 6 2 2 6 1 0 500 0 3
+    let gameStatus = GameStatus [card1, card2, card1, card3, card3] [player1, player2, player3, player4, player5, player6] 5 2 2 6 1 0 500 0 3
     printTable gameStatus
 
     
