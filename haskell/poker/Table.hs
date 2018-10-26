@@ -10,6 +10,7 @@ import qualified System.Process
 import Model
 import Deck
 import Hands
+import HandProb
 import System.IO.Unsafe
 import System.Random
 import TableOutput
@@ -36,8 +37,8 @@ setInitialGameStatus = do
     let valPot = 0
     let firstBetPlayerPosition = -1
     let actualPlayer = 0
-    -- getRandomInteger (0,5)
-    let dealerPos = 0
+
+    let dealerPos = getRandomInteger (0,5)
     let exitValue = False
 
     putStrLn("DealerPos: " ++ show(dealerPos))
@@ -45,6 +46,41 @@ setInitialGameStatus = do
     return (GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound 
          userPosition valPot firstBetPlayerPosition actualPlayer newDeck2 exitValue)
 
+
+buildGameStatus :: GameStatus -> IO GameStatus
+buildGameStatus gs = do
+    let card = Card " " " "
+
+    newDeck1 <- shuffleDeck
+    let newDeck2 = Deck newDeck1
+
+    let cards = [card, card, card, card, card]
+    let lastBet = 0
+    let minimumBet = 2
+    let activePlayers = 6
+    let currentRound = 0
+    let userPosition = 0
+    let valPot = 0
+    let firstBetPlayerPosition = -1
+    let actualPlayer = 0
+
+    let dealerPos = nextPlayerPosition(dealerPosition gs)
+    let exitValue = False
+
+    putStrLn("DealerPos: " ++ show(dealerPos))
+    let activedPlayers = activePlayersTable (playersTable gs)
+    return (GameStatus cards activedPlayers dealerPos lastBet minimumBet activePlayers currentRound 
+         userPosition valPot firstBetPlayerPosition actualPlayer newDeck2 exitValue)  
+
+
+activePlayersTable :: [Player] -> [Player]
+activePlayersTable [] = []
+activePlayersTable (x:xs) = do
+    (setActive True x) : activePlayersTable xs
+
+{-
+    Gera um número aleatório.
+-}
 getRandomInteger :: (Int,Int) -> Int
 getRandomInteger (a,b) = unsafePerformIO(randomRIO (a,b))  
 
@@ -70,11 +106,9 @@ runGame = do
     Roda as partidas.
 -}
 runMatch :: GameStatus -> IO GameStatus
-runMatch currentGameStatus
-    | (exit currentGameStatus) == True = return currentGameStatus
-    | otherwise = do
+runMatch currentGameStatus = do
+        let gameStatus = buildGameStatus currentGameStatus
         let cards = getHandsPlayers (deck currentGameStatus)
-
         let newGs = setHandsPlayers cards currentGameStatus
 
         newGs2 <- preFlopRound newGs
@@ -107,8 +141,8 @@ preFlopRound gameStatus = do
 -}
 preFlopActions :: Int -> Int -> GameStatus -> IO GameStatus
 preFlopActions currentPosition endPosition gameStatus 
-    | exit gameStatus == True = return gameStatus
-    | (activePlayers gameStatus) < 2 = return (setExit True gameStatus)
+    | exit gameStatus == True = return newGameStatus
+    | (activePlayers gameStatus) < 2 = return newGameStatus
     | currentPosition == endPosition = return newGameStatus
     | not(active((playersTable gameStatus) !! currentPosition)) = do
         showTable newGameStatus
@@ -194,7 +228,7 @@ riverRound gameStatus = do
 runRound :: Int -> GameStatus -> IO GameStatus
 runRound currentPosition gameStatus
     | exit gameStatus == True = return gameStatus
-    | (activePlayers gameStatus) < 2 = return (setExit True gameStatus)
+    | (activePlayers gameStatus) < 2 = return gameStatus
     | currentPosition == (firstBetPlayerPosition gameStatus) = return newGameStatus
     | not(active((playersTable gameStatus) !! currentPosition)) = do
         showTable newGameStatus
@@ -483,4 +517,30 @@ showFinalists (x:xs) pos total | (pos == (total - 1)) =  putStrLn  ("- JOGADOR "
     | otherwise = do 
         putStrLn  ("- JOGADOR " ++ show(pos) ++ " -> HAND: " ++ (value ((hand x) !! 0)) ++ (naipe ((hand x) !! 0)) ++ " " ++ (value ((hand x) !! 1)) ++ (naipe ((hand x) !! 1)))
         showFinalists xs (pos+1) total
-        
+
+setPlayersPreFlopProb :: [Player] -> [Player]
+setPlayersPreFlopProb [] = []
+setPlayersPreFlopProb (x:xs) = do
+    let prob = unsafePerformIO((get_prob ((hand x) !! 0) ((hand x) !! 1) 6))
+    setPreFlopProb prob x : setPlayersPreFlopProb xs
+
+setPlayersFlopToTurnProb :: GameStatus -> [Player] -> [Player]
+setPlayersFlopToTurnProb _ [] = []
+setPlayersFlopToTurnProb gs (x:xs) = do
+    let playerHand = verifyHand (hand x) (cardsTable gs) 5
+    let prob = (preFlopProb x) * (1 - (getImproveHandProb playerHand))
+    setFlopToTurnProb prob x : setPlayersPreFlopProb xs
+
+setPlayersTurnToRiverProb :: GameStatus -> [Player] -> [Player]
+setPlayersTurnToRiverProb _ [] = []
+setPlayersTurnToRiverProb gs (x:xs) = do
+    let playerHand = verifyHand (hand x) (cardsTable gs) 5
+    let prob = (flopToTurnProb x) * (1 - (getImproveHandProb playerHand))
+    setTurnToRiverProb prob x : setPlayersPreFlopProb xs
+
+setPlayersRiverToShowDown :: GameStatus -> [Player] -> [Player]
+setPlayersRiverToShowDown _ [] = []
+setPlayersRiverToShowDown gs (x:xs) = do
+    let playerHand = verifyHand (hand x) (cardsTable gs) 5
+    let prob = (turnToRiverProb x) * (1 - (getImproveHandProb playerHand))
+    setRiverToShowDownProb prob x : setPlayersPreFlopProb xs
