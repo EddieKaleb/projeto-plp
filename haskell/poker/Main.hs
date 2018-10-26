@@ -25,6 +25,7 @@ pause = do
 
 showTitle :: IO()
 showTitle = do
+    clearScreen
     putStrLn "\n\n"
     putStrLn "               $$$$$$$\134   $$$$$$\134  $$\134   $$\134 $$$$$$$$\134 $$$$$$$\134"
     putStrLn "               $$  __$$\134 $$  __$$\134 $$ | $$  |$$  _____|$$  __$$\134"
@@ -116,7 +117,15 @@ selectGameModeOption n = showInvalidOptionMessage
 
 casualMatch :: IO()
 casualMatch = do
-    putStrLn "casualMatch"
+    clearScreen
+    putStrLn("\n\n                    O JOGO VAI COMEÇAR !!!!")
+    putStrLn("\n\n                 você jogará como o player 1")
+
+    sleep3s
+
+    startGame
+
+
 
 manualMatch :: IO()
 manualMatch = do
