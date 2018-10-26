@@ -290,7 +290,7 @@ callPlayerAction :: GameStatus -> IO GameStatus
 callPlayerAction gs 
     | not(fst (callAction gs)) = do
         invalidAction
-        return gs
+        return snd (callAction gs)
     | otherwise = do
         putStrLn("")
         return gs
