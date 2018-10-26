@@ -17,11 +17,11 @@ setInitialGameStatus :: IO GameStatus
 setInitialGameStatus = do
     let card = Card " " " "
 
-    let cardA = Card "O" "5"
-    let cardB = Card "P" "2"
+    newDeck1 <- shuffleDeck
+    let newDeck2 = Deck newDeck1
 
     let cards = [card, card, card, card, card]
-    let player = Player [cardA, cardB] 100 True 0 0 0 0
+    let player = Player [card, card] 100 True 0 0 0 0
     let players = [player, player, player, player, player, player]
     let lastBet = 0
     let minimumBet = 2
@@ -33,9 +33,6 @@ setInitialGameStatus = do
     let actualPlayer = 0
 
     let dealerPos = getRandomInteger (0,5)
-
-    newDeck1 <- shuffleDeck
-    let newDeck2 = Deck newDeck1
 
     return (GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound 
          userPosition valPot firstBetPlayerPosition actualPlayer newDeck2)
@@ -59,7 +56,13 @@ startGame = do
 runMatch :: IO GameStatus
 runMatch = do
     currentGameStatus <- setInitialGameStatus
-    preFlopRound currentGameStatus
+
+    let cards = getHandsPlayers (deck currentGameStatus)
+    putStrLn(show(cards))
+
+    let newGs = setHandsPlayers cards currentGameStatus
+
+    preFlopRound newGs
 
 
 {-
@@ -86,6 +89,7 @@ preFlopRound gameStatus = do
 -}
 preFlopActions :: Int -> Int -> GameStatus -> IO GameStatus
 preFlopActions currentPosition endPosition gameStatus 
+    | (activePlayers gameStatus) < 2 = return gameStatus
     | currentPosition == endPosition = return newGameStatus
     | not(active((playersTable gameStatus) !! currentPosition)) = do
         showTable newGameStatus
@@ -114,7 +118,7 @@ flopRound gameStatus = do
     let smallPos = smallPosition newGameStatus
 
     let newGs1 = setCurrentRound 1 (setActualPlayer smallPos newGameStatus)
-    let newGs2 = setFirstBetPlayerPosition 0 newGs1
+    let newGs2 = setFirstBetPlayerPosition 10 newGs1
     let newGs3 = setLastBet 0 newGs2
 
     gs <- runRound smallPos newGs3
@@ -134,7 +138,7 @@ turnRound gameStatus = do
     let smallPos = smallPosition newGameStatus
 
     let newGs1 = setCurrentRound 2 (setActualPlayer smallPos newGameStatus)
-    let newGs2 = setFirstBetPlayerPosition 0 newGs1
+    let newGs2 = setFirstBetPlayerPosition 10 newGs1
     let newGs3 = setLastBet 0 newGs2
     let newGs4 = setMinimumBet ((minimumBet newGs3) * 2) newGs3
 
@@ -155,7 +159,7 @@ riverRound gameStatus = do
     let smallPos = smallPosition newGameStatus
 
     let newGs1 = setCurrentRound 3 (setActualPlayer smallPos newGameStatus)
-    let newGs2 = setFirstBetPlayerPosition 0 newGs1
+    let newGs2 = setFirstBetPlayerPosition 10 newGs1
     let newGs3 = setLastBet 0 newGs2
 
     gs <- runRound smallPos newGs3
@@ -169,6 +173,7 @@ riverRound gameStatus = do
 -}
 runRound :: Int -> GameStatus -> IO GameStatus
 runRound currentPosition gameStatus
+    | (activePlayers gameStatus) < 2 = return gameStatus
     | currentPosition == (firstBetPlayerPosition gameStatus) = return newGameStatus
     | not(active((playersTable gameStatus) !! currentPosition)) = do
         showTable newGameStatus
@@ -264,7 +269,6 @@ sleep seg = do
     _ <- System.Process.system ("sleep " ++ ((intToDigit seg) : "s"))
     return ()
 
-
 {-
     Configura a próxima posição do dealer.
     @param gs Estado atual do jogo.
@@ -293,11 +297,13 @@ callPlayerAction gs
         return gs
     | otherwise = do
         putStrLn("")
-        return snd (callAction gs)
+        return (snd (callAction gs))
+
 
 -- Realiza a ação de 'Mesa' (Passar a vez).
 checkAction :: GameStatus -> Bool
 checkAction gs = ((currentRound gs) /= 0 && (lastBet gs) == 0)
+
 
 -- Realiza a ação de 'Pagar'.
 callAction :: GameStatus -> (Bool, GameStatus)
@@ -307,6 +313,7 @@ callAction gs
         (True, newGs)
     | otherwise = (False, gs)
 
+
 callAux :: GameStatus -> GameStatus
 callAux gs 
     | ((lastBet gs) == 0) = do
@@ -315,9 +322,9 @@ callAux gs
         let newChips = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
         let newPlayer = setChips newChips ((playersTable gs) !! (actualPlayer gs))
         let newPot = (pot gs) + (minimumBet gs)
-        let newPlayers1 = players [] gs 0 newPlayer
-        let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
-        let newGS = GameStatus (cardsTable gs) newPlayers2 (dealerPosition gs) newLastBet
+        let newPlayers1 = players (playersTable gs) gs (actualPlayer gs) newPlayer
+        --let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
+        let newGS = GameStatus (cardsTable gs) newPlayers1 (dealerPosition gs) newLastBet
              (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot
              (firstBetPlayerPosition gs) (actualPlayer gs)
 
@@ -327,14 +334,22 @@ callAux gs
         let newChips = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
         let newPlayer = setChips newChips ((playersTable gs) !! (actualPlayer gs))
         let newPot = (pot gs) + (minimumBet gs)
-        let newPlayers1 = players [] gs 0 newPlayer
-        let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
-        let newGS = GameStatus (cardsTable gs) newPlayers2 (dealerPosition gs) newLastBet
+        let newPlayers1 = players (playersTable gs) gs (actualPlayer gs) newPlayer
+        --let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
+        let newGS = GameStatus (cardsTable gs) newPlayers1 (dealerPosition gs) newLastBet
              (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot
              (firstBetPlayerPosition gs) (actualPlayer gs)
 
         gs
 
+players :: [Player] -> GameStatus -> Int -> Player -> [Player]
+players ps gs 6 newPlayer = []
+players [] gs playerPos newPlayer = []
+players (p:ps) gs playerPos newPlayer 
+    | playerPos == (actualPlayer gs) = [newPlayer]
+    | otherwise = p : players ps gs (playerPos + 1) newPlayer
+
+{-
 players :: [Player] -> GameStatus -> Int -> Player -> [Player]
 players newPlayers gs i newPlayer
     | (i == (actualPlayer gs)) = newPlayers++[newPlayer]
@@ -344,16 +359,18 @@ auxPlayers :: [Player] -> GameStatus -> Int -> [Player]
 auxPlayers newPlayers gs i
     | (i == qtdPlayers) = newPlayers++[((playersTable gs) !! i)]
     | otherwise = auxPlayers (newPlayers++[((playersTable gs) !! i)]) gs (i + 1)
+-}
 
 -- Realiza a ação de 'Desistir' (Encerrar o jogo).
 foldAction :: GameStatus -> GameStatus
 foldAction gs = do
-    let newPlayer = setActive False ((playersTable gs) !! (userPosition gs))
-    let newPlayers1 = players [] gs 0 newPlayer
-    let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
-    let newGs = setPlayersTable newPlayers2 gs
+    let newPlayer = setActive False ((playersTable gs) !! (actualPlayer gs))
+    let newPlayers1 = players (playersTable gs) gs (actualPlayer gs) newPlayer
+    --let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
+    let newGs = setPlayersTable newPlayers1 gs
+    let newGs2 = setActivePlayers ((activePlayers newGs) - 1) newGs
     
-    newGs
+    newGs2
 
 -- Realiza a ação de 'Sair' da mesa.showTable
 exitAction :: IO()
@@ -364,8 +381,11 @@ exitAction = do
 
 showTable :: GameStatus -> IO()
 showTable gs = do
+    clearScreen
     printTable gs
-    sleep 3
+    putStrLn("Jogando: Jogador " ++ show((actualPlayer gs) + 1))
+    putStrLn("Jogandores ativos: " ++ show((activePlayers gs)))
+    sleep 4
 
 main :: IO ()
 main = do
