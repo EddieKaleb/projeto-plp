@@ -39,5 +39,5 @@ get_prob c1 c2 numPlayers = do
 
 modifyHand :: Card -> Card -> String
 modifyHand c1 c2 | value c1 /= value c2 && naipe c1 == naipe c2 = value c1 ++ value c2 ++ "s"
-                 | value c1 /= value c2 = value c1 ++ value c2 ++ "s"
+                 | value c1 /= value c2 = value c1 ++ value c2 ++ "o"
                  | otherwise = value c1 ++ value c2

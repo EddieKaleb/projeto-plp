@@ -1,5 +1,6 @@
 module Table (
-    startGame
+    startGame,
+    setPlayersPreFlopProb
 ) where
 
 import System.IO
@@ -27,7 +28,7 @@ setInitialGameStatus = do
     let newDeck2 = Deck newDeck1
 
     let cards = [card, card, card, card, card]
-    let player = Player [card, card] 100 True 0 0 0 0
+    let player = Player [card, card] 100 True 15.0 0.0 0.0 0.0
     let players = [player, player, player, player, player, player]
     let lastBet = 0
     let minimumBet = 2
@@ -113,6 +114,9 @@ runMatch currentGameStatus = do
 
         newGs2 <- preFlopRound newGs
 
+        setWinners newGs2
+        sleep 5
+
         runMatch newGs2
 
 
@@ -123,6 +127,8 @@ runMatch currentGameStatus = do
 preFlopRound :: GameStatus -> IO GameStatus
 preFlopRound gameStatus = do
     putStrLn("preFlopRound")
+   -- let newPlayers = setPlayersPreFlopProb (playersTable gameStatus)
+   -- let newGs0 = setPlayersTable newPlayers gameStatus
     let smallPos = smallPosition gameStatus
     let bigPos = bigPosition gameStatus
 
@@ -296,12 +302,12 @@ selectAction 4 gameStatus = exitAction gameStatus
 -}
 botActions :: GameStatus -> Int -> IO GameStatus
 botActions gs pos 
-    | ((currentRound gs) == 0 && (bigPosition gs /= pos) && getRandomInteger (0,3) > floor(preFlopProb ((playersTable gs) !! pos) /10 * 1.15)) = return (foldAction gs)
-    | (((currentRound gs) == 0) && (fst (callAction gs)) == False) = return (foldAction gs)
-    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) = return (foldAction gs)
-    | (currentRound gs) <= 3 && (lastBet gs) /= 0 && not(fst (callAction gs)) = return (foldAction gs)
-    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) && not(fst (callAction gs)) = return (foldAction gs)
-    | (checkAction gs == True) = return gs
+    | (currentRound gs) == 0 && (active ((playersTable gs) !! pos)) == True && (bigPosition gs /= pos) && getRandomInteger (0,3) < floor(( (preFlopProb ((playersTable gs) !! pos)) / 10) * 2) = return (snd (callAction gs))
+    | (currentRound gs) == 0 && (active ((playersTable gs) !! pos)) == True = return (foldAction gs)
+    | (currentRound gs) <= 3 && (active ((playersTable gs) !! pos)) == True && (lastBet gs) /= 0 && getRandomInteger (0,3) < floor(( (preFlopProb ((playersTable gs) !! pos)) / 10) * 2) = return (snd (callAction gs))
+    | (currentRound gs) <= 3 && (active ((playersTable gs) !! pos)) == True && (lastBet gs) /= 0 = return (foldAction gs)
+    | (currentRound gs) <= 3 && (active ((playersTable gs) !! pos)) == True && (lastBet gs) == 0 && checkAction gs = return gs
+    | (currentRound gs) <= 3 && (active ((playersTable gs) !! pos)) == True && (lastBet gs) == 0 = return (foldAction gs)
     | otherwise = return gs
 
 {-
@@ -486,12 +492,12 @@ setWinners gs = do
    putStrLn "*      FINALISTAS     *"
    putStrLn "***********************\n"
    let finalists = getFinalists gs (playersTable gs) []
-   let sFin = showFinalists finalists 0 (length finalists)
+   showFinalists gs finalists
    putStrLn "\n***********************"
    putStrLn "*      VENCEDORES     *" 
    putStrLn "***********************\n"
-   let winners = getWinners gs (playersTable gs) [] 0
-   let sWin = showFinalists winners 0 (length finalists)
+   let winners = getWinners gs finalists [] 0
+   showFinalists gs winners
    let val = (pot gs) `div` length winners
    let result = shareChips winners [] val
    putStrLn ""
@@ -512,11 +518,13 @@ getWinners gs (x:xs) winners bigger | (mapHands (verifyHand (hand x) (cardsTable
                                       | (mapHands (verifyHand (hand x) (cardsTable gs) 7) == bigger) && ((active x) == True)= getWinners gs xs (winners++[x]) bigger
                                       | otherwise = getWinners gs xs winners bigger
 
-showFinalists :: [Player] -> Int -> Int -> IO()
-showFinalists (x:xs) pos total | (pos == (total - 1)) =  putStrLn  ("- JOGADOR " ++ show(pos) ++ " -> HAND: " ++ (value ((hand x) !! 0)) ++ (naipe ((hand x) !! 0)) ++ " " ++ (value ((hand x) !! 1)) ++ (naipe ((hand x) !! 1)))
-    | otherwise = do 
-        putStrLn  ("- JOGADOR " ++ show(pos) ++ " -> HAND: " ++ (value ((hand x) !! 0)) ++ (naipe ((hand x) !! 0)) ++ " " ++ (value ((hand x) !! 1)) ++ (naipe ((hand x) !! 1)))
-        showFinalists xs (pos+1) total
+showFinalists :: GameStatus -> [Player] -> IO()
+showFinalists _ [] = do
+    putStrLn ""
+showFinalists gs (x:xs) = do
+    putStrLn  ("HAND: " ++ (value ((hand x) !! 0)) ++ (naipe ((hand x) !! 0)) ++ " " ++ (value ((hand x) !! 1)) ++ (naipe ((hand x) !! 1)) ++ " " ++ (verifyHand (hand x) (cardsTable gs) 7))
+    showFinalists gs xs
+
 
 setPlayersPreFlopProb :: [Player] -> [Player]
 setPlayersPreFlopProb [] = []
@@ -534,13 +542,13 @@ setPlayersFlopToTurnProb gs (x:xs) = do
 setPlayersTurnToRiverProb :: GameStatus -> [Player] -> [Player]
 setPlayersTurnToRiverProb _ [] = []
 setPlayersTurnToRiverProb gs (x:xs) = do
-    let playerHand = verifyHand (hand x) (cardsTable gs) 5
+    let playerHand = verifyHand (hand x) (cardsTable gs) 6
     let prob = (flopToTurnProb x) * (1 - (getImproveHandProb playerHand))
     setTurnToRiverProb prob x : setPlayersPreFlopProb xs
 
 setPlayersRiverToShowDown :: GameStatus -> [Player] -> [Player]
 setPlayersRiverToShowDown _ [] = []
 setPlayersRiverToShowDown gs (x:xs) = do
-    let playerHand = verifyHand (hand x) (cardsTable gs) 5
+    let playerHand = verifyHand (hand x) (cardsTable gs) 7
     let prob = (turnToRiverProb x) * (1 - (getImproveHandProb playerHand))
     setRiverToShowDownProb prob x : setPlayersPreFlopProb xs
