@@ -102,11 +102,7 @@ preFlopActions currentPosition endPosition gameStatus
         showTable gs
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     | otherwise = do
-        putStrLn("BotActionsPreFlopRound | Position: " ++ show(currentPosition))
         gs <- botActions newGameStatus currentPosition
-        putStrLn("BotActionsPreFlopRound 2 | Position: " ++ show(currentPosition) ++ "\n")
-        putStrLn(show gs)
-        putStrLn("\n")
         showTable gs
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
@@ -247,27 +243,13 @@ selectAction 3 gameStatus = do
 -}
 botActions :: GameStatus -> Int -> IO GameStatus
 botActions gs pos 
-    | ((currentRound gs) == 0 && (bigPosition gs /= pos) && getRandomInteger (0,3) > floor(preFlopProb ((playersTable gs) !! pos) /10 * 1.15)) = do
-        putStrLn("BotAction7")
-        return (foldAction gs)
-    | (((currentRound gs) == 0) && (fst (callAction gs)) == False) = do
-        putStrLn("FoldAction1")
-        return (foldAction gs)
-    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) = do
-        putStrLn("FoldAction2")
-        return (foldAction gs)
-    | (currentRound gs) <= 3 && (lastBet gs) /= 0 && not(fst (callAction gs)) = do
-        putStrLn("FoldAction3")
-        return (foldAction gs)
-    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) && not(fst (callAction gs)) = do
-        putStrLn("FoldAction4")
-        return (foldAction gs)
-    | (checkAction gs == True) = do
-        putStrLn("BotAction5")
-        return gs
-    | otherwise = do
-        putStrLn("BotAction6")
-        return gs
+    | ((currentRound gs) == 0 && (bigPosition gs /= pos) && getRandomInteger (0,3) > floor(preFlopProb ((playersTable gs) !! pos) /10 * 1.15)) = return (foldAction gs)
+    | (((currentRound gs) == 0) && (fst (callAction gs)) == False) = return (foldAction gs)
+    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) = return (foldAction gs)
+    | (currentRound gs) <= 3 && (lastBet gs) /= 0 && not(fst (callAction gs)) = return (foldAction gs)
+    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) && not(fst (callAction gs)) = return (foldAction gs)
+    | (checkAction gs == True) = return gs
+    | otherwise = return gs
 
 {-
     Define a quantidade de jogadores.
@@ -400,7 +382,6 @@ showTable gs = do
     printTable gs
     putStrLn("Jogando: Jogador " ++ show((actualPlayer gs) + 1))
     putStrLn("Jogandores ativos: " ++ show((activePlayers gs)))
-    sleep 10
 
 main :: IO ()
 main = do
