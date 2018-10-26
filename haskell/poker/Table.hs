@@ -95,7 +95,7 @@ preFlopActions currentPosition endPosition gameStatus
         showTable gs
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     | otherwise = do
-        gs <- botActions newGameStatus
+        gs <- botActionsIO newGameStatus
         showTable gs
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
@@ -175,7 +175,7 @@ runRound currentPosition gameStatus
         showTable gs
         runRound (nextPlayerPosition currentPosition) gs
     | otherwise = do
-        gs <- botActions newGameStatus
+        gs <- botActionsIO newGameStatus
         showTable gs
         runRound (nextPlayerPosition currentPosition) gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
@@ -227,8 +227,8 @@ selectAction 3 gameStatus = do
     Executa as ações de um jogador bot.
     @param gameStatus Estado atual do jogo.
 -}
-botActions :: GameStatus -> IO GameStatus
-botActions gameStatus = do
+botActionsIO :: GameStatus -> IO GameStatus
+botActionsIO gameStatus = do
     putStrLn "Bot Actions"
 
     setInitialGameStatus
@@ -365,3 +365,25 @@ showTable gs = do
 main :: IO ()
 main = do
     startGame
+
+getImproveProb :: Float -> Float
+getImproveProb outs = (outs * 4) - (outs - 8)
+
+getImproveHandProb :: String -> Float
+getImproveHandProb hand | (hand == "IS_ONE_PAIR") = (getImproveProb 5) / 100
+                        | (hand == "IS_TWO_PAIR") = (getImproveProb 4) / 100
+                        | (hand == "IS_THREE") = (getImproveProb 8) / 100
+                        | (hand == "IS_STRAIGHT") = (getImproveProb 1) / 100
+                        | (hand == "IS_FLUSH") = (getImproveProb 2) / 100
+                        | (hand == "IS_FULL_HOUSE") = (getImproveProb 1) / 100
+                        | (hand == "IS_HIGH_CARD") = (getImproveProb 15) / 100
+                        | otherwise = (getImproveProb 0) / 100
+
+botActions :: GameStatus -> Int -> Int -> GameStatus
+botActions gs round pos | round == 0 && (bigPosition gs /= pos) && getRandomInteger (0,3) > floor(preFlopProb ((playersTable gs) !! pos) /10 * 1.15) = foldAction gs
+    | round == 0 && fst (callAction gs) == False = foldAction gs
+    | round <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) = foldAction gs
+    | round <= 3 && (lastBet gs) /= 0 && not(fst (callAction gs)) = foldAction gs
+    | round <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) && not(fst (callAction gs)) = foldAction gs
+    | (checkAction gs == True) = gs
+    | otherwise = gs
