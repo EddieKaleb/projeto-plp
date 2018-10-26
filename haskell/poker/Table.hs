@@ -10,6 +10,7 @@ import qualified System.Process
 import Model
 import Deck
 import Hands
+import HandProb
 import System.IO.Unsafe
 import System.Random
 import TableOutput
@@ -483,4 +484,3 @@ showFinalists (x:xs) pos total | (pos == (total - 1)) =  putStrLn  ("- JOGADOR "
     | otherwise = do 
         putStrLn  ("- JOGADOR " ++ show(pos) ++ " -> HAND: " ++ (value ((hand x) !! 0)) ++ (naipe ((hand x) !! 0)) ++ " " ++ (value ((hand x) !! 1)) ++ (naipe ((hand x) !! 1)))
         showFinalists xs (pos+1) total
-        

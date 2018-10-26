@@ -379,8 +379,8 @@ printCard (Card {naipe = n, value = v}) = do
     putStrLn(v)
 
 
-printUserProfile :: IO()
-printUserProfile = do 
+printUserProfile :: GameStatus -> IO()
+printUserProfile gs = do 
    putStr "\n\n        .------..------..------..------..------..------.\n"
    putStr "        |P.--. ||E.--. ||R.--. ||F.--. ||I.--. ||L.--. |\n"
    putStr "        | \58/\92\58 || \58/\92\58 || \58()\58 || \58()\58 || \58/\92\58 || \58/\92\58 |\n"
@@ -388,7 +388,12 @@ printUserProfile = do
    putStr "        | '--'P|| '--'E|| '--'R|| '--'F|| '--'I|| '--'L|\n"
    putStr "        `------'`------'`------'`------'`------'`------'\n\n\n"
    putStr "PERFIS POSSÍVEIS \n\n[-] MUITO AGRESSIVO [-] AGRESSIVO [+] MUITO MODERADO [+] MODERADO\n\n\n"
-    {-}   float average_prob = 
+
+   let average_prob = ((preFlopProb ((playersTable gs)!!0)) + (flopToTurnProb ((playersTable gs)!!0)) + (turnToRiverProb ((playersTable gs)!!0)) + (riverToShowDownProb ((playersTable gs)!!0))) / 4 
+   let average_pot = (pot gs) `div` 4
+   putStr ""
+   
+   {-}   float average_prob = 
         (playersTable[0].preFlopProb + playersTable[0].flopToTurnProb + 
         playersTable[0].turnToRiverProb + playersTable[0].riverToShowDownProb) / 4;
     float average_pot = POT / 4;
