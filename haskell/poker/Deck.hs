@@ -26,3 +26,13 @@ shuffle xs = do randomPosition <- getStdRandom (randomR (0, length xs - 1))
 shuffleDeck :: IO [Card]
 shuffleDeck = do
     shuffle deck
+
+
+getHandsPlayers :: Deck -> [Card]
+getHandsPlayers d = take 12 (cards d)
+
+getTableCards :: Deck -> [Card] -> [Card]
+getTableCards d ct | length ct == 0 = ct ++ (take 3 (drop 12 (cards d)))
+                   | length ct == 3 = ct ++ (take 1 (drop 15 (cards d)))
+                   | length ct == 4 = ct ++ (take 1 (drop 16 (cards d)))
+
