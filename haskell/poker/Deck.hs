@@ -1,13 +1,14 @@
 module Deck (
-	shuffleDeck
+	shuffleDeck,
+	getTableCards
 ) where
 
 import Model
 import System.Random
 
 -- retorna uma lista de cartas ordenadas
-deck :: [Card]
-deck = do
+generateDeck :: [Card]
+generateDeck = do
     let cards = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"]
     let naipes = ["E","C","P","O"]
     buildDeck naipes cards
@@ -29,7 +30,7 @@ shuffle xs = do randomPosition <- getStdRandom (randomR (0, length xs - 1))
 -- retorna uma lista de cartas embaralhadas
 shuffleDeck :: IO [Card]
 shuffleDeck = do
-    shuffle deck
+    shuffle generateDeck
 
 
 getHandsPlayers :: Deck -> [Card]

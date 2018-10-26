@@ -1,6 +1,6 @@
-{-module TableOutput(
+module TableOutput(
     printTable
-)where-}
+)where
     
 import Model
 import Text.Printf
@@ -385,8 +385,9 @@ main = do
     let player4 = Player [card1, card2] 23 True 100 100 100 100
     let player5 = Player [card1, card2] 65 False 100 100 100 100
     let player6 = Player [card1, card2] 1000 True 100 100 100 100
+    let deck = Deck [card1, card2, card3]
     
-    let gameStatus = GameStatus [card1, card2, card1, card3, card3] [player1, player2, player3, player4, player5, player6] 5 2 2 6 1 0 500 0 3
+    let gameStatus = GameStatus [card1, card2, card1, card3, card3] [player1, player2, player3, player4, player5, player6] 5 2 2 6 1 0 500 0 3 deck
     printTable gameStatus
 
     

@@ -7,16 +7,21 @@ import Model
 import Deck
 import System.IO.Unsafe
 import System.Random
+import TableOutput
 
 
 {-
     Configura o estado inicial do jogo.
 -}
-setInitialGameStatus :: GameStatus
+setInitialGameStatus :: IO GameStatus
 setInitialGameStatus = do
     let card = Card " " " "
-    let cards = [card, card, card, card, card]
-    let player = Player [card, card] 100 True 0 0 0 0
+
+    let cardA = Card "O" "5"
+    let cardB = Card "P" "2"
+
+    let cards = [cardA, cardA, card, card, card]
+    let player = Player [cardA, cardB] 100 True 0 0 0 0
     let players = [player, player, player, player, player, player]
     let lastBet = 0
     let minimumBet = 2
@@ -29,11 +34,11 @@ setInitialGameStatus = do
 
     let dealerPos = getRandomInteger (0,5)
 
-    deckCards <- shuffleDeck
-    let deck = Deck deckCards
+    newDeck1 <- shuffleDeck
+    let newDeck2 = Deck newDeck1
 
-    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound 
-         userPosition valPot firstBetPlayerPosition actualPlayer
+    return (GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound 
+         userPosition valPot firstBetPlayerPosition actualPlayer newDeck2)
 
 getRandomInteger :: (Int,Int) -> Int
 getRandomInteger (a,b) = unsafePerformIO(randomRIO (a,b))  
@@ -53,7 +58,7 @@ startGame = do
 -}
 runMatch :: IO GameStatus
 runMatch = do
-    let currentGameStatus = setInitialGameStatus
+    currentGameStatus <- setInitialGameStatus
     preFlopRound currentGameStatus
 
 
@@ -184,7 +189,7 @@ showUserActions :: GameStatus -> IO GameStatus
 showUserActions gameStatus = do
     clearScreen
 
-    -- showTable (Implementar)
+    showTable gameStatus
 
     putStrLn "\n\n-----------------------------     AÇÕES     -----------------------------\n\n"
     putStrLn "          1  -  Mesa"
@@ -216,9 +221,6 @@ selectAction 1 gameStatus = checkPlayerAction gameStatus
 selectAction 2 gameStatus = callPlayerAction gameStatus
 selectAction 3 gameStatus = do
     return (foldAction gameStatus)
-selectAction 4 gameStatus = exitAction gameStatus
-selectAction option gameStatus = do
-    return setInitialGameStatus
 
 
 {-
@@ -229,7 +231,7 @@ botActions :: GameStatus -> IO GameStatus
 botActions gameStatus = do
     putStrLn "Bot Actions"
 
-    return setInitialGameStatus
+    setInitialGameStatus
 
 
 {-
@@ -358,10 +360,8 @@ exitAction = do
 
 showTable :: GameStatus -> IO()
 showTable gs = do
-    putStrLn("Player: " ++ show(actualPlayer gs))
-    putStrLn("Turno: " ++ show(currentRound gs))
-    sleep 5
-    putStrLn("Exibe a tabela")
+    printTable gs
+    sleep 3
 
 
 
