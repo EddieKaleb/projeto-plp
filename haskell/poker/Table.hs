@@ -355,7 +355,6 @@ exitAction = do
 	putStrLn("Até a próxima!")
 	-- Falta exit
 
-
 showTable :: GameStatus -> IO()
 showTable gs = do
     putStrLn("Player: " ++ show(actualPlayer gs))
