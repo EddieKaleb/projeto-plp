@@ -20,7 +20,7 @@ setInitialGameStatus = do
     let cardA = Card "O" "5"
     let cardB = Card "P" "2"
 
-    let cards = [cardA, cardA, card, card, card]
+    let cards = [card, card, card, card, card]
     let player = Player [cardA, cardB] 100 True 0 0 0 0
     let players = [player, player, player, player, player, player]
     let lastBet = 0
@@ -108,11 +108,12 @@ preFlopActions currentPosition endPosition gameStatus
 flopRound :: GameStatus -> IO GameStatus
 flopRound gameStatus = do
 
-    -- Configura as 3 cartas da mesa (Implementar)
+    let newTableCards = getTableCards (deck gameStatus) (cardsTable gameStatus)
+    let newGameStatus = setCardsTable (newTableCards) gameStatus
 
-    let smallPos = smallPosition gameStatus
+    let smallPos = smallPosition newGameStatus
 
-    let newGs1 = setCurrentRound 1 (setActualPlayer smallPos gameStatus)
+    let newGs1 = setCurrentRound 1 (setActualPlayer smallPos newGameStatus)
     let newGs2 = setFirstBetPlayerPosition 0 newGs1
     let newGs3 = setLastBet 0 newGs2
 
@@ -127,11 +128,12 @@ flopRound gameStatus = do
 turnRound :: GameStatus -> IO GameStatus
 turnRound gameStatus = do
 
-    -- Configura a quarta carta da mesa (Implementar)
+    let newTableCards = getTableCards (deck gameStatus) (cardsTable gameStatus)
+    let newGameStatus = setCardsTable (newTableCards) gameStatus
 
-    let smallPos = smallPosition gameStatus
+    let smallPos = smallPosition newGameStatus
 
-    let newGs1 = setCurrentRound 2 (setActualPlayer smallPos gameStatus)
+    let newGs1 = setCurrentRound 2 (setActualPlayer smallPos newGameStatus)
     let newGs2 = setFirstBetPlayerPosition 0 newGs1
     let newGs3 = setLastBet 0 newGs2
     let newGs4 = setMinimumBet ((minimumBet newGs3) * 2) newGs3
@@ -147,11 +149,12 @@ turnRound gameStatus = do
 riverRound :: GameStatus -> IO GameStatus
 riverRound gameStatus = do
 
-    -- Configura a quinta carta da mesa (Implementar)
+    let newTableCards = getTableCards (deck gameStatus) (cardsTable gameStatus)
+    let newGameStatus = setCardsTable (newTableCards) gameStatus
+    
+    let smallPos = smallPosition newGameStatus
 
-    let smallPos = smallPosition gameStatus
-
-    let newGs1 = setCurrentRound 3 (setActualPlayer smallPos gameStatus)
+    let newGs1 = setCurrentRound 3 (setActualPlayer smallPos newGameStatus)
     let newGs2 = setFirstBetPlayerPosition 0 newGs1
     let newGs3 = setLastBet 0 newGs2
 
