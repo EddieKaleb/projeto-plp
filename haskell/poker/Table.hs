@@ -363,8 +363,6 @@ showTable gs = do
     sleep 5
     putStrLn("Exibe a tabela")
 
-
-
 main :: IO ()
 main = do
     startGame
