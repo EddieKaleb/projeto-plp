@@ -1,4 +1,4 @@
-module HandProb where
+module HandProb (get_prob) where
 
 import System.IO
 import Model
