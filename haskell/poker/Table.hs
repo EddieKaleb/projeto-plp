@@ -95,7 +95,7 @@ preFlopActions currentPosition endPosition gameStatus
         showTable gs
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     | otherwise = do
-        gs <- botActionsIO newGameStatus
+        gs <- botActions newGameStatus currentPosition
         showTable gs
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
@@ -227,12 +227,14 @@ selectAction 3 gameStatus = do
     Executa as ações de um jogador bot.
     @param gameStatus Estado atual do jogo.
 -}
-botActionsIO :: GameStatus -> IO GameStatus
-botActionsIO gameStatus = do
-    putStrLn "Bot Actions"
-
-    setInitialGameStatus
-
+botActions :: GameStatus -> Int -> IO GameStatus
+botActions gs pos | (currentRound gs) == 0 && (bigPosition gs /= pos) && getRandomInteger (0,3) > floor(preFlopProb ((playersTable gs) !! pos) /10 * 1.15) = return (foldAction gs)
+    | (currentRound gs) == 0 && fst (callAction gs) == False = return (foldAction gs)
+    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) = return (foldAction gs)
+    | (currentRound gs) <= 3 && (lastBet gs) /= 0 && not(fst (callAction gs)) = return (foldAction gs)
+    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) && not(fst (callAction gs)) = return (foldAction gs)
+    | (checkAction gs == True) = return gs
+    | otherwise = return gs
 
 {-
     Define a quantidade de jogadores.
@@ -378,12 +380,3 @@ getImproveHandProb hand | (hand == "IS_ONE_PAIR") = (getImproveProb 5) / 100
                         | (hand == "IS_FULL_HOUSE") = (getImproveProb 1) / 100
                         | (hand == "IS_HIGH_CARD") = (getImproveProb 15) / 100
                         | otherwise = (getImproveProb 0) / 100
-
-botActions :: GameStatus -> Int -> IO GameStatus
-botActions gs pos | (currentRound gs) == 0 && (bigPosition gs /= pos) && getRandomInteger (0,3) > floor(preFlopProb ((playersTable gs) !! pos) /10 * 1.15) = return (foldAction gs)
-    | (currentRound gs) == 0 && fst (callAction gs) == False = return (foldAction gs)
-    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) = return (foldAction gs)
-    | (currentRound gs) <= 3 && (lastBet gs) /= 0 && not(fst (callAction gs)) = return (foldAction gs)
-    | (currentRound gs) <= 3 && getRandomInteger (0,3) > floor(flopToTurnProb ((playersTable gs) !! pos) /10 * 1.15) && not(fst (callAction gs)) = return (foldAction gs)
-    | (checkAction gs == True) = return gs
-    | otherwise = return gs
