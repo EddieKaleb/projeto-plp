@@ -2,7 +2,8 @@ module Model (
 	Card(..),
 	Player(..),
 	Deck(..),
-	GameStatus(..),
+    GameStatus(..),
+    Prob(..),
 	setPot,
 	setDealerPosition,
 	setLastBet,
@@ -71,6 +72,10 @@ data GameStatus = GameStatus {
     deck :: Deck
 } deriving (Show);
 
+data Prob = Prob {
+    mHand :: String,
+    probs :: [String]
+} deriving (Show);
 
 ---------- MÉTODOS AUXILIARES DE MANIPULAÇÃO DA GAMESTATUS  ----------
 
