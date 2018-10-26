@@ -366,9 +366,10 @@ foldAction gs = do
     let newPlayer = setActive False ((playersTable gs) !! (userPosition gs))
     let newPlayers1 = players [] gs 0 newPlayer
     let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
-    let newGs = setPlayersTable newPlayers2 gs
+    let newGs1 = setPlayersTable newPlayers2 gs
+    let newGs2 = setActivePlayers ((activePlayers gs) - 1) newGs1
      
-    newGs
+    newGs2
 
 -- Realiza a ação de 'Sair' da mesa.showTable
 exitAction :: IO()
