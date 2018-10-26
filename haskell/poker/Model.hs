@@ -13,7 +13,10 @@ module Model (
     setFirstBetPlayerPosition,
 	setActualPlayer,
     setChips,
-    setActive
+    setActive,
+    smallPosition,
+    bigPosition,
+    nextPlayerPosition
 ) where
 
 
@@ -146,6 +149,30 @@ setActualPlayer value gameStatus = do
          (firstBetPlayerPosition gameStatus) value
 
     gm
+
+
+{-
+    Retorna a posição do small.
+    @param gameStatus Estado atual do jogo.
+-}
+smallPosition :: GameStatus -> Int
+smallPosition gameStatus = nextPlayerPosition(dealerPosition gameStatus)
+
+
+{-
+    Retorna a posição do big.
+    @param gameStatus Estado atual do jogo.
+-}
+bigPosition :: GameStatus -> Int
+bigPosition gameStatus = nextPlayerPosition(smallPosition gameStatus)
+
+
+{-
+    Retorna a posição do próximo jogador com base na posição do jogador atual.
+    @param pos Posição do jogador.
+-}
+nextPlayerPosition :: Int -> Int
+nextPlayerPosition pos = (mod (pos + 1) 6)
 
 ---------- FIM DOS MÉTODOS AUXILIARES DE MANIPULAÇÃO DA GAMESTATUS ----------
 

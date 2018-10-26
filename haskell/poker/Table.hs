@@ -208,12 +208,11 @@ getOption = do
     Interpreta a ação escolhida pelo jogador.
     @param option Opção escolhida pelo jogador.
     @param gameStatus Estado atual do jogo.
--}
-{- Adicionar:
-    selectAction 3 gameStatus = foldAction gameStatus
     selectAction 1 gameStatus = checkPlayerAction gameStatus
-    selectAction 2 gameStatus = callPlayerAction gameStatus
-    selectAction 4 gameStatus = exitAction gameStatus
+selectAction 2 gameStatus = callPlayerAction gameStatus
+selectAction 3 gameStatus = do
+    return foldAction gameStatus
+selectAction 4 gameStatus = exitAction gameStatus
 -}
 selectAction :: Int -> GameStatus -> IO GameStatus
 selectAction option gameStatus = do
@@ -232,34 +231,10 @@ botActions gameStatus = do
 
 
 {-
-    Retorna a posição do small.
-    @param gameStatus Estado atual do jogo.
--}
-smallPosition :: GameStatus -> Int
-smallPosition gameStatus = nextPlayerPosition(dealerPosition gameStatus)
-
-
-{-
-    Retorna a posição do big.
-    @param gameStatus Estado atual do jogo.
--}
-bigPosition :: GameStatus -> Int
-bigPosition gameStatus = nextPlayerPosition(smallPosition gameStatus)
-
-
-{-
     Define a quantidade de jogadores.
 -}
 qtdPlayers :: Int
 qtdPlayers = 6 
-
-
-{-
-    Retorna a posição do próximo jogador com base na posição do jogador atual.
-    @param pos Posição do jogador.
--}
-nextPlayerPosition :: Int -> Int
-nextPlayerPosition pos = (mod (pos + 1) qtdPlayers)
 
 
 {-
