@@ -1,3 +1,7 @@
+module Table (
+    startGame
+) where
+
 import System.IO
 import Data.Char
 import Data.Time.Clock.POSIX
