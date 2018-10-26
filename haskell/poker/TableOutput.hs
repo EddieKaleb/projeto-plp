@@ -123,7 +123,7 @@ centralCards = do
     putStr("│\n")
     
     -- Inserir Logica para mostrar ou não a carta do jogador
-    
+
     putStr("│")
     centralCardSpaces
     nCardLaterals 2
@@ -141,6 +141,7 @@ centralCards = do
     nCardBottoms 2
     centralCardSpaces
     putStr("│\n")
+
 
 centralCardsWithProb :: Player -> Float -> IO()
 centralCardsWithProb (Player {hand = h, chips = c, active = a}) prob = do
@@ -354,11 +355,14 @@ printTable gameStatus = do
     centralCardsWithProb (players!!0) (getProb (players!!0) round)
     bottomBorder
 
+
 getValue :: Card -> String
 getValue (Card {naipe = n, value = v}) = v
 
+
 getNaipe :: Card -> String
 getNaipe (Card {naipe = n, value = v}) = n
+
 
 printPlayer :: Player -> IO()
 printPlayer (Player {hand = h, chips = c, active = a}) = do
@@ -368,10 +372,12 @@ printPlayer (Player {hand = h, chips = c, active = a}) = do
     putStrLn(show a)
     
 
+
 printCard :: Card -> IO()
 printCard (Card {naipe = n, value = v}) = do
     putStrLn(n)
     putStrLn(v)
+
 
 printUserProfile :: IO()
 printUserProfile = do 
