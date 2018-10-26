@@ -100,10 +100,12 @@ preFlopActions currentPosition endPosition gameStatus
     | currentPosition == (userPosition gameStatus) = do
         gs <- showUserActions newGameStatus
         showTable gs
+        sleep 4
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     | otherwise = do
         gs <- botActions newGameStatus currentPosition
         showTable gs
+        sleep 4
         preFlopActions (nextPlayerPosition currentPosition) endPosition gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
 
@@ -187,10 +189,12 @@ runRound currentPosition gameStatus
     | currentPosition == (userPosition gameStatus) = do
         gs <- showUserActions newGameStatus
         showTable gs
+        sleep 4
         runRound (nextPlayerPosition currentPosition) gs
     | otherwise = do
         gs <- botActions newGameStatus currentPosition
         showTable gs
+        sleep 4
         runRound (nextPlayerPosition currentPosition) gs
     where newGameStatus = setActualPlayer currentPosition gameStatus
 
