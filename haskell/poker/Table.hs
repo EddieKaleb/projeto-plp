@@ -320,7 +320,7 @@ callAction :: GameStatus -> (Bool, GameStatus)
 callAction gs
     | ((chips ((playersTable gs) !! (actualPlayer gs))) >= (minimumBet gs)) = do
         let newGs = callAux gs
-        return (True, newGs)
+        (True, newGs)
     | otherwise = (False, gs)
 
 callAux :: GameStatus -> GameStatus
@@ -337,7 +337,7 @@ callAux gs
              (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot
              (firstBetPlayerPosition gs) (actualPlayer gs)
 
-        return gs
+        gs
     | otherwise = do
         let newLastBet = (minimumBet gs)
         let newChips = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
@@ -349,7 +349,7 @@ callAux gs
              (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot
              (firstBetPlayerPosition gs) (actualPlayer gs)
 
-        return gs
+        gs
 
 players :: [Player] -> GameStatus -> Int -> Player -> [Player]
 players newPlayers gs i newPlayer
@@ -369,7 +369,7 @@ foldAction gs = do
     let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
     let newGs = setPlayersTable newPlayers2 gs
     
-    return newGs
+    newGs
 
 -- Realiza a ação de 'Sair' da mesa.showTable
 exitAction :: IO()
