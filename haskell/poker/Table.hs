@@ -4,6 +4,10 @@ import Data.Time.Clock.POSIX
 import Control.Monad
 import qualified System.Process
 import Model
+import System.Process as SP
+import System.IO.Unsafe
+import System.Random
+import Data.List
 
 
 {-
@@ -13,12 +17,8 @@ setInitialGameStatus :: GameStatus
 setInitialGameStatus = do
     let card = Card " " " "
     let cards = [card, card, card, card, card]
-
     let player = Player [card, card] 100 True 0 0 0 0
     let players = [player, player, player, player, player, player]
-
-    position <- getRandomPosition
-    let dealerPos = position
     let lastBet = 0
     let minimumBet = 2
     let activePlayers = 6
@@ -28,9 +28,13 @@ setInitialGameStatus = do
     let firstBetPlayerPosition = -1
     let actualPlayer = 0
 
-    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound userPosition valPot 
-         firstBetPlayerPosition actualPlayer
+    let dealerPos = getRandomInteger (0,5)
 
+    GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound 
+         userPosition valPot firstBetPlayerPosition actualPlayer
+
+getRandomInteger :: (Int,Int) -> Int
+getRandomInteger (a,b) = unsafePerformIO(randomRIO (a,b))  
 
 {-
     Inicia o jogo.
@@ -276,15 +280,6 @@ sleep seg = do
     _ <- System.Process.system ("sleep " ++ ((intToDigit seg) : "s"))
     return ()
 
-{-
-    Gera uma posição aleatória.
--}
-getRandomPosition :: IO Int
-getRandomPosition = do
-    currentTime <- getPOSIXTime
-    let currTimestamp = mod (floor currentTime) 6
-    return currTimestamp
-
 
 {-
     Configura a próxima posição do dealer.
@@ -393,6 +388,6 @@ showTable gs = do
 
 
 
---main :: IO ()
---main = do
---    putStrLn(show(randomRIO (1, 6)))
+main :: IO ()
+main = do
+    startGame
