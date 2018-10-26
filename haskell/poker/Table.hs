@@ -331,11 +331,9 @@ callAux gs
         let newPot = (pot gs) + (minimumBet gs)
         let newPlayers1 = players [] gs 0 newPlayer
         let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
-        let newGS = GameStatus (cardsTable gs) newPlayers2 (dealerPosition gs) newLastBet 
-             (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot 
-                 firstBet (actualPlayer gs) (deck gs)
+        let newGS = GameStatus (cardsTable gs) newPlayers2 (dealerPosition gs) newLastBet (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot firstBet (actualPlayer gs) (deck gs)
  
-        newGs
+        newGS
      | otherwise = do
         let newLastBet = (minimumBet gs)
         let newChips = (chips ((playersTable gs) !! (actualPlayer gs))) - (minimumBet gs)
@@ -343,11 +341,9 @@ callAux gs
         let newPot = (pot gs) + (minimumBet gs)
         let newPlayers1 = players [] gs 0 newPlayer
         let newPlayers2 = auxPlayers newPlayers1 gs ((actualPlayer gs) + 1)
-        let newGS = GameStatus (cardsTable gs) newPlayers2 (dealerPosition gs) newLastBet 
-             (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot
-                 (firstBetPlayerPosition gs) (actualPlayer gs) (deck gs)
+        let newGS = GameStatus (cardsTable gs) newPlayers2 (dealerPosition gs) newLastBet (minimumBet gs) (activePlayers gs) (currentRound gs) (userPosition gs) newPot (firstBetPlayerPosition gs) (actualPlayer gs) (deck gs)
  
-        newGs
+        newGS
  
 players :: [Player] -> GameStatus -> Int -> Player -> [Player]
 players newPlayers gs i newPlayer
