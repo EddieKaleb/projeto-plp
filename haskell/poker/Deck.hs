@@ -1,3 +1,7 @@
+module Deck (
+	shuffleDeck
+) where
+
 import Model
 import System.Random
 
