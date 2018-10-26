@@ -374,7 +374,7 @@ players newPlayers gs i newPlayer
  
 auxPlayers :: [Player] -> GameStatus -> Int -> [Player]
 auxPlayers newPlayers gs i
-    | (i == qtdPlayers) = newPlayers++[((playersTable gs) !! i)]
+    | (i == (qtdPlayers - 1)) = newPlayers++[((playersTable gs) !! i)]
     | otherwise = auxPlayers (newPlayers++[((playersTable gs) !! i)]) gs (i + 1)
  
 -- Realiza a ação de 'Desistir' (Encerrar o jogo).
