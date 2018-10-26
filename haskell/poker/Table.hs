@@ -290,10 +290,10 @@ callPlayerAction :: GameStatus -> IO GameStatus
 callPlayerAction gs 
     | not(fst (callAction gs)) = do
         invalidAction
-        return snd (callAction gs)
+        return gs
     | otherwise = do
         putStrLn("")
-        return gs
+        return snd (callAction gs)
 
 -- Realiza a ação de 'Mesa' (Passar a vez).
 checkAction :: GameStatus -> Bool
