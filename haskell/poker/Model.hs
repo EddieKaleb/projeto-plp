@@ -2,7 +2,8 @@ module Model (
 	Card(..),
 	Player(..),
 	Deck(..),
-	GameStatus(..),
+    GameStatus(..),
+    Prob(..),
 	setPot,
 	setDealerPosition,
 	setLastBet,
@@ -16,7 +17,9 @@ module Model (
     setActive,
     smallPosition,
     bigPosition,
-    nextPlayerPosition
+    nextPlayerPosition,
+    setHandsPlayers,
+    setActivePlayers
 ) where
 
 
@@ -69,6 +72,10 @@ data GameStatus = GameStatus {
     deck :: Deck
 } deriving (Show);
 
+data Prob = Prob {
+    mHand :: String,
+    probs :: [String]
+} deriving (Show);
 
 ---------- MÉTODOS AUXILIARES DE MANIPULAÇÃO DA GAMESTATUS  ----------
 
@@ -152,6 +159,15 @@ setActualPlayer value gameStatus = do
     gm
 
 
+setActivePlayers :: Int -> GameStatus -> GameStatus
+setActivePlayers value gameStatus = do
+    let gm = GameStatus (cardsTable gameStatus) (playersTable gameStatus) (dealerPosition gameStatus) (lastBet gameStatus)
+         (minimumBet gameStatus) value (currentRound gameStatus) (userPosition gameStatus) (pot gameStatus) 
+         (firstBetPlayerPosition gameStatus) (actualPlayer gameStatus) (deck gameStatus)
+
+    gm
+
+
 {-
     Retorna a posição do small.
     @param gameStatus Estado atual do jogo.
@@ -179,6 +195,22 @@ nextPlayerPosition pos = (mod (pos + 1) 6)
 
 
 ---------- MÉTODOS AUXILIARES DE MANIPULAÇÃO DA PLAYER
+
+setHandsPlayers :: [Card] -> GameStatus -> GameStatus
+setHandsPlayers cards gameStatus = do
+    let newGameStatus = setPlayersTable (setInitialHandPlayer cards (playersTable gameStatus) 0) gameStatus
+    newGameStatus
+
+setInitialHandPlayer :: [Card] -> [Player] -> Int -> [Player]
+setInitialHandPlayer cards (p:ps) cardPosition = do
+    let cardA = cards !! cardPosition
+    let cardB = cards !! (cardPosition + 1)
+
+    if(cardPosition == 10)
+        then [(Player [cardA, cardB] (chips p) (active p) (preFlopProb p) (flopToTurnProb p) (turnToRiverProb p) 
+         (riverToShowDownProb p))]
+    else (Player [cardA, cardB] (chips p) (active p) (preFlopProb p) (flopToTurnProb p) (turnToRiverProb p) 
+             (riverToShowDownProb p)) : setInitialHandPlayer cards ps (cardPosition + 2)
 
 setHand :: [Card] -> Player -> Player
 setHand value player = do

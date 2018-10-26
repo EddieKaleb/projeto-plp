@@ -373,6 +373,45 @@ printCard (Card {naipe = n, value = v}) = do
     putStrLn(n)
     putStrLn(v)
 
+printUserProfile :: IO()
+printUserProfile = do 
+   putStr "\n\n        .------..------..------..------..------..------.\n"
+   putStr "        |P.--. ||E.--. ||R.--. ||F.--. ||I.--. ||L.--. |\n"
+   putStr "        | \58/\92\58 || \58/\92\58 || \58()\58 || \58()\58 || \58/\92\58 || \58/\92\58 |\n"
+   putStr "        | (__) || (__) || ()() || ()() || (__) || (__) |\n"
+   putStr "        | '--'P|| '--'E|| '--'R|| '--'F|| '--'I|| '--'L|\n"
+   putStr "        `------'`------'`------'`------'`------'`------'\n\n\n"
+   putStr "PERFIS POSSÍVEIS \n\n[-] MUITO AGRESSIVO [-] AGRESSIVO [+] MUITO MODERADO [+] MODERADO\n\n\n"
+    {-}   float average_prob = 
+        (playersTable[0].preFlopProb + playersTable[0].flopToTurnProb + 
+        playersTable[0].turnToRiverProb + playersTable[0].riverToShowDownProb) / 4;
+    float average_pot = POT / 4;
+    // MÃO NÃO MELHOROU AO LONGO DOS TURNOS
+    if (average_prob < playersTable[0].flopToTurnProb) {
+
+        // USUARIO COM POUCAS FICHAS 
+        if (playersTable[0].chips < average_pot) {
+            profile += "Seu perfil é MUITO AGRESSIVO, no geral sua probabilidade\n";
+            profile += "de vitória não melhorou em relação a sua probabilidade no \nFLOP ";
+            profile += "e suas fichas estão abaixo da média do pote.";
+        } else {
+            profile += "Seu perfil é AGRESSIVO, no geral sua probabilidade\n";
+            profile += "de vitória não melhorou em relação a sua probabilidade \n no FLOP,\n";
+            profile += "mas suas fichas estão acima da média do pote.";
+        }
+    // MÃO MELHOROU AO LONGO DOS TURNOS    
+    } else {
+        // USUARIO COM POUCAS FICHAS 
+        if (playersTable[0].chips < average_pot) {
+            profile += "Seu perfil é MUITO MODERADO, no geral sua probabilidade\n"; 
+            profile += "de vitória melhorou em relação a sua probabilidade no FLOP,\n";
+            profile += "mas suas fichas estão abaixo da média do pote"; 
+        } else {
+            profile += "Seu perfil é MODERADO, no geral sua probabilidade\n"; 
+            profile += "de vitória melhorou em relação a sua probabilidade no FLOP\n";  
+            profile += "e suas fichas estão acima da média do pote";
+        }
+    }-}
 
 main :: IO()
 main = do
