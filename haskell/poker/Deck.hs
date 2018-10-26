@@ -32,7 +32,8 @@ getHandsPlayers :: Deck -> [Card]
 getHandsPlayers d = take 12 (cards d)
 
 getTableCards :: Deck -> [Card] -> [Card]
-getTableCards d ct | length ct == 0 = ct ++ (take 3 (drop 12 (cards d)))
-                   | length ct == 3 = ct ++ (take 1 (drop 15 (cards d)))
-                   | length ct == 4 = ct ++ (take 1 (drop 16 (cards d)))
+getTableCards deck cardsTable 
+                   | (value ((!!)cardsTable 0)) == " " = (take 3 (drop 12 (cards deck))) ++ [Card " " " ",  Card " " " "]
+                   | (value ((!!)cardsTable 3)) == " " = (take 4 (drop 12 (cards deck))) ++ [Card " " " "]
+                   | (value ((!!)cardsTable 4)) == " " = (take 5 (drop 12 (cards deck)))
 
