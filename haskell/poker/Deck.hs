@@ -1,6 +1,7 @@
 module Deck (
 	shuffleDeck,
-	getTableCards
+	getTableCards,
+  getHandsPlayers
 ) where
 
 import Model
