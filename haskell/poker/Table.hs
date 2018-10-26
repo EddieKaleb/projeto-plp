@@ -9,6 +9,7 @@ import Control.Monad
 import qualified System.Process
 import Model
 import Deck
+import Hands
 import System.IO.Unsafe
 import System.Random
 import TableOutput
@@ -405,3 +406,28 @@ getImproveHandProb hand | (hand == "IS_ONE_PAIR") = (getImproveProb 5) / 100
                         | (hand == "IS_FULL_HOUSE") = (getImproveProb 1) / 100
                         | (hand == "IS_HIGH_CARD") = (getImproveProb 15) / 100
                         | otherwise = (getImproveProb 0) / 100
+
+mapHands :: String -> Int
+mapHands flag | (flag == "IS_HIGH_CARD") = 1
+              | (flag == "IS_ONE_PAIR") = 2
+              | (flag == "IS_TWO_PAIR") = 3
+              | (flag == "IS_THREE") = 4
+              | (flag == "IS_STRAIGHT") = 5
+              | (flag == "IS_FLUSH") = 6
+              | (flag == "IS_FULL_HOUSE") = 7
+              | (flag == "IS_FOUR") = 8
+              | (flag == "IS_STRAIGHT_FLUSH") = 9
+              | otherwise = 10
+
+
+setWinners :: GameStatus -> IO()
+setWinners gs = do 
+    print gs 
+
+getFinalists :: GameStatus -> [Player] -> [Player] -> Int -> [Player]
+getFinalists _ [] winners _  = winners
+getFinalists gs (x:xs) winners bigger | (mapHands (verifyHand (hand x) (cardsTable gs) 7) > bigger) && ((active x) == True) = getFinalists gs xs [x] (mapHands (verifyHand (hand x) (cardsTable gs) 7))
+                                      | (mapHands (verifyHand (hand x) (cardsTable gs) 7) == bigger) && ((active x) == True)= getFinalists gs xs (winners++[x]) bigger
+                                      | otherwise = getFinalists gs xs winners bigger
+
+            
