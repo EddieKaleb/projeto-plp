@@ -4,10 +4,9 @@ import Data.Time.Clock.POSIX
 import Control.Monad
 import qualified System.Process
 import Model
-import System.Process as SP
+import Deck
 import System.IO.Unsafe
 import System.Random
-import Data.List
 
 
 {-
@@ -29,6 +28,9 @@ setInitialGameStatus = do
     let actualPlayer = 0
 
     let dealerPos = getRandomInteger (0,5)
+
+    deckCards <- shuffleDeck
+    let deck = Deck deckCards
 
     GameStatus cards players dealerPos lastBet minimumBet activePlayers currentRound 
          userPosition valPot firstBetPlayerPosition actualPlayer
@@ -208,13 +210,13 @@ getOption = do
     Interpreta a ação escolhida pelo jogador.
     @param option Opção escolhida pelo jogador.
     @param gameStatus Estado atual do jogo.
-    selectAction 1 gameStatus = checkPlayerAction gameStatus
-selectAction 2 gameStatus = callPlayerAction gameStatus
-selectAction 3 gameStatus = do
-    return foldAction gameStatus
-selectAction 4 gameStatus = exitAction gameStatus
 -}
 selectAction :: Int -> GameStatus -> IO GameStatus
+selectAction 1 gameStatus = checkPlayerAction gameStatus
+selectAction 2 gameStatus = callPlayerAction gameStatus
+selectAction 3 gameStatus = do
+    return (foldAction gameStatus)
+selectAction 4 gameStatus = exitAction gameStatus
 selectAction option gameStatus = do
     return setInitialGameStatus
 
