@@ -357,13 +357,10 @@ exitAction = do
 	putStrLn("Até a próxima!")
 	-- Falta exit
 
-
 showTable :: GameStatus -> IO()
 showTable gs = do
     printTable gs
     sleep 3
-
-
 
 main :: IO ()
 main = do
