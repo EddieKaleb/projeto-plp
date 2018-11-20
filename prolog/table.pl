@@ -1,9 +1,39 @@
 start_game :-
     sleep(3),
-    writeln("Casual Match").
+    writeln("Casual Match"),
+    run_game.
 
+run_game:-
+    run_match.
 
-start_game_manual :-
+run_match:- 
+    run_round(0),
+    run_round(1),
+    run_round(2),
+    run_round(3).
+
+run_round(0):- run_preflop_round.
+run_round(1):- run_flop_round.
+run_round(2):- run_turn_round.
+run_round(3):- run_river_round.
+
+run_preflop_round:-
+    writeln("PreFlopRound"),
+    sleep(3).
+
+run_flop_round:-
+    writeln("FlopRound"),
+    sleep(3).
+
+run_turn_round:-
+    writeln("TurnRound"),
+    sleep(3).
+
+run_river_round:-
+    writeln("RiverRound"),
+    sleep(3).
+
+start_game_manual:-
     sleep(3),
     writeln("Manual Match").    
 
