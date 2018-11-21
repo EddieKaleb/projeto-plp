@@ -1,4 +1,5 @@
 :- use_module('table.pl').
+:- initialization(main).
 
 clear_screen :-
     tty_clear.
@@ -122,10 +123,7 @@ manual_match :-
     writeln("\n\n                    O JOGO VAI COMEÇAR !!!!"),
     writeln("\n\n                 você jogará como o player 1"),
     sleep(3),
-    start_game_manual.
-
-
-:- initialization(main).
+    start_game.
 
 main :-
     show_title,

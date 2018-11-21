@@ -13,17 +13,17 @@
 
 
 :- dynamic(player/5).
-player(1, ["A", 1], ["A", 1], 100, True).
-player(2, ["A", 1], ["A", 1], 100, True).
-player(3, ["A", 1], ["A", 1], 100, True).
-player(4, ["A", 1], ["A", 1], 100, True).
-player(5, ["A", 1], ["A", 1], 100, True).
-player(6, ["A", 1], ["A", 1], 100, True).
+player(0, ["A", 1], ["A", 1], 100, 1).
+player(1, ["A", 1], ["A", 1], 100, 1).
+player(2, ["A", 1], ["A", 1], 100, 1).
+player(3, ["A", 1], ["A", 1], 100, 1).
+player(4, ["A", 1], ["A", 1], 100, 1).
+player(5, ["A", 1], ["A", 1], 100, 1).
 
 
 set_player(Id, Card1, Card2, Chips, Active):-
     set_player_cards(Id, Card1, Card2),
-    set_player_chips(Id, Pot),
+    set_player_chips(Id, Chips),
     set_player_active(Id, Active).
 
 
@@ -55,9 +55,10 @@ get_player_active(Id, Active):-
 
 
 config_players:-
-    set_player(1, ['P', 3], ["O", 4], 100, True),
-    set_player(2, ["E", "K"], ["C", 2], 100, True),
-    set_player(3, ["C", "Q"], ["E", "J"], 100, True),
-    set_player(4, ["O", "J"], ["P", 2], 100, True),
-    set_player(5, ["C", 3], ["E", 4], 100, True),
-    set_player(6, ["E", 5], ["O", "T"], 100, True).
+    set_player(0, ["P", 3], ["O", 4], 100, 1),
+    set_player(1, ["E", "K"], ["C", 2], 100, 1),
+    set_player(2, ["C", "Q"], ["E", "J"], 100, 1),
+    set_player(3, ["O", "J"], ["P", 2], 100, 1),
+    set_player(4, ["C", 3], ["E", 4], 100, 1),
+    set_player(5, ["E", 5], ["O", "T"], 100, 1).
+
