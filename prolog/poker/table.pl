@@ -41,27 +41,40 @@ start_game_manual:-
     sleep(3),
     writeln("Manual Match").    
 
+invalid_action :- writeln("Ação inválida").
 
-checkPlayerAction :-
-    writeln("checkPlayerAction").
+check_player_action :-
+    check_action(Check_action),
+    not(Check_action) -> invalid_action.%, show_user_actions.
 
-callPlayerAction :-
-    writeln("callPlayerAction").
+call_player_action :-
+    call_action(Call_action),
+    not(Call_action) -> invalid_action.
 
-checkAction(Result) :-
+check_action(Result) :-
     current_round(Current_round),
     last_bet(Last_bet),
     (Current_round \= 0, Last_bet =:= 0) -> Result = true;
     Result = false.
 
-callAction :-
-    writeln("callAction").
+call_action(Result) :-
+    actualPlayer(Actual_player),
+    get_player_chips(Actual_player, Chips),
+    minimum_bet(Minimum_bet),
+    New_chips is Chips - Minimum_bet,
+    (Chips >= Minimum_bet) -> set_player_chips(Actual_player, New_chips),
+        Result = true;
+    Result = false.
+    
 
-foldAction :-
-    writeln("foldAction").
+fold_action :-
+    actual_player(Actual_player),
+    set_player_active(Actual_player, 0).
 
-exitAction :-
-    writeln("exitAction").
+exit_action :-
+    %clearScreen,
+    writeln("                  Até a próxima !!!"),
+    sleep(3).
 
 % PROBABILIDADES
 
