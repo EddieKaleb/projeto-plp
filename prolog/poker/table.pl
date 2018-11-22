@@ -48,8 +48,11 @@ checkPlayerAction :-
 callPlayerAction :-
     writeln("callPlayerAction").
 
-checkAction :-
-    writeln("checkAction").
+checkAction(Result) :-
+    current_round(Current_round),
+    last_bet(Last_bet),
+    (Current_round \= 0, Last_bet =:= 0) -> Result = true;
+    Result = false.
 
 callAction :-
     writeln("callAction").
