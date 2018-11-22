@@ -2,10 +2,15 @@
 :- use_module('players.pl').
 :- use_module('game_status.pl').
 
+cls :- write("\e[2J").
+
 start_game :-
     sleep(3),
-    writeln("Casual Match"),
-    run_game.
+    writeln("Casual Match"),%retirar isso quando implementar rodadas
+    run_game,
+    cls,
+    writeln("O jogo acabou."),
+    sleep(5).
 
 run_game:-
     run_match.
@@ -72,7 +77,7 @@ fold_action :-
     set_player_active(Actual_player, 0).
 
 exit_action :-
-    %clearScreen,
+    cls,
     writeln("                  Até a próxima !!!"),
     sleep(3).
 
