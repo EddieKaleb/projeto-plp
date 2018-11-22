@@ -61,4 +61,3 @@ config_players:-
     set_player(3, ["O", "J"], ["P", 2], 100, 1),
     set_player(4, ["C", 3], ["E", 4], 100, 1),
     set_player(5, ["E", 5], ["O", "T"], 100, 1).
-

@@ -1,17 +1,21 @@
 :- use_module('table.pl').
 :- initialization(main).
 
+
 clear_screen :-
     tty_clear.
+
 
 pause :-
     get_char(_),
     clear_screen.
 
+
 input_number(Option) :-
     read_line_to_codes(user_input, Codes),
     string_to_atom(Codes, Atom),
     atom_number(Atom, Option).
+
 
 show_title :-
     clear_screen,
@@ -79,7 +83,6 @@ show_rules :-
     show_menu.
 
 
-
 quit :-
     clear_screen,
     writeln("\n\n                                    Até mais!"),
@@ -91,7 +94,6 @@ quit :-
     writeln("                        Marcus Vinícius de Farias Barbosa"),
     writeln("                              Rayla Medeiros Araújo"),
     sleep(3).
-
 
 
 show_invalid_option_message :-
@@ -109,6 +111,7 @@ select_game_mode_option(1) :- casual_match.
 select_game_mode_option(2) :- manual_match.
 select_game_mode_option(3) :- show_menu.
 select_game_mode_option(_) :- show_invalid_option_message, show_game_modes_menu.
+
 
 casual_match :- 
     clear_screen,

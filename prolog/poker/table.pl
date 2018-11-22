@@ -1,5 +1,6 @@
 :- module(table, [start_game/0]).
 :- use_module('players.pl').
+:- use_module('game_status.pl').
 
 start_game :-
     sleep(3),
