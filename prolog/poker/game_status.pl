@@ -11,7 +11,7 @@
     first_bet_player/1,
     small_position/1,
     big_position/1,
-    next_player_position/1,
+    next_player_position/2,
     set_dealer_position/1,
     set_minimum_bet/1,
     set_cards_table/1,
