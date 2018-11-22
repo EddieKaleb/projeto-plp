@@ -1,33 +1,6 @@
 :- module(table, [start_game/0]).
 :- use_module('players.pl').
 
-:- dynamic(dealer_position/1).
-dealer_position(0).
-
-:- dynamic(minimum_bet/2).
-minimum_bet(2).
-
-:- dynamic(cards_table/1).
-cards_table([]).
-
-:- dynamic(active_players/1).
-active_players(6).
-
-:- dynamic(pot/1).
-pot(0).
-
-:- dynamic(current_round/1).
-current_round(0).
-
-:- dynamic(actual_player/1).
-actual_player(0).
-
-:- dynamic(last_bet/1).
-last_bet(0).
-
-:- dynamic(first_bet_player/1).
-first_bet_player(-1).
-
 start_game :-
     sleep(3),
     writeln("Casual Match"),
@@ -67,16 +40,6 @@ start_game_manual:-
     sleep(3),
     writeln("Manual Match").    
 
-small_position(Small_pos):-
-    dealer_position(Dealer_pos),
-    next_player_position(Dealer_pos, Small_pos).
-
-big_position(Big_pos):-
-    small_position(Small_pos),
-    next_player_position(Small_pos, Big_pos).    
-
-next_player_position(Actual_pos, Next_pos):-
-    Next_pos is mod(Actual_pos + 1, 6).
 
 checkPlayerAction :-
     writeln("checkPlayerAction").
