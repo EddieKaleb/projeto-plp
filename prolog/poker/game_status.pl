@@ -11,7 +11,7 @@
     first_bet_player/1,
     small_position/1,
     big_position/1,
-    next_player_position/2,
+    get_next_position/2,
     set_dealer_position/1,
     set_minimum_bet/1,
     set_cards_table/1,
@@ -52,13 +52,13 @@ first_bet_player(-1).
 
 small_position(Small_pos):-
     dealer_position(Dealer_pos),
-    next_player_position(Dealer_pos, Small_pos).
+    get_next_position(Dealer_pos, Small_pos).
 
 big_position(Big_pos):-
     small_position(Small_pos),
-    next_player_position(Small_pos, Big_pos).    
+    get_next_position(Small_pos, Big_pos).    
 
-next_player_position(Actual_pos, Next_pos):-
+get_next_position(Actual_pos, Next_pos):-
     Next_pos is mod(Actual_pos + 1, 6).
 
 set_dealer_position(New_dealer_position):-
@@ -96,3 +96,12 @@ set_last_bet(New_last_bet):-
 set_first_bet_player(New_first_bet_player):-
     retract(first_bet_player(_)),
     asserta(first_bet_player(New_first_bet_player)).
+
+next_player(New_player_position):-
+    actual_player(Actual_player),
+    get_next_position(Actual_player, New_player_position),
+    set_actual_player(New_player_position).
+
+start_dealer_position(Dealer_position):-
+    random(0, 5, Dealer_position),
+    set_dealer_position(Dealer_position).

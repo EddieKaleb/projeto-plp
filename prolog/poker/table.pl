@@ -3,13 +3,14 @@
 :- use_module('game_status.pl').
 :- use_module('hand_prob.pl').
 
-cls :- write("\e[2J").
+clear_screen :-
+    tty_clear.
 
 start_game :-
     sleep(3),
     writeln("Casual Match"),%retirar isso quando implementar rodadas
     run_game,
-    cls,
+    clear_screen,
     writeln("O jogo acabou."),
     sleep(5).
 
@@ -64,7 +65,7 @@ check_action(Result) :-
     Result = false.
 
 call_action(Result) :-
-    actualPlayer(Actual_player),
+    actual_player(Actual_player),
     get_player_chips(Actual_player, Chips),
     minimum_bet(Minimum_bet),
     New_chips is Chips - Minimum_bet,
@@ -78,7 +79,7 @@ fold_action :-
     set_player_active(Actual_player, 0).
 
 exit_action :-
-    cls,
+    clear_screen,
     writeln("                  Até a próxima !!!"),
     sleep(3).
 
