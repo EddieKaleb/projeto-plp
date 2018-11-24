@@ -8,7 +8,11 @@
     set_player_cards/3,
     get_player_cards/3,
     set_player_active/2,
-    get_player_active/2
+    get_player_active/2,
+    set_player_pre_flop_prob/2,
+    set_player_flop_turn_prob/2,
+    set_player_turn_river_prob/2,
+    set_player_river_showdown_prob/2
 ]).
 
 :- dynamic(player/5).
@@ -75,4 +79,4 @@ config_players:-
     set_player(2, ["C", "Q"], ["E", "J"], 100, 1, _, _, _, _),
     set_player(3, ["O", "J"], ["P", 2], 100, 1, _, _, _, _),
     set_player(4, ["C", 3], ["E", 4], 100, 1, _, _, _, _),
-    set_player(5, ["E", 5], ["O", "T"], 100, 1, _, _, _, _).
+    set_player(5, ["E", 5], ["O", "T"], 100, 1, _, _, _, _).    

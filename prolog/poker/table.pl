@@ -1,6 +1,7 @@
 :- module(table, [start_game/0]).
 :- use_module('players.pl').
 :- use_module('game_status.pl').
+:- use_module('hand_prob.pl').
 
 cls :- write("\e[2J").
 
