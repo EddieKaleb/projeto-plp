@@ -15,6 +15,9 @@ start_game :-
     sleep(5).
 
 run_game:-
+    start_dealer_position,
+    small_position(Small_position),
+    set_actual_player(Small_position),
     run_match.
 
 run_match:- 
@@ -30,7 +33,33 @@ run_round(3):- run_river_round.
 
 run_preflop_round:-
     writeln("PreFlopRound"),
-    sleep(3).
+    sleep(3),
+    call_action(_),
+
+    next_player(_),
+    minimum_bet(Min_bet),
+    New_min_bet is Min_bet * 2,
+    set_minimum_bet(New_min_bet),
+    call_action(_),
+
+    next_player(New_position),
+    run_pre_flop_actions(New_position).
+
+run_pre_flop_actions(Actual_position):-
+    write("Actual:   "), writeln(Actual_position),
+
+    (big_position(Big_position), Actual_position =:= Big_position);
+    
+    (
+        (Actual_position =:= 0, get_player_active(Actual_position, Active1), Active1 =:= 1, show_user_actions);
+    
+        (get_player_active(Actual_position, Active2), Active2 =:= 1, bot_actions)
+    ),
+    
+    show_infos,
+    sleep(2),
+    next_player(Next_position),
+    run_pre_flop_actions(Next_position).
 
 run_flop_round:-
     writeln("FlopRound"),
@@ -69,8 +98,12 @@ call_action(Result) :-
     get_player_chips(Actual_player, Chips),
     minimum_bet(Minimum_bet),
     New_chips is Chips - Minimum_bet,
-    (Chips >= Minimum_bet) -> set_player_chips(Actual_player, New_chips),
-        Result = true;
+    (Chips >= Minimum_bet) -> 
+        (set_player_chips(Actual_player, New_chips),
+        pot(Pot),
+        New_pot is (Pot + Minimum_bet),
+        set_pot(New_pot),
+        Result = true);
     Result = false.
     
 
@@ -82,6 +115,37 @@ exit_action :-
     clear_screen,
     writeln("                  Até a próxima !!!"),
     sleep(3).
+
+
+show_user_actions:-
+    writeln("Ações do usuário").
+
+bot_actions:-
+    writeln("Ações do bot").
+
+show_infos:-
+    dealer_position(Dealer_position),
+    small_position(Small_position),
+    big_position(Big_position),
+    minimum_bet(Min_bet),
+    cards_table(Cards_table),
+    active_players(Active_players),
+    pot(Pot),
+    current_round(Current_round),
+    actual_player(Actual_player),
+    last_bet(Last_bet),
+    write("Posição do Dealer: "), writeln(Dealer_position),
+    write("Posição do Small: "), writeln(Small_position),
+    write("Posição do Big: "), writeln(Big_position),
+    write("Aposta mínima: "), writeln(Min_bet),
+    write("Cartas da mesa: "), writeln(Cards_table),
+    write("Pot: "), writeln(Pot),    
+    write("Round: "), writeln(Current_round),
+    write("Jogador atual: "), writeln(Actual_player),
+    write("Última aposta: "), writeln(Last_bet),
+    write("Jogadores ativos: "), writeln(Active_players),
+    write("\n\n\n\n").
+
 
 % PROBABILIDADES
 

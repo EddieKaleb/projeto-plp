@@ -20,7 +20,9 @@
     set_current_round/1,
     set_actual_player/1,
     set_last_bet/1,
-    set_first_bet_player/1
+    set_first_bet_player/1,
+    start_dealer_position/0,
+    next_player/1
 ]).
 
 :- dynamic(dealer_position/1).
@@ -102,6 +104,6 @@ next_player(New_player_position):-
     get_next_position(Actual_player, New_player_position),
     set_actual_player(New_player_position).
 
-start_dealer_position(Dealer_position):-
+start_dealer_position():-
     random(0, 5, Dealer_position),
     set_dealer_position(Dealer_position).
