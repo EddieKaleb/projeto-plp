@@ -178,7 +178,7 @@ lateralCards:-
     lateralSpaces,
     write("|\n").
 
-flopTurnRiver:-
+flopTurnRiver():-
     write("|"),
     spaces(30),
     nCardTops(3),
@@ -219,7 +219,12 @@ flopTurnRiver:-
     spaces(31),
     write("|\n").
 
-centralPlayer(Player, Chips):-
+role("dealer", "(D)").
+role("small", "(S)").
+role("big", "(B)").
+role(X, "   ").
+
+centralPlayer(Player, Chips, PlayerRole):-
     write("|"),
     spaces(39),
     /**active*/
@@ -227,7 +232,8 @@ centralPlayer(Player, Chips):-
     write("Player "),
     write(Player),
     /**role*/
-    spaces(3),
+    role(PlayerRole, Role),
+    write(Role),
     spaces(39),
     write("|\n"),
 
@@ -239,7 +245,7 @@ centralPlayer(Player, Chips):-
     spaces(43 - Ndigits),
     write("|\n").
 
-lateralPlayers(Player1, Chips1, Player2, Chips2):-
+lateralPlayers(Player1, Chips1, Player1Role, Player2, Chips2, Player2Role):-
     write("|"),
     spaces(2),
     /**active*/
@@ -247,10 +253,12 @@ lateralPlayers(Player1, Chips1, Player2, Chips2):-
     write("Player "),
     write(Player1),
     /**role*/
-    spaces(3),
+    role(Player1Role, Role1),
+    write(Role1),
     spaces(62),
     /**role*/
-    spaces(3),
+    role(Player2Role, Role2),
+    write(Role2),
     write("Player "),
     write(Player2),
     /**active*/
@@ -273,13 +281,13 @@ lateralPlayers(Player1, Chips1, Player2, Chips2):-
 printTable:-
     topBorder,
     centralCards,
-    centralPlayer(4,50),
+    centralPlayer(4,50, "jaaj"),
     lateralCards,
-    lateralPlayers(3, 10, 5, 6000),
+    lateralPlayers(3, 10,"dealer", 5, 6000,"small"),
     flopTurnRiver,
-    lateralPlayers(2, 0, 6, 200),
+    lateralPlayers(2, 0, "big", 6, 200, ""),
     lateralCards,
-    centralPlayer(1,500),
+    centralPlayer(1,500, "dealer"),
     centralCardsWithProb("T","K", "5", "P", 30.0),
     bottomBorder.
 
