@@ -107,8 +107,8 @@ select_menu_option(3) :- quit.
 select_menu_option(_) :- show_invalid_option_message, show_menu.
 
 
-select_game_mode_option(1) :- casual_match.
-select_game_mode_option(2) :- manual_match.
+select_game_mode_option(1) :- casual_match, show_menu.
+select_game_mode_option(2) :- manual_match, show_menu.
 select_game_mode_option(3) :- show_menu.
 select_game_mode_option(_) :- show_invalid_option_message, show_game_modes_menu.
 

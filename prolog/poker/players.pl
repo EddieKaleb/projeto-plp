@@ -56,8 +56,8 @@ set_player_chips(Id, Pot):-
     asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
 
 
-get_player_chips(Id, Pot):-
-    player(Id, _, _, Pot, _, _, _, _, _).
+get_player_chips(Id, Chips):-
+    player(Id, _, _, Chips, _, _, _, _, _).
 
 
 set_player_cards(Id, Card1, Card2):-

@@ -26,13 +26,13 @@
 ]).
 
 :- dynamic(dealer_position/1).
-dealer_position(0).
+dealer_position(-1).
 
 :- dynamic(minimum_bet/1).
 minimum_bet(2).
 
 :- dynamic(cards_table/1).
-cards_table([]).
+cards_table([[" ", " "], [" ", " "], [" ", " "], [" ", " "], [" ", " "]]).
 
 :- dynamic(active_players/1).
 active_players(6).
@@ -105,5 +105,9 @@ next_player(New_player_position):-
     set_actual_player(New_player_position).
 
 start_dealer_position():-
-    random(0, 5, Dealer_position),
+    dealer_position(Dealer_pos),
+    (
+        (Dealer_pos =:= -1, random(0, 5, Dealer_position));
+        get_next_position(Dealer_pos, Dealer_position)
+    ),
     set_dealer_position(Dealer_position).

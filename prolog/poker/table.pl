@@ -6,19 +6,26 @@
 clear_screen :-
     tty_clear.
 
+input_number(Option) :-
+    read_line_to_codes(user_input, Codes),
+    string_to_atom(Codes, Atom),
+    atom_number(Atom, Option).
+
 start_game :-
     sleep(3),
-    writeln("Casual Match"),%retirar isso quando implementar rodadas
+    config_new_match,
     run_game,
-    clear_screen,
-    writeln("O jogo acabou."),
-    sleep(5).
+    clear_screen.
 
 run_game:-
+    % Adicionar a configuração das mãos dos jogadores.
+    set_pot(0),
+    set_minimum_bet(2),
     start_dealer_position,
     small_position(Small_position),
     set_actual_player(Small_position),
-    run_match.
+    run_match,
+    end_game.
 
 run_match:- 
     run_round(0),
@@ -32,8 +39,8 @@ run_round(2):- run_turn_round.
 run_round(3):- run_river_round.
 
 run_preflop_round:-
-    writeln("PreFlopRound"),
-    sleep(3),
+    writeln(" ------- PreFlopRound -------- \n"),
+
     call_action(_),
     
     next_player(_),
@@ -43,80 +50,185 @@ run_preflop_round:-
     call_action(_),
 
     next_player(New_position2),
-    run_pre_flop_actions(New_position2).
+    big_position(Big_position),
+    show_infos,
+    run_pre_flop_action(New_position2, Big_position).
 
-run_pre_flop_actions(Actual_position):-
-    (big_position(Big_position), Actual_position =:= Big_position);
+
+run_flop_round:-
+    writeln(" -------- FlopRound -------- \n"),
+
+    %Adicionar método que seta as 3 primeiras cartas
+
+    config_new_round(1),
+    sleep(3).
+
+
+run_turn_round:-
+    writeln(" ------- TurnRound -------- \n"),
+
+    %Adicionar método que seta a quarta carta
+
+    minimum_bet(Min_bet),
+    New_min_bet is (Min_bet * 2),
+    set_minimum_bet(New_min_bet),
+    config_new_round(2),
+    sleep(3).
+
+
+run_river_round:-
+    writeln(" -------- RiverRound ---------- \n"),
+
+    %Adicionar método que seta a quinta carta
+
+    config_new_round(3),
+    sleep(3).
+
+
+config_new_round(Round_id):-
+    small_position(Small_position),
+    set_actual_player(Small_position),
+    set_current_round(Round_id),
+    set_last_bet(0),
+    set_first_bet_player(-1),
+    first_bet_player(First_bet_player),
+    actual_player(Actual_player),
+    run_action(Actual_player, First_bet_player).
+
+config_new_match:-
+    set_minimum_bet(2),
+    set_pot(0),
+    set_minimum_bet(2),
+    start_dealer_position,
+    small_position(Small_position),
+    set_actual_player(Small_position),
+    set_player_active(0, 1),
+    set_player_active(1, 1),
+    set_player_active(2, 1),
+    set_player_active(3, 1),
+    set_player_active(4, 1),
+    set_player_active(5, 1).
+
+
+run_pre_flop_action(Actual_position, End_position):-
+    (Actual_position =:= End_position);
+    
+    ((get_player_active(Actual_position, Active), Active =:= 1,
+        (
+            (Actual_position =:= 0, show_user_actions);
+            bot_actions
+        )
+    ); !),
+    show_infos,
+    sleep(2),
+    next_player(Next_position),
+    run_pre_flop_action(Next_position, End_position).
+
+
+run_action(Actual_position, End_position):-
+    (Actual_position =:= End_position);
     
     (
         (Actual_position =:= 0, get_player_active(Actual_position, Active1), Active1 =:= 1, show_user_actions);
         (get_player_active(Actual_position, Active2), Active2 =:= 1, bot_actions)
     ) ->
-
+    
     show_infos,
     sleep(2),
     next_player(Next_position),
-    run_pre_flop_actions(Next_position).
-
-run_flop_round:-
-    writeln("FlopRound"),
-    sleep(3).
-
-run_turn_round:-
-    writeln("TurnRound"),
-    sleep(3).
-
-run_river_round:-
-    writeln("RiverRound"),
-    sleep(3).
+    first_bet_player(First_bet_player),
+    run_action(Next_position, First_bet_player).
 
 start_game_manual:-
     sleep(3),
     writeln("Manual Match").    
 
-invalid_action :- writeln("Ação inválida").
+invalid_action :- 
+    clear_screen,
+    writeln("\n\n\n              Ação inválida, escolha outra opção !\n\n\n"),
+    clear_screen,
+    sleep(3).
+
+end_game:-
+    clear_screen,
+    writeln("\n\n                                   FIM DO JOGO !!!\n\n\n"),
+    writeln("                         Deseja continuar jogando ? 1 (Sim) / 2 (Não)\n"),
+    input_number(Op),
+    (Op =:= 1, start_game);
+    clear_screen.
 
 check_player_action :-
-    check_action(Check_action),
-    not(Check_action) -> invalid_action.%, show_user_actions.
+    (check_action(Check_action), Check_action =:= 1);
+    invalid_action, show_user_actions.
 
-call_player_action :-
-    call_action(Call_action),
-    not(Call_action) -> invalid_action.
 
 check_action(Result) :-
     current_round(Current_round),
     last_bet(Last_bet),
-    (Current_round \= 0, Last_bet =:= 0) -> Result = true;
-    Result = false.
+    ((Current_round \= 0, Last_bet =:= 0, Result is 1);
+    Result is 0).
+
+
+call_player_action:-
+    (call_action(Call_action), Call_action =:= 1);
+    (invalid_action, show_user_actions).
+
 
 call_action(Result) :-
     actual_player(Actual_player),
     get_player_chips(Actual_player, Chips),
     minimum_bet(Minimum_bet),
-    New_chips is Chips - Minimum_bet,
+    New_chips is (Chips - Minimum_bet),
 
-    (Chips >= Minimum_bet,
+    ((Chips >= Minimum_bet,
         set_player_chips(Actual_player, New_chips),
         pot(Pot),
         New_pot is (Pot + Minimum_bet),
         set_pot(New_pot),
-        Result = true);
-    Result = false.
+        config_first_bet_player,
+        Result is 1
+    );
+    Result is 0).
     
+config_first_bet_player:-
+    (actual_player(Actual_player),
+    first_bet_player(First_bet_player), 
+    First_bet_player =:= -1,
+    set_first_bet_player(Actual_player)); !.
 
 fold_action :-
     actual_player(Actual_player),
-    set_player_active(Actual_player, 0).
+    set_player_active(Actual_player, 0),
+    active_players(Active_players),
+    set_active_players((Active_players - 1)).
+
 
 exit_action :-
     clear_screen,
-    writeln("                  Até a próxima !!!"),
+    writeln("\n\n\n                           Até a próxima !!!\n\n\n"),
     sleep(3).
 
 
 show_user_actions:-
-    writeln("Ações do usuário").
+    writeln("\n\n-----------------------------     AÇÕES     -----------------------------\n\n"),
+    writeln("          1  -  Mesa"),
+    writeln("          2  -  Apostar"),
+    writeln("          3  -  Desistir"),
+    writeln("          4  -  Sair da mesa"),
+    get_option(Option),
+    select_player_option(Option).
+
+get_option(Option) :-
+    write("\n\n                    Informe o número da opção desejada: "),
+    input_number(Option),
+    write("\n\n\n").
+
+select_player_option(1):- check_player_action.
+select_player_option(2):- call_player_action.
+select_player_option(3):- fold_action.
+select_player_option(4):- exit_action, halt.
+select_player_option(_):- invalid_action, show_user_actions.
+
 
 bot_actions:-
     writeln("Ações do bot").
@@ -131,7 +243,7 @@ show_infos:-
     pot(Pot),
     current_round(Current_round),
     actual_player(Actual_player),
-    last_bet(Last_bet),
+    first_bet_player(First_bet_player),
     write("Posição do Dealer: "), writeln(Dealer_position),
     write("Posição do Small: "), writeln(Small_position),
     write("Posição do Big: "), writeln(Big_position),
@@ -140,7 +252,7 @@ show_infos:-
     write("Pot: "), writeln(Pot),    
     write("Round: "), writeln(Current_round),
     write("Jogador atual: "), writeln(Actual_player),
-    write("Última aposta: "), writeln(Last_bet),
+    write("Último que apostou: "), writeln(First_bet_player),
     write("Jogadores ativos: "), writeln(Active_players),
     write("\n\n").
 
