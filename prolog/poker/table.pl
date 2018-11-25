@@ -35,27 +35,24 @@ run_preflop_round:-
     writeln("PreFlopRound"),
     sleep(3),
     call_action(_),
-
+    
     next_player(_),
     minimum_bet(Min_bet),
     New_min_bet is Min_bet * 2,
     set_minimum_bet(New_min_bet),
     call_action(_),
 
-    next_player(New_position),
-    run_pre_flop_actions(New_position).
+    next_player(New_position2),
+    run_pre_flop_actions(New_position2).
 
 run_pre_flop_actions(Actual_position):-
-    write("Actual:   "), writeln(Actual_position),
-
     (big_position(Big_position), Actual_position =:= Big_position);
     
     (
         (Actual_position =:= 0, get_player_active(Actual_position, Active1), Active1 =:= 1, show_user_actions);
-    
         (get_player_active(Actual_position, Active2), Active2 =:= 1, bot_actions)
-    ),
-    
+    ) ->
+
     show_infos,
     sleep(2),
     next_player(Next_position),
@@ -98,8 +95,9 @@ call_action(Result) :-
     get_player_chips(Actual_player, Chips),
     minimum_bet(Minimum_bet),
     New_chips is Chips - Minimum_bet,
-    (Chips >= Minimum_bet) -> 
-        (set_player_chips(Actual_player, New_chips),
+
+    (Chips >= Minimum_bet,
+        set_player_chips(Actual_player, New_chips),
         pot(Pot),
         New_pot is (Pot + Minimum_bet),
         set_pot(New_pot),
@@ -144,7 +142,7 @@ show_infos:-
     write("Jogador atual: "), writeln(Actual_player),
     write("Última aposta: "), writeln(Last_bet),
     write("Jogadores ativos: "), writeln(Active_players),
-    write("\n\n\n\n").
+    write("\n\n").
 
 
 % PROBABILIDADES
