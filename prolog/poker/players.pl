@@ -31,24 +31,29 @@ set_player(Id, Card1, Card2, Chips, Active):-
 
 
 set_player_pre_flop_prob(Id, PreFlopProb):-
+    player(Id, Card1, Card2, Pot, Active, _, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb),
     retract(player(Id, _, _, _, _, _, _, _, _)),
-    asserta(player(Id, _, _, _, _, PreFlopProb, _, _, _)).
+    asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
 
 set_player_flop_turn_prob(Id, FlopToTurnProb):-
+    player(Id, Card1, Card2, Pot, Active, PreFlopProb, _, TurnToRiverProb, RiverToShowDownProb),
     retract(player(Id, _, _, _, _, _, _, _, _)),
-    asserta(player(Id, _, _, _, _, _, FlopToTurnProb, _, _)).
+    asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
 
 set_player_turn_river_prob(Id, TurnToRiverProb):-
+    player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, _, RiverToShowDownProb),
     retract(player(Id, _, _, _, _, _, _, _, _)),
-    asserta(player(Id, _, _, _, _, _, _, TurnToRiverProb, _)).
+    asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
 
 set_player_river_showdown_prob(Id, RiverToShowDownProb):-
+    player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, _),
     retract(player(Id, _, _, _, _, _, _, _, _)),
-    asserta(player(Id, _, _, _, _, _, _, _, RiverToShowDownProb)).
+    asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
      
 set_player_chips(Id, Pot):-
+    player(Id, Card1, Card2, _, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb),
     retract(player(Id, _, _, _, _, _, _, _, _)),
-    asserta(player(Id, _, _, Pot, _, _, _, _, _)).
+    asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
 
 
 get_player_chips(Id, Pot):-
@@ -56,8 +61,9 @@ get_player_chips(Id, Pot):-
 
 
 set_player_cards(Id, Card1, Card2):-
+    player(Id, _, _, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb),
     retract(player(Id, _, _, _, _, _, _, _, _)),
-    asserta(player(Id, Card1, Card2, _, _, _, _, _, _)).
+    asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
 
 
 get_player_cards(Id, Card1, Card2):-
@@ -65,8 +71,9 @@ get_player_cards(Id, Card1, Card2):-
 
 
 set_player_active(Id, Active):-
+    player(Id, Card1, Card2, Pot, _, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb),
     retract(player(Id, _, _, _, _, _, _, _, _)),
-    asserta(player(Id, _, _, _, Active, _, _, _, _)).
+    asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
 
 
 get_player_active(Id, Active):-
