@@ -1,4 +1,3 @@
-:- initialization main.
 
 
 
@@ -9,11 +8,11 @@ verifyHand(Cards,Hand):-
                         % verifyStraight(Cards,Hand), Hand == "IS_STRAIGHT";
                         % verifyThree(Cards,Hand), Hand == "IS_THREE";
                         % verifyTwoPair(Cards,Hand), Hand == "IS_TWO_PAIR";
-                        verifyOnePair(Cards,Hand), Hand == "IS_ONE_PAIR";
+                        quick_sort(Cards,Sorted), verifyOnePair(Sorted) -> (Hand = "IS_ONE_PAIR");
                         Hand = "null".
 
-
-verifyOnePair(Cards,Hand):- Hand= "IS_ONE_PAIR".
+verifyOnePair([_]):- false.
+verifyOnePair([X,Y|T]):- nth0(1,X,ValueX), nth0(1,Y,ValueY), ValueX==ValueY; verifyOnePair([Y|T]).
 
 
 
@@ -27,8 +26,6 @@ pivoting(H,[],[],[]).
 pivoting(H,[X|T],[X|L],G):-map_cards(X,X1),map_cards(H,H1),X1=<H1,pivoting(H,T,L,G).
 pivoting(H,[X|T],L,[X|G]):-map_cards(X,X1),map_cards(H,H1),X1>H1,pivoting(H,T,L,G).
 
-map_cards(Card,NumCard):- mapCards(["2","3","4","5","6","7","8","9","10","J","Q","K","A"],Card,2,NumCard).
-mapCards([H|T],Card,Cont,NumCard):- H == Card ->(NumCard is Cont);
+map_cards(Card,NumCard):- mapCards(["2","3","4","5","6","7","8","9","T","J","Q","K","A"],Card,2,NumCard).
+mapCards([H|T],Card,Cont,NumCard):- nth0(1,Card,Value), H == Value  ->(NumCard is Cont);
                                     mapCards(T,Card,Cont+1,NumCard).
-
-main:- verifyHand([],Hand), write(Hand).
