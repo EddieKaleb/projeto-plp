@@ -1,4 +1,6 @@
-:- module(table, [start_game/0]).
+:- module(table, 
+    [start_game/0, 
+    start_game_manual/0]).
 :- use_module('players.pl').
 :- use_module('game_status.pl').
 :- use_module('hand_prob.pl').
@@ -108,7 +110,8 @@ config_new_match:-
     set_player_active(2, 1),
     set_player_active(3, 1),
     set_player_active(4, 1),
-    set_player_active(5, 1).
+    set_player_active(5, 1),
+    reset_cards_table.
 
 
 run_pre_flop_action(Actual_position, End_position):-
@@ -131,9 +134,8 @@ run_action(Actual_position, End_position):-
     
     (
         (Actual_position =:= 0, get_player_active(Actual_position, Active1), Active1 =:= 1, show_user_actions);
-        (get_player_active(Actual_position, Active2), Active2 =:= 1, bot_actions)
-    ) ->
-    
+        (get_player_active(Actual_position, Active2), Active2 =:= 1, bot_actions); !
+    ),
     show_infos,
     sleep(2),
     next_player(Next_position),
@@ -357,7 +359,11 @@ show_infos:-
     small_position(Small_position),
     big_position(Big_position),
     minimum_bet(Min_bet),
-   % cards_table(Cards_table),
+    cards_table(Index0, Valor0, Naipe0),
+    cards_table(Index1, Valor1, Naipe1),
+    cards_table(Index2, Valor2, Naipe2),
+    cards_table(Index3, Valor3, Naipe3),
+    cards_table(Index4, Valor4, Naipe4),
     active_players(Active_players),
     pot(Pot),
     current_round(Current_round),
@@ -367,11 +373,16 @@ show_infos:-
     write("Posição do Small: "), writeln(Small_position),
     write("Posição do Big: "), writeln(Big_position),
     write("Aposta mínima: "), writeln(Min_bet),
-    write("Cartas da mesa: "), writeln(Cards_table),
+    write("Cartas da mesa: "),
+    write(Valor0), write("  "), writeln(Naipe0),
+    write(Valor1), write("  "), writeln(Naipe1),
+    write(Valor2), write("  "), writeln(Naipe2),
+    write(Valor3), write("  "), writeln(Naipe3),
+    write(Valor4), write("  "), writeln(Naipe4),
     write("Pot: "), writeln(Pot),    
     write("Round: "), writeln(Current_round),
     write("Jogador atual: "), writeln(Actual_player),
-    write("Último que apostou: "), writeln(First_bet_player),
+    write("Primeiro a apostar: "), writeln(First_bet_player),
     write("Jogadores ativos: "), writeln(Active_players),
     write("\n\n").
 
