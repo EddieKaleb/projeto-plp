@@ -126,7 +126,7 @@ manual_match :-
     writeln("\n\n                    O JOGO VAI COMEÇAR !!!!"),
     writeln("\n\n                 você jogará como o player 1"),
     sleep(3),
-    start_game.
+    start_game_manual.
 
 main :-
     show_title,

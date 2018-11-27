@@ -140,6 +140,9 @@ run_action(Actual_position, End_position):-
     first_bet_player(First_bet_player),
     run_action(Next_position, First_bet_player).
 
+
+% ----- Partida manual --------
+
 start_game_manual:-
     sleep(3),
     config_new_match,
@@ -188,26 +191,25 @@ run_river_round_manual:-
 select_card_hand:-
     clear_screen,
     actual_player(Actual_player),
-    writeln(" --- SELEÇÃO DAS CARTAS DA SUA MÃO --- "),
-    config_card(Card1),
-    config_card(Card2),
-    set_player_cards(Actual_player, Card1, Card2).
+    config_card(Value1, Naipe1),
+    config_card(Value2, Naipe2),
+    set_player_cards(Actual_player, [Value1, Naipe1], [Value2, Naipe2]).
 
-config_card(Card):-
-    writeln("Digite o valor da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
-    input_number(Valor),
+config_card(Value, Naipe):-
+    writeln("Digite o Value da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
+    read_line_to_string(user_input, Value),
     writeln("Digite o naipe da carta (O, C, P, E): "),
     read_line_to_string(user_input, Naipe),
-    (not(is_valid_card([Naipe, Valor])) -> config_card(Card)),
+    is_valid_card([Value, Naipe], Result),
+    ((not(Result), config_card(Value, Naipe));
     write("Carta: "),
-    write(Valor),
+    write(Value),
     write(" "),
-    writeln(Naipe),
-    Card = [Naipe, Valor].
+    writeln(Naipe)).
 
 is_valid_card(Card, Result):-
-    not(get_card_player(Card)) -> (card_invalid_message, Result = False);
-    Result = True.
+    (not(get_card_player(Card)), (card_invalid_message, Result is 0));
+    Result is 1.
 
 card_invalid_message:-
     writeln("                       Carta inválida... Selecione outra !"),
@@ -221,22 +223,24 @@ flop_round_manual:-
 select_flop_cards:- 
     clear_screen,
     writeln(" --- SELEÇÃO DAS TRÊS PRIMEIRAS CARTAS DA MESA --- "),
-    config_card(Card1),
-    config_card(Card2),
-    config_card(Card3),
-    set_cards_table([Card1, Card2, Card3, _, _]).
+    config_card(Value0, Naipe0),
+    set_card_table(0, Value0, Naipe0),
+    config_card(Value1, Naipe1),
+    set_card_table(1, Value1, Naipe1),
+    config_card(Value2, Naipe2),
+    set_card_table(2, Value2, Naipe2).
 
 select_turn_card:-
     clear_screen,
     writeln(" --- SELEÇÃO DA CARTA DE TURN --- "),
-    config_card(Card),
-    set_cards_table([_, _, _, Card, _]).
+    config_card(Value, Naipe),
+    set_card_table(3, Value, Naipe).
 
 select_river_card:-
     clear_screen,
     writeln(" --- SELEÇÃO DA CARTA DE RIVER --- "),
-    config_card(Card),
-    set_cards_table([_, _, _, _, Card]).
+    config_card(Value, Naipe),
+    set_card_table(4, Value, Naipe).
 
 turn_round_manual:-
     select_turn_card,
