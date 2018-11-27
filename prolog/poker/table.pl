@@ -84,7 +84,6 @@ run_river_round:-
     config_new_round(3),
     sleep(3).
 
-
 config_new_round(Round_id):-
     small_position(Small_position),
     set_actual_player(Small_position),
@@ -141,22 +140,63 @@ run_action(Actual_position, End_position):-
 
 start_game_manual:-
     sleep(3),
-    config_new_match.
+    config_new_match,
+    run_game_manual,
+    clear_screen.
+
+run_game_manual:-
+    select_card_hand,
+    set_pot(0),
+    set_minimum_bet(2),
+    start_dealer_position,
+    small_position(Small_position),
+    set_actual_player(Small_position),
+    run_match_manual,
+    end_game.
+
+run_match_manual:- 
+    run_round_manual(0),
+    run_round_manual(1),
+    run_round_manual(2),
+    run_round_manual(3).
+
+run_round_manual(0):- run_preflop_round.
+run_round_manual(1):- run_flop_round_manual.
+run_round_manual(2):- run_turn_round_manual.
+run_round_manual(3):- run_river_round_manual.
+
+run_flop_round_manual:-
+    config_new_round(1),
+    flop_round_manual,
+    sleep(3).
+
+run_turn_round_manual:-
+    minimum_bet(Min_bet),
+    New_min_bet is (Min_bet * 2),
+    set_minimum_bet(New_min_bet),
+    config_new_round(2),
+    turn_round_manual,
+    sleep(3).
+
+run_river_round_manual:-
+    config_new_round(3),
+    river_round_manual,
+    sleep(3).
 
 select_card_hand:-
     clear_screen,
     actual_player(Actual_player),
     writeln(" --- SELEÇÃO DAS CARTAS DA SUA MÃO --- "),
-    config_card_hand(Card1),
-    config_card_hand(Card2),
+    config_card(Card1),
+    config_card(Card2),
     set_player_cards(Actual_player, Card1, Card2).
 
-config_card_hand(Card):-
+config_card(Card):-
     writeln("Digite o valor da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
     input_number(Valor),
     writeln("Digite o naipe da carta (O, C, P, E): "),
     read_line_to_string(user_input, Naipe),
-    (not(is_valid_card([Naipe, Valor])) -> config_card_hand(Card)),
+    (not(is_valid_card([Naipe, Valor])) -> config_card(Card)),
     write("Carta: "),
     write(Valor),
     write(" "),
@@ -171,8 +211,7 @@ card_invalid_message:-
     writeln("                       Carta inválida... Selecione outra !"),
     sleep(1).
 
-flopRoundManual:-
-    small_position(Small_pos),
+flop_round_manual:-
     select_flop_cards,
     bots_flop,
     run_round(1).
@@ -180,25 +219,24 @@ flopRoundManual:-
 select_flop_cards:- 
     clear_screen,
     writeln(" --- SELEÇÃO DAS TRÊS PRIMEIRAS CARTAS DA MESA --- "),
-    config_card_hand(Card1),
-    config_card_hand(Card2),
-    config_card_hand(Card3),
+    config_card(Card1),
+    config_card(Card2),
+    config_card(Card3),
     set_cards_table([Card1, Card2, Card3, _, _]).
 
 select_turn_card:-
     clear_screen,
     writeln(" --- SELEÇÃO DA CARTA DE TURN --- "),
-    config_card_hand(Card),
+    config_card(Card),
     set_cards_table([_, _, _, Card, _]).
 
 select_river_card:-
     clear_screen,
     writeln(" --- SELEÇÃO DA CARTA DE RIVER --- "),
-    config_card_hand(Card),
+    config_card(Card),
     set_cards_table([_, _, _, _, Card]).
 
 turn_round_manual:-
-    small_position(Small_pos),
     select_turn_card,
     minimum_bet(Minimum_bet),
     New_minimun_bet is Minimum_bet * 2,
@@ -207,7 +245,6 @@ turn_round_manual:-
     run_round(2).
 
 river_round_manual:-
-    small_position(Small_pos),
     select_river_card,
     bots_river,
     run_round(3).
