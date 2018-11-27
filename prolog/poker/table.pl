@@ -88,12 +88,12 @@ run_river_round:-
 config_new_round(Round_id):-
     small_position(Small_position),
     set_actual_player(Small_position),
-    (Round_id, 0),
     set_current_round(Round_id),
     set_last_bet(0),
     set_first_bet_player(-1),
     first_bet_player(First_bet_player),
     actual_player(Actual_player),
+    set_players_probs(Round_id,0),
     run_action(Actual_player, First_bet_player).
 
 config_new_match:-
@@ -389,10 +389,32 @@ set_players_probs(_, 6).
 set_players_probs(0, Pos) :- get_player_cards(Pos, Card1, Card2),
                              get_hand_prob(Card1, Card2, 6, PreFlopProb),
                              write("Probabilidade: "), writeln(PreFlopProb),
-                             set_player_pre_flop_prob(Id, PreFlopProb),
+                             set_player_pre_flop_prob(Pos, PreFlopProb),
                              Aux is Pos + 1,
                              set_players_probs(0, Aux).
 
-set_players_probs(1, Pos) :- writeln("inicio do flop").
+set_players_probs(1, Pos) :- get_player_cards(Pos, Card1, Card2),
+                             %cards_table(Cards_table),
+                             Cards_table = [],
+                             append(Card1,Card2,Hand),
+                             writeln(Cards_table),
+                             append(Hand,Cards_table,AllCards),
+                             verify_hand(AllCards, HandStatus),
+                             get_improve_prob(HandStatus,ImproveProb),
+                             get_player_pre_flop_prob(Pos, PreFlopProb),
+                             FlopToTurnProb is PreFlopProb * (1 - ImproveProb),
+                             write("Probabilidade: "), writeln(FlopToTurnProb),
+                             set_player_flop_turn_prob(Pos, FlopToTurnProb),
+                             Aux is Pos + 1,
+                             set_players_probs(1, Aux).
+
 set_players_probs(2, Pos) :- writeln("inicio do turn").
 set_players_probs(3, Pos) :- writeln("inicio do river").
+
+
+verify_hand(_, "IS_THREE").
+
+%handStatus hand = verifyHand(playersTable[i].hand, cardsTable, 5);
+%        playersTable[i].flopToTurnProb = playersTable[i].preFlopProb * (1 - getImproveHandProb(hand.flag));
+%        cout << playersTable[i].flopToTurnProb << "%" << endl;
+        
