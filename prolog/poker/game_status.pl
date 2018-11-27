@@ -2,7 +2,7 @@
     game_status,
     [dealer_position/1,
     minimum_bet/1,
-    cards_table/1,
+    cards_table/3,
     active_players/1,
     pot/1,
     current_round/1,
@@ -14,7 +14,7 @@
     get_next_position/2,
     set_dealer_position/1,
     set_minimum_bet/1,
-    set_cards_table/1,
+    set_card_table/3,
     set_active_players/1,
     set_pot/1,
     set_current_round/1,
@@ -31,8 +31,12 @@ dealer_position(-1).
 :- dynamic(minimum_bet/1).
 minimum_bet(2).
 
-:- dynamic(cards_table/1).
-cards_table([[" ", " "], [" ", " "], [" ", " "], [" ", " "], [" ", " "]]).
+:- dynamic(cards_table/3).
+cards_table(0, " ", " ").
+cards_table(1, " ", " ").
+cards_table(2, " ", " ").
+cards_table(3, " ", " ").
+cards_table(4, " ", " ").
 
 :- dynamic(active_players/1).
 active_players(6).
@@ -71,9 +75,9 @@ set_minimum_bet(New_minimun_bet):-
     retract(minimum_bet(_)),
     asserta(minimum_bet(New_minimun_bet)).
 
-set_cards_table(New_cards_table):-
-    retract(cards_table(_)),
-    asserta(cards_table(New_cards_table)).
+set_card_table(Index, Valor, Naipe):-
+    retract(cards_table(Index, _, _)),
+    asserta(cards_table(Index, Valor, Naipe)).
 
 set_active_players(New_active_players):-
     retract(active_players(_)),
