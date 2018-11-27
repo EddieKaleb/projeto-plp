@@ -52,6 +52,7 @@ run_preflop_round:-
     next_player(New_position2),
     big_position(Big_position),
     show_infos,
+    set_players_probs(0,0),
     run_pre_flop_action(New_position2, Big_position).
 
 
@@ -87,6 +88,7 @@ run_river_round:-
 config_new_round(Round_id):-
     small_position(Small_position),
     set_actual_player(Small_position),
+    (Round_id, 0),
     set_current_round(Round_id),
     set_last_bet(0),
     set_first_bet_player(-1),
@@ -336,14 +338,11 @@ select_player_option(4):- exit_action, halt.
 select_player_option(_):- invalid_action, show_user_actions.
 
 
-bot_actions:- writeln("Ações do bot"),current_round(Current_round),run_bot(Current_round).
+bot_actions:- writeln("Ações do bot"),
+              current_round(Current_round),
+              run_bot(Current_round).
 
-run_bot(0):- writeln("Ação pre flop"),
-             actual_player(Actual_player),
-             get_player_cards(Actual_player, Card1, Card2),
-             writeln(Card1), writeln(Card2),
-             get_hand_prob(Card1, Card2, 6, Prob),
-             write("Probabilidade: "), writeln(Prob).
+run_bot(0):- writeln("Ação pre flop").
 
 run_bot(1):- writeln("Ação flop").
 run_bot(2):- writeln("Ação turn").
@@ -385,3 +384,15 @@ get_improve_prob("IS_HIGH_CARD", Iprob) :- improve_prob(15, Prob), Iprob is Prob
 get_improve_prob(_, Iprob) :- improve_prob(0, Prob), Iprob is Prob / 100.
 
 improve_prob(Outs, Prob) :- Prob is (Outs * 4) - (Outs - 8).
+
+set_players_probs(_, 6).
+set_players_probs(0, Pos) :- get_player_cards(Pos, Card1, Card2),
+                             get_hand_prob(Card1, Card2, 6, PreFlopProb),
+                             write("Probabilidade: "), writeln(PreFlopProb),
+                             set_player_pre_flop_prob(Id, PreFlopProb),
+                             Aux is Pos + 1,
+                             set_players_probs(0, Aux).
+
+set_players_probs(1, Pos) :- writeln("inicio do flop").
+set_players_probs(2, Pos) :- writeln("inicio do turn").
+set_players_probs(3, Pos) :- writeln("inicio do river").
