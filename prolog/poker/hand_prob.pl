@@ -24,8 +24,8 @@ rows_to_lists(Rows, Lists):-
 row_to_list(Row, List):-
   Row =.. [row|List].
 
+% Falta ordenar cartas 
 format_hand([N1,V1],[N2,V2],Formated):-
   V1 =\= V2,N1 =:= N2 -> string_concat(V1,V2,Values),string_concat(Values,'s',Formated);
-  V1 =\= V2, N1 =\= N2 -> string_concat(V1,V2,Values), string_concat(Values,'o',Formated);
-  string_concat(V1,V2,Formated),
-  writeln(Formated).
+  V1 =\= V2,N1 =\= N2 -> string_concat(V1,V2,Values), string_concat(Values,'o',Formated);
+  string_concat(V1,V2,Formated).

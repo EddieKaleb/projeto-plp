@@ -12,13 +12,17 @@
     set_player_pre_flop_prob/2,
     set_player_flop_turn_prob/2,
     set_player_turn_river_prob/2,
-    set_player_river_showdown_prob/2
+    set_player_river_showdown_prob/2,
+    get_player_pre_flop_prob/2,
+    get_player_flop_turn_prob/2,
+    get_player_turn_river_prob/2,
+    get_player_river_showdown_prob/2
 ]).
 
 :- dynamic(player/9).
 player(0, ["E", 3], ["E", 3], 100, 1, 0, 0, 0, 0).
 player(1, ["O", 4], ["O", 4], 100, 1, 0, 0, 0, 0).
-player(2, ["E", "K"], ["E", "J"], 100, 1, 0, 0, 0, 0).
+player(2, ["E", "K"], ["E", "T"], 100, 1, 0, 0, 0, 0).
 player(3, ["E", 8], ["P", 4], 100, 1, 0, 0, 0, 0).
 player(4, ["E", "Q"], ["O", "Q"], 100, 1, 0, 0, 0, 0).
 player(5, ["E", 7], ["E", 7], 100, 1, 0, 0, 0, 0).
@@ -30,20 +34,33 @@ set_player(Id, Card1, Card2, Chips, Active):-
     set_player_active(Id, Active).
 
 
+
+get_player_pre_flop_prob(Id, PreFlopProb):-
+    player(Id, _, _, _, _, PreFlopProb, _, _, _).
+
 set_player_pre_flop_prob(Id, PreFlopProb):-
     player(Id, Card1, Card2, Pot, Active, _, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb),
     retract(player(Id, _, _, _, _, _, _, _, _)),
     asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
+
+get_player_flop_turn_prob(Id, FlopToTurnProb):-
+    player(Id, _, _, _, _, _, FlopToTurnProb, _, _).
 
 set_player_flop_turn_prob(Id, FlopToTurnProb):-
     player(Id, Card1, Card2, Pot, Active, PreFlopProb, _, TurnToRiverProb, RiverToShowDownProb),
     retract(player(Id, _, _, _, _, _, _, _, _)),
     asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
 
+get_player_turn_river_prob(Id, TurnToRiverProb):-
+    player(Id, _, _, _, _, _, _, TurnToRiverProb, _).
+
 set_player_turn_river_prob(Id, TurnToRiverProb):-
     player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, _, RiverToShowDownProb),
     retract(player(Id, _, _, _, _, _, _, _, _)),
     asserta(player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, RiverToShowDownProb)).
+
+get_player_river_showdown_prob(Id, RiverToShowDownProb):-
+    player(Id, _, _, _, _, _, _, _, RiverToShowDownProb).
 
 set_player_river_showdown_prob(Id, RiverToShowDownProb):-
     player(Id, Card1, Card2, Pot, Active, PreFlopProb, FlopToTurnProb, TurnToRiverProb, _),
