@@ -1,15 +1,14 @@
 
 
-
-verifyHand(Cards,Hand):-
-                        % verifyFour(Cards,Hand), Hand == "IS_FOUR";
-                        % verifyFullHouse(Cards,Hand), Hand == "IS_FULL_HOUSE";
-                        % verifyFlush(Cards,Hand), Hand == "IS_FLUSH";
-                        % verifyStraight(Cards,Hand), Hand == "IS_STRAIGHT";
-                        % verifyThree(Cards,Hand), Hand == "IS_THREE";
-                        quick_sort(Cards,Sorted), verifyTwoPair(Sorted) -> (Hand = "IS_TWO_PAIR");
-                        quick_sort(Cards,Sorted), verifyOnePair(Sorted) -> (Hand = "IS_ONE_PAIR");
-                        Hand = "null".
+verifyHand(Cards,Hand):-quick_sort(Cards,Sorted), verify_hand(Sorted,Hand).
+verify_hand(Cards,Hand):- % verifyFour(Cards,Hand), Hand == "IS_FOUR";
+                          % verifyFullHouse(Cards,Hand), Hand == "IS_FULL_HOUSE";
+                          % verifyFlush(Cards,Hand), Hand == "IS_FLUSH";
+                          % verifyStraight(Cards,Hand), Hand == "IS_STRAIGHT";
+                          verifyThree(Cards) -> (Hand = "IS_THREE");
+                          verifyTwoPair(Cards) -> (Hand = "IS_TWO_PAIR");
+                          verifyOnePair(Cards) -> (Hand = "IS_ONE_PAIR");
+                          Hand = "null".
 
 verifyOnePair([_]):- false.
 verifyOnePair([X,Y|T]):- nth0(1,X,ValueX), nth0(1,Y,ValueY), ValueX==ValueY; 
@@ -19,6 +18,9 @@ verifyTwoPair([_]):- false.
 verifyTwoPair([X,Y|T]):- nth0(1,X,ValueX), nth0(1,Y,ValueY), ValueX==ValueY -> (verifyOnePair(T)); 
                          verifyTwoPair([Y|T]).
 
+verifyThree([_,_]):- false.
+verifyThree([X,Y,Z|T]):- nth0(1,X,ValueX), nth0(1,Y,ValueY), nth0(1,Z,ValueZ), ValueX==ValueY, ValueZ==ValueY; 
+                         verifyThree([Y,Z|T]).
 
 
 quick_sort(List,Sorted):-q_sort(List,[],Sorted).
