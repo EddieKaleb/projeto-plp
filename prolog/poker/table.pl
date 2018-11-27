@@ -397,7 +397,6 @@ set_players_probs(1, Pos) :- get_player_cards(Pos, Card1, Card2),
                              %cards_table(Cards_table),
                              Cards_table = [],
                              append(Card1,Card2,Hand),
-                             writeln(Cards_table),
                              append(Hand,Cards_table,AllCards),
                              verify_hand(AllCards, HandStatus),
                              get_improve_prob(HandStatus,ImproveProb),
@@ -408,13 +407,22 @@ set_players_probs(1, Pos) :- get_player_cards(Pos, Card1, Card2),
                              Aux is Pos + 1,
                              set_players_probs(1, Aux).
 
-set_players_probs(2, Pos) :- writeln("inicio do turn").
+set_players_probs(2, Pos):- get_player_cards(Pos, Card1, Card2),
+                            %cards_table(Cards_table),
+                            Cards_table = [],
+                            append(Card1,Card2,Hand),
+                            append(Hand,Cards_table,AllCards),
+                            %verify_hand(AllCards, HandStatus),
+                            get_improve_prob("IS_TWO_PAIR",ImproveProb),
+                            get_player_flop_turn_prob(Pos, FlopToTurnProb),
+                            TurnToRiverProb is FlopToTurnProb * (1 - ImproveProb),
+                            write("Probabilidade: "), writeln(TurnToRiverProb),
+                            set_player_turn_river_prob(Pos, TurnToRiverProb),
+                            Aux is Pos + 1,
+                            set_players_probs(2, Aux).
+
 set_players_probs(3, Pos) :- writeln("inicio do river").
 
 
 verify_hand(_, "IS_THREE").
-
-%handStatus hand = verifyHand(playersTable[i].hand, cardsTable, 5);
-%        playersTable[i].flopToTurnProb = playersTable[i].preFlopProb * (1 - getImproveHandProb(hand.flag));
-%        cout << playersTable[i].flopToTurnProb << "%" << endl;
         
