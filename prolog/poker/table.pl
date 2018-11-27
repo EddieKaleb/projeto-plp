@@ -357,7 +357,7 @@ show_infos:-
     small_position(Small_position),
     big_position(Big_position),
     minimum_bet(Min_bet),
-    cards_table(Cards_table),
+   % cards_table(Cards_table),
     active_players(Active_players),
     pot(Pot),
     current_round(Current_round),
@@ -398,12 +398,9 @@ set_players_probs(0, Pos) :- get_player_cards(Pos, Card1, Card2),
                              set_players_probs(0, Aux).
 
 set_players_probs(1, Pos) :- get_player_cards(Pos, Card1, Card2),
-                             %cards_table(Cards_table),
-                             Cards_table = [],
                              append(Card1,Card2,Hand),
-                             append(Hand,Cards_table,AllCards),
-                             verify_hand(AllCards, HandStatus),
-                             get_improve_prob(HandStatus,ImproveProb),
+                             append(Hand,[],AllCards),
+                             get_improve_prob("IS_THREE",ImproveProb),
                              get_player_pre_flop_prob(Pos, PreFlopProb),
                              FlopToTurnProb is PreFlopProb * (1 - ImproveProb),
                              write("Probabilidade: "), writeln(FlopToTurnProb),
@@ -412,11 +409,8 @@ set_players_probs(1, Pos) :- get_player_cards(Pos, Card1, Card2),
                              set_players_probs(1, Aux).
 
 set_players_probs(2, Pos):- get_player_cards(Pos, Card1, Card2),
-                            %cards_table(Cards_table),
-                            Cards_table = [],
                             append(Card1,Card2,Hand),
-                            append(Hand,Cards_table,AllCards),
-                            %verify_hand(AllCards, HandStatus),
+                            append(Hand,[],AllCards),
                             get_improve_prob("IS_TWO_PAIR",ImproveProb),
                             get_player_flop_turn_prob(Pos, FlopToTurnProb),
                             TurnToRiverProb is FlopToTurnProb * (1 - ImproveProb),
@@ -425,8 +419,13 @@ set_players_probs(2, Pos):- get_player_cards(Pos, Card1, Card2),
                             Aux is Pos + 1,
                             set_players_probs(2, Aux).
 
-set_players_probs(3, Pos) :- writeln("inicio do river").
-
-
-verify_hand(_, "IS_THREE").
-        
+set_players_probs(3, Pos):- get_player_cards(Pos, Card1, Card2),
+                            append(Card1,Card2,Hand),
+                            append(Hand,[],AllCards),
+                            get_improve_prob("IS_ONE_PAIR",ImproveProb),
+                            get_player_turn_river_prob(Pos, TurnToRiverProb),
+                            RiverToShowDownProb is TurnToRiverProb * (1 - ImproveProb),
+                            write("Probabilidade: "), writeln(RiverToShowDownProb),
+                            set_player_river_showdown_prob(Pos, RiverToShowDownProb),
+                            Aux is Pos + 1,
+                            set_players_probs(3, Aux).
