@@ -336,16 +336,18 @@ select_player_option(4):- exit_action, halt.
 select_player_option(_):- invalid_action, show_user_actions.
 
 
-bot_actions:-
-    writeln("Ações do bot"),
-    current_round(Current_round),actual_player(Actual_player),Current_round =:= 0 ->
-        writeln("ENTREI"),
-        get_player_cards(Actual_player, Card1, Card2),
-        writeln(Card1), writeln(Card2),
-        get_hand_prob(Card1, Card2, 6, Prob),
-        write("Probabilidade: "), writeln(Prob).
-    %write("Current bot round: "), write(Current_round).
+bot_actions:- writeln("Ações do bot"),current_round(Current_round),run_bot(Current_round).
 
+run_bot(0):- writeln("Ação pre flop"),
+             actual_player(Actual_player),
+             get_player_cards(Actual_player, Card1, Card2),
+             writeln(Card1), writeln(Card2),
+             get_hand_prob(Card1, Card2, 6, Prob),
+             write("Probabilidade: "), writeln(Prob).
+
+run_bot(1):- writeln("Ação flop").
+run_bot(2):- writeln("Ação turn").
+run_bot(3):- writeln("Ação river").
 
 show_infos:-
     dealer_position(Dealer_position),
