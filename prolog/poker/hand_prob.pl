@@ -3,10 +3,10 @@
 :- use_module(library(apply)).
 :- use_module(library(csv)).
 
-get_hand_prob(Card1, Card2, Numplayers, Prob) :-
+get_hand_prob([N1,V1], [N2,V2], Numplayers, Prob) :-
   get_rows_data("../data/hands.csv", L), 
   Num is Numplayers - 1,
-  format_hand(Card1,Card2,Hand),
+  format_hand([N1,V1], [N2,V2],Hand),
   get_hand(Hand, Num, L, Prob).
 
 get_hand(_, _, [], 0). 
@@ -27,4 +27,5 @@ row_to_list(Row, List):-
 format_hand([N1,V1],[N2,V2],Formated):-
   V1 =\= V2,N1 =:= N2 -> string_concat(V1,V2,Values),string_concat(Values,'s',Formated);
   V1 =\= V2, N1 =\= N2 -> string_concat(V1,V2,Values), string_concat(Values,'o',Formated);
-  string_concat(V1,V2,Formated).
+  string_concat(V1,V2,Formated),
+  writeln(Formated).
