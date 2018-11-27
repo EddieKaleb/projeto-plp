@@ -204,7 +204,7 @@ config_card(Card):-
     Card = [Naipe, Valor].
 
 is_valid_card(Card, Result):-
-    (not(get_card_player(Card)) -> (card_invalid_message, Result = False));
+    not(get_card_player(Card)) -> (card_invalid_message, Result = False);
     Result = True.
 
 card_invalid_message:-
@@ -240,7 +240,7 @@ turn_round_manual:-
     select_turn_card,
     minimum_bet(Minimum_bet),
     New_minimun_bet is Minimum_bet * 2,
-    set_minimum_bet(New_minimun_bet)
+    set_minimum_bet(New_minimun_bet),
     bots_turn,
     run_round(2).
 
