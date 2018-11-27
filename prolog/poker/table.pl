@@ -141,7 +141,76 @@ run_action(Actual_position, End_position):-
 
 start_game_manual:-
     sleep(3),
-    writeln("Manual Match").    
+    config_new_match.
+
+select_card_hand:-
+    clear_screen,
+    actual_player(Actual_player),
+    writeln(" --- SELEÇÃO DAS CARTAS DA SUA MÃO --- "),
+    config_card_hand(Card1),
+    config_card_hand(Card2),
+    set_player_cards(Actual_player, Card1, Card2).
+
+config_card_hand(Card):-
+    writeln("Digite o valor da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
+    input_number(Valor),
+    writeln("Digite o naipe da carta (O, C, P, E): "),
+    read_line_to_string(user_input, Naipe),
+    (not(is_valid_card([Naipe, Valor])) -> config_card_hand(Card)),
+    write("Carta: "),
+    write(Valor),
+    write(" "),
+    writeln(Naipe),
+    Card = [Naipe, Valor].
+
+is_valid_card(Card, Result):-
+    (not(get_card_player(Card)) -> (card_invalid_message, Result = False));
+    Result = True.
+
+card_invalid_message:-
+    writeln("                       Carta inválida... Selecione outra !"),
+    sleep(1).
+
+flopRoundManual:-
+    small_position(Small_pos),
+    select_flop_cards,
+    bots_flop,
+    run_round(1).
+
+select_flop_cards:- 
+    clear_screen,
+    writeln(" --- SELEÇÃO DAS TRÊS PRIMEIRAS CARTAS DA MESA --- "),
+    config_card_hand(Card1),
+    config_card_hand(Card2),
+    config_card_hand(Card3),
+    set_cards_table([Card1, Card2, Card3, _, _]).
+
+select_turn_card:-
+    clear_screen,
+    writeln(" --- SELEÇÃO DA CARTA DE TURN --- "),
+    config_card_hand(Card),
+    set_cards_table([_, _, _, Card, _]).
+
+select_river_card:-
+    clear_screen,
+    writeln(" --- SELEÇÃO DA CARTA DE RIVER --- "),
+    config_card_hand(Card),
+    set_cards_table([_, _, _, _, Card]).
+
+turn_round_manual:-
+    small_position(Small_pos),
+    select_turn_card,
+    minimum_bet(Minimum_bet),
+    New_minimun_bet is Minimum_bet * 2,
+    set_minimum_bet(New_minimun_bet)
+    bots_turn,
+    run_round(2).
+
+river_round_manual:-
+    small_position(Small_pos),
+    select_river_card,
+    bots_river,
+    run_round(3).
 
 invalid_action :- 
     clear_screen,
