@@ -22,7 +22,8 @@
     set_last_bet/1,
     set_first_bet_player/1,
     start_dealer_position/0,
-    next_player/1
+    next_player/1,
+    reset_cards_table/0
 ]).
 
 :- dynamic(dealer_position/1).
@@ -115,3 +116,11 @@ start_dealer_position():-
         get_next_position(Dealer_pos, Dealer_position)
     ),
     set_dealer_position(Dealer_position).
+
+reset_cards_table:-
+    set_card_table(0, " ", " "),
+    set_card_table(1, " ", " "),
+    set_card_table(2, " ", " "),
+    set_card_table(3, " ", " "),
+    set_card_table(4, " ", " ").
+
