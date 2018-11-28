@@ -1,4 +1,5 @@
 :- initialization(main).
+:-use_module(game_status).
 
 printNTimes(S, N) :-
     N < 1 -> true;
@@ -224,11 +225,17 @@ role("small", "(S)").
 role("big", "(B)").
 role(X, "   ").
 
-centralPlayer(Player, Chips, PlayerRole):-
+playing(X, X):- write("*").
+playing(Player, X):- write(" ").
+
+
+
+centralPlayer(Player, Chips, PlayerRole, ActualPlayer):-
     write("|"),
     spaces(39),
     /**active*/
-    spaces(1),
+    PlayerId is Player - 1,
+    playing(PlayerId, ActualPlayer),
     write("Player "),
     write(Player),
     /**role*/
@@ -245,11 +252,12 @@ centralPlayer(Player, Chips, PlayerRole):-
     spaces(43 - Ndigits),
     write("|\n").
 
-lateralPlayers(Player1, Chips1, Player1Role, Player2, Chips2, Player2Role):-
+lateralPlayers(Player1, Chips1, Player1Role, Player2, Chips2, Player2Role, ActualPlayer):-
     write("|"),
     spaces(2),
     /**active*/
-    spaces(1), 
+    PlayerId1 is Player1 - 1,
+    playing(PlayerId1, ActualPlayer), 
     write("Player "),
     write(Player1),
     /**role*/
@@ -262,7 +270,9 @@ lateralPlayers(Player1, Chips1, Player1Role, Player2, Chips2, Player2Role):-
     write("Player "),
     write(Player2),
     /**active*/
-    spaces(1),
+
+    PlayerId2 is Player2 - 1,
+    playing(PlayerId2, ActualPlayer), 
     spaces(2),
     write("|\n"),
 
@@ -279,15 +289,16 @@ lateralPlayers(Player1, Chips1, Player1Role, Player2, Chips2, Player2Role):-
     write("|\n").
 
 printTable:-
+    actual_player(ActualPlayer),
     topBorder,
     centralCards,
-    centralPlayer(4,50, "jaaj"),
+    centralPlayer(4,50, "jaaj", ActualPlayer),
     lateralCards,
-    lateralPlayers(3, 10,"dealer", 5, 6000,"small"),
+    lateralPlayers(3, 10,"dealer", 5, 6000,"small", ActualPlayer),
     flopTurnRiver,
-    lateralPlayers(2, 0, "big", 6, 200, ""),
+    lateralPlayers(2, 0, "big", 6, 200, "", ActualPlayer),
     lateralCards,
-    centralPlayer(1,500, "dealer"),
+    centralPlayer(1,500, "dealer", ActualPlayer),
     centralCardsWithProb("T","K", "5", "P", 30.0),
     bottomBorder.
 
@@ -301,3 +312,4 @@ numDigits(Number, Num):-
 
 main :-
     printTable.
+    
