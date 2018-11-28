@@ -21,6 +21,11 @@ verifyTwoPair([X,Y|T]):- nth0(1,X,ValueX), nth0(1,Y,ValueY), ValueX==ValueY -> (
 verifyThree([_,_]):- false.
 verifyThree([X,Y,Z|T]):- nth0(1,X,ValueX), nth0(1,Y,ValueY), nth0(1,Z,ValueZ), ValueX==ValueY, ValueZ==ValueY; 
                          verifyThree([Y,Z|T]).
+ 
+
+verify_straight([_], Cont):- Cont >= 5.
+verify_straight([X,Y|T],Cont):- nth0(1,X,ValueX), nth0(1,Y,ValueY), ValueX==ValueY+1 -> (Cont = Cont + 1, verify_straight([Y|T],Cont)); 
+                                Cont = 0, verify_straight([Y|T],Cont).
 
 
 quick_sort(List,Sorted):-q_sort(List,[],Sorted).
