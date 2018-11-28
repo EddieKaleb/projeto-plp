@@ -345,17 +345,57 @@ select_player_option(_):- invalid_action, show_user_actions.
 
 bot_actions:- current_round(Current_round),run_bot(Current_round).
 
-run_bot(0):- actual_player(Actual_player),
-         big_position(Big_position),
+run_bot(0):- % Apenas a probabilidade de vitoria 
+         actual_player(Actual_player),
          random(0,20.0,RandProb),
          get_player_pre_flop_prob(Actual_player, WinProb),
          RandProb < WinProb,
-         call_action(Result), Result =:= 1 -> writeln("Bot Call"); 
+         call_action(Result), Result =:= 1 -> writeln("Bot Call");
          fold_action,writeln("Bot Fold").
 
-run_bot(1):- writeln("Ação flop").
-run_bot(2):- writeln("Ação turn").
-run_bot(3):- writeln("Ação river").
+run_bot(1):- % Apenas a probabilidade de vitoria
+        (actual_player(Actual_player),
+         random(0,20.0,RandProb),
+         get_player_flop_turn_prob(Actual_player, WinProb),
+         RandProb > WinProb) -> fold_action,writeln("Bot Fold");
+         % Probabilidade de vitoria e nao houve aposta antes
+         (last_bet(Last_bet),
+         Last_bet =:= 0,
+         random(0,20.0,RandProb),
+         get_player_flop_turn_prob(Actual_player, WinProb),
+         RandProb > WinProb) ->
+            ((call_action(Result), Result =:= 1) -> writeln("Bot Call"); 
+            fold_action; writeln("Bot Fold"));
+         % Houve aposta antes
+         (call_action(Result), Result =:= 1) -> writeln("Bot Call");
+         fold_action; writeln("Bot Fold").
+
+% Chances de continuar na partida são maiores %          
+run_bot(2):- 
+         % Probabilidade de vitoria e nao houve aposta antes
+         (last_bet(Last_bet),
+         Last_bet =:= 0,
+         random(0,20.0,RandProb),
+         get_player_turn_river_prob(Actual_player, WinProb),
+         RandProb > WinProb) ->
+            ((call_action(Result), Result =:= 1) -> writeln("Bot Call"); 
+            fold_action; writeln("Bot Fold"));
+         % Houve aposta antes
+         (call_action(Result), Result =:= 1) -> writeln("Bot Call");
+         fold_action; writeln("Bot Fold").
+
+% Chances de continuar na partida são maiores %
+run_bot(3):- % Probabilidade de vitoria e nao houve aposta antes
+         (last_bet(Last_bet),
+         Last_bet =:= 0,
+         random(0,20.0,RandProb),
+         get_player_river_showdown_prob(Actual_player, WinProb),
+         RandProb > WinProb) ->
+            ((call_action(Result), Result =:= 1) -> writeln("Bot Call"); 
+            fold_action; writeln("Bot Fold"));
+         % Houve aposta antes
+         (call_action(Result), Result =:= 1) -> writeln("Bot Call");
+         fold_action; writeln("Bot Fold").
 
 show_infos:-
     dealer_position(Dealer_position),
