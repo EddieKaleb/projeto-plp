@@ -33,8 +33,6 @@ set_player(Id, Card1, Card2, Chips, Active):-
     set_player_chips(Id, Chips),
     set_player_active(Id, Active).
 
-
-
 get_player_pre_flop_prob(Id, PreFlopProb):-
     player(Id, _, _, _, _, PreFlopProb, _, _, _).
 

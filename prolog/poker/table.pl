@@ -264,6 +264,7 @@ invalid_action :-
     sleep(3).
 
 end_game:-
+    show_winners,
     clear_screen,
     writeln("\n\n                                   FIM DO JOGO !!!\n\n\n"),
     writeln("                         Deseja continuar jogando ? 1 (Sim) / 2 (Não)\n"),
@@ -483,3 +484,36 @@ set_players_probs(3, Pos):- get_player_cards(Pos, Card1, Card2),
                             set_player_river_showdown_prob(Pos, RiverToShowDownProb),
                             Aux is Pos + 1,
                             set_players_probs(3, Aux).
+
+% VENCEDORES 
+
+show_winners:-
+    writeln("***********************"),
+    writeln("****** FINALISTAS *****"),
+    writeln("***********************"),
+    get_finalists(0, 0, Big),
+    writeln("***********************"),
+    writeln("****** VENCEDORES *****"),
+    writeln("***********************"),
+    write("Big: "), writeln(Big),
+    %print_winners(Winners),
+    sleep(7).
+
+print_winners([]).
+print_winners([H|T]):- Id is H + 1,  write("Player "), writeln(Id), print_winners(T).  
+
+get_finalists(6,BigAux, Biggest):- Biggest = BigAux.
+get_finalists(Pos, BigAux, Biggest):- 
+    get_player_active(Pos, Active),Active =:= 1,Id is Pos + 1 -> 
+        (write("Player "), writeln(Id),
+        (map_hands("IS_FULL_HOUSE", Value), Value > BigAux ->
+            get_finalists(Id, Value, Biggest); get_finalists(Id, BigAux, Biggest)));
+    Id is Pos + 1, get_finalists(Id, BigAux, Biggest).
+
+map_hands("IS_ONE_PAIR", 1).
+map_hands("IS_TWO_PAIR", 2).
+map_hands("IS_THREE", 3).
+map_hands("IS_STRAIGHT", 4).
+map_hands("IS_FLUSH", 5).
+map_hands("IS_FULL_HOUSE", 6).
+map_hands("IS_HIGH_CARD", 7).
