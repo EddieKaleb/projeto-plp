@@ -495,17 +495,24 @@ show_winners:-
     writeln("***********************"),
     writeln("****** VENCEDORES *****"),
     writeln("***********************"),
-    write("Big: "), writeln(Big),
-    %print_winners(Winners),
+    print_winners(0, Big),
     sleep(7).
 
-print_winners([]).
-print_winners([H|T]):- Id is H + 1,  write("Player "), writeln(Id), print_winners(T).  
+
+print_winners(6,Biggest):- !.
+print_winners(Pos, Biggest):- 
+    ((get_player_active(Pos, Active),
+    Active =:= 1,
+    map_hands("IS_FULL_HOUSE", Value),
+    Value =:= Biggest,
+    Id is Pos + 1) ->
+    (write("Player "),write(Id),write(" -> "),writeln("IS_FULL_HOUSE"),print_winners(Id, Biggest)));
+    (Id is Pos + 1,print_winners(Id, Biggest)).
 
 get_finalists(6,BigAux, Biggest):- Biggest = BigAux.
 get_finalists(Pos, BigAux, Biggest):- 
     get_player_active(Pos, Active),Active =:= 1,Id is Pos + 1 -> 
-        (write("Player "), writeln(Id),
+        (write("Player "),write(Id),write(" -> "),writeln("IS_FULL_HOUSE"),
         (map_hands("IS_FULL_HOUSE", Value), Value > BigAux ->
             get_finalists(Id, Value, Biggest); get_finalists(Id, BigAux, Biggest)));
     Id is Pos + 1, get_finalists(Id, BigAux, Biggest).
