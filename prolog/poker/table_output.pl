@@ -228,9 +228,23 @@ role(X, "   ").
 playing(X, X):- write("*").
 playing(Player, X):- write(" ").
 
+blinds(Player, Role):-
+    dealer_position(D),
+    Player == D -> Role = "dealer".
+
+blinds(Player, Role):-
+    small_position(S),
+    Player == S -> Role = "small".
+
+blinds(Player, Role):-
+    big_position(B),
+    Player == B -> Role = "big".
+
+blinds(Player, Role):-
+    Role = "none".
 
 
-centralPlayer(Player, Chips, PlayerRole, ActualPlayer):-
+centralPlayer(Player, Chips, ActualPlayer):-
     write("|"),
     spaces(39),
     /**active*/
@@ -239,6 +253,7 @@ centralPlayer(Player, Chips, PlayerRole, ActualPlayer):-
     write("Player "),
     write(Player),
     /**role*/
+    blinds(PlayerId, PlayerRole),
     role(PlayerRole, Role),
     write(Role),
     spaces(39),
@@ -252,7 +267,7 @@ centralPlayer(Player, Chips, PlayerRole, ActualPlayer):-
     spaces(43 - Ndigits),
     write("|\n").
 
-lateralPlayers(Player1, Chips1, Player1Role, Player2, Chips2, Player2Role, ActualPlayer):-
+lateralPlayers(Player1, Chips1, Player2, Chips2, ActualPlayer):-
     write("|"),
     spaces(2),
     /**active*/
@@ -261,18 +276,22 @@ lateralPlayers(Player1, Chips1, Player1Role, Player2, Chips2, Player2Role, Actua
     write("Player "),
     write(Player1),
     /**role*/
+    blinds(PlayerId1, Player1Role),
     role(Player1Role, Role1),
     write(Role1),
     spaces(62),
+
+    PlayerId2 is Player2 - 1,
+    playing(PlayerId2, ActualPlayer),
     /**role*/
+    blinds(PlayerId2, Player2Role),
     role(Player2Role, Role2),
     write(Role2),
     write("Player "),
     write(Player2),
     /**active*/
 
-    PlayerId2 is Player2 - 1,
-    playing(PlayerId2, ActualPlayer), 
+     
     spaces(2),
     write("|\n"),
 
@@ -292,13 +311,13 @@ printTable:-
     actual_player(ActualPlayer),
     topBorder,
     centralCards,
-    centralPlayer(4,50, "jaaj", ActualPlayer),
+    centralPlayer(4,50, ActualPlayer),
     lateralCards,
-    lateralPlayers(3, 10,"dealer", 5, 6000,"small", ActualPlayer),
+    lateralPlayers(3, 10, 5, 6000, ActualPlayer),
     flopTurnRiver,
-    lateralPlayers(2, 0, "big", 6, 200, "", ActualPlayer),
+    lateralPlayers(2, 0, 6, 200, ActualPlayer),
     lateralCards,
-    centralPlayer(1,500, "dealer", ActualPlayer),
+    centralPlayer(1,500, ActualPlayer),
     centralCardsWithProb("T","K", "5", "P", 30.0),
     bottomBorder.
 
@@ -311,5 +330,6 @@ numDigits(Number, Num):-
 
 
 main :-
+    set_dealer_position(3),
     printTable.
     
