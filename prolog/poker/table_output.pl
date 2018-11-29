@@ -244,8 +244,9 @@ role("small", "(S)").
 role("big", "(B)").
 role(X, "   ").
 
-playing(X, X):- write("*").
-playing(Player, X):- write(" ").
+playing(0, _, _):-write("X").
+playing(1, X, X):- write("*").
+playing(1, Player, X):- write(" ").
 
 blinds(Player, Role):-
     dealer_position(D),
@@ -268,7 +269,8 @@ centralPlayer(Player, ActualPlayer):-
     spaces(39),
     /**active*/
     PlayerId is Player - 1,
-    playing(PlayerId, ActualPlayer),
+    get_player_active(PlayerId, Active),
+    playing(Active, PlayerId, ActualPlayer),
     write("Player "),
     write(Player),
     /**role*/
@@ -292,7 +294,8 @@ lateralPlayers(Player1, Player2, ActualPlayer):-
     spaces(2),
     /**active*/
     PlayerId1 is Player1 - 1,
-    playing(PlayerId1, ActualPlayer), 
+    get_player_active(PlayerId1, Active1),
+    playing(Active1, PlayerId1, ActualPlayer), 
     write("Player "),
     write(Player1),
     /**role*/
@@ -302,17 +305,19 @@ lateralPlayers(Player1, Player2, ActualPlayer):-
     spaces(58),
 
     PlayerId2 is Player2 - 1,
-    playing(PlayerId2, ActualPlayer),
+    get_player_active(PlayerId2, Active2),
+    
     /**role*/
+    spaces(2),
     blinds(PlayerId2, Player2Role),
     role(Player2Role, Role2),
     write(Role2),
     write("Player "),
     write(Player2),
     /**active*/
-
+    playing(Active2, PlayerId2, ActualPlayer),
      
-    spaces(6),
+    spaces(4),
     write("|\n"),
 
     write("|"),
@@ -363,7 +368,15 @@ numDigits(Number, Num):-
 
 
 main :-
-    set_dealer_position(0),
+    set_dealer_position(3),
+    set_player_active(1, 0),
+    set_player_active(2, 0),
+    set_player_active(3, 0),
+    set_player_active(4, 0),
+    set_player_active(5, 0),
+    set_player_active(0, 0),
+    set_player_chips(5, 600000),
+    set_pot(6000000000),
     set_card_table(0, "P", "J"),
     set_card_table(1, "P", "J"),
     set_card_table(2, "P", "J"),
