@@ -13,7 +13,8 @@ setDeck(Deck):-
 
 buildDeck():- 
     build_deck(["A","K","Q","J","T","9","8","7","6","5","4","3","2"], ["E","C","P","O"], Deck),
-    setDeck(Deck).
+    random_permutation(Deck,Shuffled),
+    setDeck(Shuffled).
 
 build_deck(Values,[H],Deck):- 
     create(H,Values,Deck).
@@ -35,4 +36,5 @@ getCardByIndex(Index,Card):-
     deck(X), 
     nth0(Index,X,Value), 
     Card = Value.
+
 
