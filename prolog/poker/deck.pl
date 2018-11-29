@@ -1,8 +1,7 @@
 :- module(
     deck, 
-    [build_deck/0,
-    init_deck/0,
-    getCardByIndex/2
+    [init_deck/0,
+    get_card_by_index/2
     ]).
 
 :- dynamic(deck/1).

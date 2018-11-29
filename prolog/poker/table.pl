@@ -4,6 +4,7 @@
 :- use_module('players.pl').
 :- use_module('game_status.pl').
 :- use_module('hand_prob.pl').
+:- use_module('deck.pl').
 
 clear_screen :-
     tty_clear.
@@ -20,7 +21,6 @@ start_game :-
     clear_screen.
 
 run_game:-
-    % Adicionar a configuração das mãos dos jogadores.
     set_pot(0),
     set_minimum_bet(2),
     start_dealer_position,
@@ -61,7 +61,16 @@ run_preflop_round:-
 run_flop_round:-
     writeln(" -------- FlopRound -------- \n"),
 
-    %Adicionar método que seta as 3 primeiras cartas
+    get_card_by_index(12, [Valor1, Naipe1]),
+    get_card_by_index(13, [Valor2, Naipe2]),
+    get_card_by_index(14, [Valor3, Naipe3]),
+    set_card_table(0, Valor1, Naipe1),
+    set_card_table(1, Valor2, Naipe2),
+    set_card_table(2, Valor3, Naipe3),
+
+    writeln([Valor1, Naipe1]),
+    writeln([Valor2, Naipe2]),
+    writeln([Valor3, Naipe3]),
 
     config_new_round(1),
     sleep(3).
@@ -70,7 +79,10 @@ run_flop_round:-
 run_turn_round:-
     writeln(" ------- TurnRound -------- \n"),
 
-    %Adicionar método que seta a quarta carta
+    get_card_by_index(15, [Valor4, Naipe4]),
+    set_card_table(3, Valor4, Naipe4),
+
+    writeln([Valor4, Naipe4]),
 
     minimum_bet(Min_bet),
     New_min_bet is (Min_bet * 2),
@@ -82,7 +94,10 @@ run_turn_round:-
 run_river_round:-
     writeln(" -------- RiverRound ---------- \n"),
 
-    %Adicionar método que seta a quinta carta
+    get_card_by_index(16, [Valor5, Naipe5]),
+    set_card_table(4, Valor5, Naipe5),
+
+    writeln([Valor5, Naipe5]),
 
     config_new_round(3),
     sleep(3).
@@ -99,6 +114,7 @@ config_new_round(Round_id):-
     run_action(Actual_player, First_bet_player).
 
 config_new_match:-
+    init_deck,
     set_minimum_bet(2),
     set_pot(0),
     set_minimum_bet(2),
@@ -403,11 +419,11 @@ show_infos:-
     small_position(Small_position),
     big_position(Big_position),
     minimum_bet(Min_bet),
-    cards_table(Index0, Valor0, Naipe0),
-    cards_table(Index1, Valor1, Naipe1),
-    cards_table(Index2, Valor2, Naipe2),
-    cards_table(Index3, Valor3, Naipe3),
-    cards_table(Index4, Valor4, Naipe4),
+    cards_table(0, Valor0, Naipe0),
+    cards_table(1, Valor1, Naipe1),
+    cards_table(2, Valor2, Naipe2),
+    cards_table(3, Valor3, Naipe3),
+    cards_table(4, Valor4, Naipe4),
     active_players(Active_players),
     pot(Pot),
     current_round(Current_round),
