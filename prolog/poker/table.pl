@@ -5,6 +5,7 @@
 :- use_module('game_status.pl').
 :- use_module('hand_prob.pl').
 :- use_module('deck.pl').
+:- use_module('table_output.pl').
 
 clear_screen :-
     tty_clear.
@@ -42,9 +43,7 @@ run_round(3):- run_river_round.
 
 run_preflop_round:-
     writeln(" ------- PreFlopRound -------- \n"),
-
     call_action(_),
-    
     next_player(_),
     minimum_bet(Min_bet),
     New_min_bet is Min_bet * 2,
@@ -55,6 +54,7 @@ run_preflop_round:-
     big_position(Big_position),
     show_infos,
     set_players_probs(0,0),
+    printTable,
     run_pre_flop_action(New_position2, Big_position).
 
 
@@ -132,28 +132,26 @@ config_new_match:-
 
 run_pre_flop_action(Actual_position, End_position):-
     (Actual_position =:= End_position);
-    
+    print_table,
     ((get_player_active(Actual_position, Active), Active =:= 1,
         (
-            (Actual_position =:= 0, show_user_actions);
-            bot_actions
+            (Actual_position =:= 0, clear_screen, print_table, show_user_actions);
+            bot_actions, sleep(2), print_table
         )
     ); !),
-    show_infos,
-    sleep(2),
     next_player(Next_position),
     run_pre_flop_action(Next_position, End_position).
 
 
 run_action(Actual_position, End_position):-
     (Actual_position =:= End_position);
-    
-    (
-        (Actual_position =:= 0, get_player_active(Actual_position, Active1), Active1 =:= 1, show_user_actions);
-        (get_player_active(Actual_position, Active2), Active2 =:= 1, bot_actions); !
-    ),
-    show_infos,
-    sleep(2),
+    print_table,
+    ((get_player_active(Actual_position, Active), Active =:= 1,
+        (
+            (Actual_position =:= 0, clear_screen, print_table, show_user_actions);
+            bot_actions, sleep(2), print_table
+        )
+    ); !),
     next_player(Next_position),
     first_bet_player(First_bet_player),
     run_action(Next_position, First_bet_player).
@@ -276,7 +274,6 @@ river_round_manual:-
 invalid_action :- 
     clear_screen,
     writeln("\n\n\n              Ação inválida, escolha outra opção !\n\n\n"),
-    clear_screen,
     sleep(3).
 
 end_game:-
@@ -285,8 +282,8 @@ end_game:-
     writeln("\n\n                                   FIM DO JOGO !!!\n\n\n"),
     writeln("                         Deseja continuar jogando ? 1 (Sim) / 2 (Não)\n"),
     input_number(Op),
-    (Op =:= 1, start_game);
-    clear_screen.
+    ((Op =:= 1, start_game);
+    clear_screen).
 
 check_player_action :-
     (check_action(Check_action), Check_action =:= 1);
@@ -358,7 +355,7 @@ select_player_option(1):- check_player_action.
 select_player_option(2):- call_player_action.
 select_player_option(3):- fold_action.
 select_player_option(4):- exit_action, halt.
-select_player_option(_):- invalid_action, show_user_actions.
+select_player_option(_):- invalid_action, clear_screen, print_table, show_user_actions.
 
 bot_actions:- current_round(Current_round),run_bot(Current_round).
 
@@ -446,6 +443,9 @@ show_infos:-
     write("Jogadores ativos: "), writeln(Active_players),
     write("\n\n").
 
+print_table:-
+    clear_screen,
+    printTable.
 
 % PROBABILIDADES
 

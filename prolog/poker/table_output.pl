@@ -1,6 +1,7 @@
+:- module(table_output, [printTable/0]).
 :- initialization(main).
-:-use_module(game_status).
-:-use_module(players).
+:- use_module('game_status.pl').
+:- use_module('players.pl').
 
 printNTimes(S, N) :-
     N < 1 -> true;
