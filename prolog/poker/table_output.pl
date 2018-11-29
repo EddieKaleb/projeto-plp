@@ -110,7 +110,25 @@ centralCards:-
     centralCardSpaces,
     write("|\n").
 
-centralCardsWithProb(Prob):-
+showProb(0, Prob):-
+    get_player_pre_flop_prob(0, TurnProb),
+    Prob = TurnProb.
+
+showProb(1, Prob):-
+    get_player_flop_turn_prob(0, TurnProb),
+    Prob = TurnProb.
+
+showProb(2, Prob):-
+    get_player_turn_river_prob(0, TurnProb),
+    Prob = TurnProb.
+
+showProb(3, Prob):-
+    get_player_river_showdown_prob(0, TurnProb),
+    Prob = TurnProb.
+
+showProb(X, Prob):- Prob = 0.0.
+
+centralCardsWithProb:-
     write("|"),
 
     centralCardSpaces,
@@ -145,6 +163,10 @@ centralCardsWithProb(Prob):-
    
     write("|"),
     write(" WIN: "),
+
+    current_round(Turn),
+    showProb(Turn, Prob),
+    
     write(Prob),
     write("%"),
     numDigits(Prob, Ndigits),
@@ -356,7 +378,7 @@ printTable:-
     lateralPlayers(2, 6, ActualPlayer),
     lateralCards,
     centralPlayer(1, ActualPlayer),
-    centralCardsWithProb(30.0),
+    centralCardsWithProb,
     bottomBorder.
 
 numDigits(Number, Num):-
@@ -382,6 +404,12 @@ main :-
     set_card_table(2, "P", "J"),
     set_card_table(3, "P", "J"),
     set_card_table(4, "P", "J"),
+
+    set_current_round(4),
+    set_player_pre_flop_prob(0, 1.0),
+    set_player_flop_turn_prob(0, 2.0),
+    set_player_turn_river_prob(0, 3.0),
+    set_player_river_showdown_prob(0, 4.0),
     
     printTable.
     
