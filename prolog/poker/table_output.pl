@@ -1,5 +1,6 @@
 :- initialization(main).
 :-use_module(game_status).
+:-use_module(players).
 
 printNTimes(S, N) :-
     N < 1 -> true;
@@ -108,7 +109,7 @@ centralCards:-
     centralCardSpaces,
     write("|\n").
 
-centralCardsWithProb(Value1, Naipe1, Value2, Naipe2, Prob):-
+centralCardsWithProb(Prob):-
     write("|"),
 
     centralCardSpaces,
@@ -116,19 +117,26 @@ centralCardsWithProb(Value1, Naipe1, Value2, Naipe2, Prob):-
     centralCardSpaces,
 
     write("|\n"),
-
+    
+    get_player_cards(0, Card1, Card2),
+    
     write("|"),
     centralCardSpaces,
+    nth0(1, Card1, Value1),
+    nth0(1, Card2, Value2),
     cardLateralValue(Value1),
     cardLateralValue(Value2),
     centralCardSpaces,
     write("|\n"),
 
+    
+
     write("E"),
     printNTimes("-", 12),
     write("\\"),
     spaces(27),
-
+    nth0(0, Card1, Naipe1),
+    nth0(0, Card2, Naipe2),
     cardLateralValue(Naipe1),
     cardLateralValue(Naipe2),
     centralCardSpaces,
@@ -190,11 +198,11 @@ flopTurnRiver:-
     spaces(31),
     write("|\n"),
 
-    cards_table(0, Value1, Naipe1),
-    cards_table(1, Value2, Naipe2),
-    cards_table(2, Value3, Naipe3),
-    cards_table(3, Value4, Naipe4),
-    cards_table(4, Value5, Naipe5),
+    cards_table(0, Naipe1, Value1),
+    cards_table(1, Naipe2, Value2),
+    cards_table(2, Naipe3, Value3),
+    cards_table(3, Naipe4, Value4),
+    cards_table(4, Naipe5, Value5),
 
     write("|"),
     spaces(30),
@@ -254,7 +262,7 @@ blinds(Player, Role):-
     Role = "none".
 
 
-centralPlayer(Player, Chips, ActualPlayer):-
+centralPlayer(Player, ActualPlayer):-
     write("|"),
     spaces(39),
     /**active*/
@@ -272,12 +280,13 @@ centralPlayer(Player, Chips, ActualPlayer):-
     write("|"),
     spaces(40),
     write("Chips: "),
+    get_player_chips(PlayerId, Chips),
     write(Chips),
     numDigits(Chips, Ndigits),
     spaces(43 - Ndigits),
     write("|\n").
 
-lateralPlayers(Player1, Chips1, Player2, Chips2, ActualPlayer):-
+lateralPlayers(Player1, Player2, ActualPlayer):-
     write("|"),
     spaces(2),
     /**active*/
@@ -289,7 +298,7 @@ lateralPlayers(Player1, Chips1, Player2, Chips2, ActualPlayer):-
     blinds(PlayerId1, Player1Role),
     role(Player1Role, Role1),
     write(Role1),
-    spaces(62),
+    spaces(58),
 
     PlayerId2 is Player2 - 1,
     playing(PlayerId2, ActualPlayer),
@@ -302,12 +311,14 @@ lateralPlayers(Player1, Chips1, Player2, Chips2, ActualPlayer):-
     /**active*/
 
      
-    spaces(2),
+    spaces(6),
     write("|\n"),
 
     write("|"),
     lateralSpaces,
     write("Chips: "),
+    get_player_chips(PlayerId1, Chips1),
+    get_player_chips(PlayerId2, Chips2),
     write(Chips1),
     numDigits(Chips1, Ndigits1),
     numDigits(Chips2, Ndigits2),
@@ -331,15 +342,15 @@ printTable:-
     actual_player(ActualPlayer),
     topBorder,
     centralCards,
-    centralPlayer(4,50, ActualPlayer),
+    centralPlayer(4, ActualPlayer),
     lateralCards,
-    lateralPlayers(3, 10, 5, 6000, ActualPlayer),
+    lateralPlayers(3, 5, ActualPlayer),
     flopTurnRiver,
     printPot,
-    lateralPlayers(2, 0, 6, 200, ActualPlayer),
+    lateralPlayers(2, 6, ActualPlayer),
     lateralCards,
-    centralPlayer(1,500, ActualPlayer),
-    centralCardsWithProb("T","K", "5", "P", 30.0),
+    centralPlayer(1, ActualPlayer),
+    centralCardsWithProb(30.0),
     bottomBorder.
 
 numDigits(Number, Num):-
@@ -351,12 +362,12 @@ numDigits(Number, Num):-
 
 
 main :-
-    set_dealer_position(3),
-    set_card_table(0, "J", "P"),
-    set_card_table(1, "J", "P"),
-    set_card_table(2, "J", "P"),
-    set_card_table(3, "J", "P"),
-    set_card_table(4, "J", "P"),
+    set_dealer_position(0),
+    set_card_table(0, "P", "J"),
+    set_card_table(1, "P", "J"),
+    set_card_table(2, "P", "J"),
+    set_card_table(3, "P", "J"),
+    set_card_table(4, "P", "J"),
     
     printTable.
     
