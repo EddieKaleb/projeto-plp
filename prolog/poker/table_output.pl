@@ -179,7 +179,7 @@ lateralCards:-
     lateralSpaces,
     write("|\n").
 
-flopTurnRiver():-
+flopTurnRiver:-
     write("|"),
     spaces(30),
     nCardTops(3),
@@ -190,23 +190,33 @@ flopTurnRiver():-
     spaces(31),
     write("|\n"),
 
+    cards_table(0, Value1, Naipe1),
+    cards_table(1, Value2, Naipe2),
+    cards_table(2, Value3, Naipe3),
+    cards_table(3, Value4, Naipe4),
+    cards_table(4, Value5, Naipe5),
+
     write("|"),
     spaces(30),
-    nCardLaterals(3),
+    cardLateralValue(Value1),
+    cardLateralValue(Value2),
+    cardLateralValue(Value3),
     spaces(2),
-    cardLateral,
+    cardLateralValue(Value4),
     spaces(2),
-    cardLateral,
+    cardLateralValue(Value5),
     spaces(31),
     write("|\n"),
 
     write("|"),
     spaces(30),
-    nCardLaterals(3),
+    cardLateralValue(Naipe1),
+    cardLateralValue(Naipe2),
+    cardLateralValue(Naipe3),
     spaces(2),
-    cardLateral,
+    cardLateralValue(Naipe4),
     spaces(2),
-    cardLateral,
+    cardLateralValue(Naipe5),
     spaces(31),
     write("|\n"),
 
@@ -307,6 +317,16 @@ lateralPlayers(Player1, Chips1, Player2, Chips2, ActualPlayer):-
     lateralSpaces,
     write("|\n").
 
+printPot:-
+    write("|"),
+    spaces(40),
+    write("Pot: "),
+    pot(Pot),
+    write(Pot),
+    numDigits(Pot, Ndigits),
+    spaces(45 - Ndigits),
+    write("|\n").
+
 printTable:-
     actual_player(ActualPlayer),
     topBorder,
@@ -315,6 +335,7 @@ printTable:-
     lateralCards,
     lateralPlayers(3, 10, 5, 6000, ActualPlayer),
     flopTurnRiver,
+    printPot,
     lateralPlayers(2, 0, 6, 200, ActualPlayer),
     lateralCards,
     centralPlayer(1,500, ActualPlayer),
@@ -331,5 +352,11 @@ numDigits(Number, Num):-
 
 main :-
     set_dealer_position(3),
+    set_card_table(0, "J", "P"),
+    set_card_table(1, "J", "P"),
+    set_card_table(2, "J", "P"),
+    set_card_table(3, "J", "P"),
+    set_card_table(4, "J", "P"),
+    
     printTable.
     
