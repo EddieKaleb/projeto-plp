@@ -233,8 +233,7 @@ card_invalid_message:-
 
 flop_round_manual:-
     select_flop_cards,
-    bots_flop,
-    run_round(1).
+    bots_flop.
 
 select_flop_cards:- 
     clear_screen,
@@ -263,13 +262,11 @@ turn_round_manual:-
     minimum_bet(Minimum_bet),
     New_minimun_bet is Minimum_bet * 2,
     set_minimum_bet(New_minimun_bet),
-    bots_turn,
-    run_round(2).
+    bots_turn.
 
 river_round_manual:-
     select_river_card,
-    bots_river,
-    run_round(3).
+    bots_river.
 
 invalid_action :- 
     clear_screen,
