@@ -1,4 +1,5 @@
-
+:- module(hands, 
+    [verifyHand/2]).
 
 verifyHand(Cards,Hand):-quick_sort(Cards,Sorted), verify_hand(Sorted,Hand).
 verify_hand(Cards,Hand):- % verifyFour(Cards,Hand), Hand == "IS_FOUR";
@@ -34,8 +35,7 @@ verify_straight([X,Y|T],Cont):-
     Cont = 1,
     verify_straight([Y|T],Cont).
 
-verifyFlush(Cards):-verify_flush(Cards,"O", 5);verify_flush(Cards,"P", 5);verify_flush(Cards,"E", 5);verify_flush(Cards,"C", 5).
-
+verifyFlush(Cards):- verify_flush(Cards,"O", 5);verify_flush(Cards,"P", 5);verify_flush(Cards,"E", 5);verify_flush(Cards,"C", 5).
 verify_flush([],_, Cont):- Cont=<0.
 verify_flush([H|T],Naipe, Cont):- nth0(0,H,Cn), Cn == Naipe, Cont1 is Cont - 1, verify_flush(T,Naipe, Cont1); verify_flush(T,Naipe, Cont).
 
