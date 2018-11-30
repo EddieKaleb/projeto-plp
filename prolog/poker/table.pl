@@ -6,6 +6,7 @@
 :- use_module('hand_prob.pl').
 :- use_module('deck.pl').
 :- use_module('table_output.pl').
+:- use_module('hands.pl').
 
 clear_screen :-
     tty_clear.
@@ -509,9 +510,11 @@ set_players_probs(0, Pos) :- get_player_cards(Pos, Card1, Card2),
                              set_players_probs(0, Aux).
 
 set_players_probs(1, Pos) :- get_player_cards(Pos, Card1, Card2),
+                             % Colocar as cartas
                              append(Card1,Card2,Hand),
                              append(Hand,[],AllCards),
-                             get_improve_prob("IS_THREE",ImproveProb),
+                             verifyHand(AllCards, HandStatus),
+                             get_improve_prob(HandStatus,ImproveProb),
                              get_player_pre_flop_prob(Pos, PreFlopProb),
                              FlopToTurnProb is PreFlopProb * (1 - ImproveProb),
                              write("Probabilidade: "), writeln(FlopToTurnProb),
