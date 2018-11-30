@@ -36,14 +36,14 @@ format_hand([N1,V1],[N2,V2],Formated):-
   V1 =\= V2,N1 =\= N2 -> string_concat(V2,V1,Values), string_concat(Values,'o',Formated);
   string_concat(V1,V2,Formated).
 
-map_card(2,2).
-map_card(3,3).
-map_card(4,4).
-map_card(5,5).
-map_card(6,6).
-map_card(7,7).
-map_card(8,8).
-map_card(9,9).
+map_card("2",2).
+map_card("3",3).
+map_card("4",4).
+map_card("5",5).
+map_card("6",6).
+map_card("7",7).
+map_card("8",8).
+map_card("9",9).
 map_card("T",10).
 map_card("J",11).
 map_card("Q",12).

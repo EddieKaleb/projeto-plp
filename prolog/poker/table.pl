@@ -272,7 +272,7 @@ end_game:-
     show_winners,
     clear_screen,
     show_profile,
-    sleep(10),
+    sleep(15),
     clear_screen,
     writeln("\n\n                                   FIM DO JOGO !!!\n\n\n"),
     writeln("                         Deseja continuar jogando ? 1 (Sim) / 2 (Não)\n"),
@@ -372,29 +372,29 @@ init_players_hand:-
 
 run_bot(0):- % Apenas a probabilidade de vitoria 
          actual_player(Actual_player),
-         random(0,20.0,RandProb),
+         random(0,40.0,RandProb),
          get_player_pre_flop_prob(Actual_player, WinProb),
-         RandProb < WinProb,
+         RandProb > WinProb,
          call_action(Result), Result =:= 1 -> writeln("Bot Call");
          fold_action,writeln("Bot Fold").
 
 run_bot(1):- % Apenas a probabilidade de vitoria
         (actual_player(Actual_player),
-         random(0,20.0,RandProb),
+         random(0,40.0,RandProb),
          get_player_flop_turn_prob(Actual_player, WinProb),
-         RandProb > WinProb) -> fold_action,writeln("Bot Fold");
+         RandProb < WinProb) -> fold_action,writeln("Bot Fold");
          % Probabilidade de vitoria e nao houve aposta antes
          (last_bet(Last_bet),
          Last_bet =:= 0,
-         random(0,20.0,RandProb),
+         random(0,35.0,RandProb),
          get_player_flop_turn_prob(Actual_player, WinProb),
-         RandProb > WinProb) ->
+         RandProb < WinProb) ->
             ((call_action(Result), Result =:= 1) -> writeln("Bot Call"); 
             (last_bet(Last_bet),
             Last_bet =:= 0,
-            random(0,35.0,RandProb),
+            random(0,30.0,RandProb),
             get_player_flop_turn_prob(Actual_player, WinProb),
-            RandProb > WinProb) ->
+            RandProb < WinProb) ->
                 ((check_action(Result), Result =:= 1) -> writeln("Bot Check"); 
                 fold_action,writeln("Bot Fold"));
          % Houve aposta antes
@@ -406,15 +406,15 @@ run_bot(2):-
          % Probabilidade de vitoria e nao houve aposta antes
          (last_bet(Last_bet),
          Last_bet =:= 0,
-         random(0,20.0,RandProb),
+         random(0,15.0,RandProb),
          get_player_turn_river_prob(Actual_player, WinProb),
-         RandProb > WinProb) ->
+         RandProb < WinProb) ->
             ((call_action(Result), Result =:= 1) -> writeln("Bot Call"); 
             (last_bet(Last_bet),
             Last_bet =:= 0,
-            random(0,35.0,RandProb),
+            random(0,30.0,RandProb),
             get_player_flop_turn_prob(Actual_player, WinProb),
-            RandProb > WinProb) ->
+            RandProb < WinProb) ->
                 ((check_action(Result), Result =:= 1) -> writeln("Bot Check"); 
             fold_action, writeln("Bot Fold"));
          % Houve aposta antes
@@ -425,9 +425,9 @@ run_bot(2):-
 run_bot(3):- % Probabilidade de vitoria e nao houve aposta antes
          (last_bet(Last_bet),
          Last_bet =:= 0,
-         random(0,20.0,RandProb),
+         random(0,15.0,RandProb),
          get_player_river_showdown_prob(Actual_player, WinProb),
-         RandProb > WinProb) ->
+         RandProb < WinProb) ->
             ((call_action(Result), Result =:= 1) -> writeln("Bot Call"); 
             (last_bet(Last_bet),
             Last_bet =:= 0,
@@ -510,9 +510,9 @@ set_players_probs(0, Pos) :- get_player_cards(Pos, Card1, Card2),
                              set_players_probs(0, Aux).
 
 set_players_probs(1, Pos) :- get_player_cards(Pos, Card1, Card2),
-                             % Colocar as cartas
-                             append(Card1,Card2,Hand),
-                             append(Hand,[],AllCards),
+                             append([Card1],[Card2],Hand),
+                             get_all_cards_table(TableCards),
+                             append(Hand,TableCards,AllCards),
                              verifyHand(AllCards, HandStatus),
                              get_improve_prob(HandStatus,ImproveProb),
                              get_player_pre_flop_prob(Pos, PreFlopProb),
@@ -523,9 +523,11 @@ set_players_probs(1, Pos) :- get_player_cards(Pos, Card1, Card2),
                              set_players_probs(1, Aux).
 
 set_players_probs(2, Pos):- get_player_cards(Pos, Card1, Card2),
-                            append(Card1,Card2,Hand),
-                            append(Hand,[],AllCards),
-                            get_improve_prob("IS_TWO_PAIR",ImproveProb),
+                            append([Card1],[Card2],Hand),
+                            get_all_cards_table(TableCards),
+                            append(Hand,TableCards,AllCards),
+                            verifyHand(AllCards, HandStatus),
+                            get_improve_prob(HandStatus,ImproveProb),
                             get_player_flop_turn_prob(Pos, FlopToTurnProb),
                             TurnToRiverProb is FlopToTurnProb * (1 - ImproveProb),
                             write("Probabilidade: "), writeln(TurnToRiverProb),
@@ -534,9 +536,11 @@ set_players_probs(2, Pos):- get_player_cards(Pos, Card1, Card2),
                             set_players_probs(2, Aux).
 
 set_players_probs(3, Pos):- get_player_cards(Pos, Card1, Card2),
-                            append(Card1,Card2,Hand),
-                            append(Hand,[],AllCards),
-                            get_improve_prob("IS_ONE_PAIR",ImproveProb),
+                            append([Card1],[Card2],Hand),
+                            get_all_cards_table(TableCards),
+                            append(Hand,TableCards,AllCards),
+                            verifyHand(AllCards, HandStatus),
+                            get_improve_prob(HandStatus,ImproveProb),
                             get_player_turn_river_prob(Pos, TurnToRiverProb),
                             RiverToShowDownProb is TurnToRiverProb * (1 - ImproveProb),
                             write("Probabilidade: "), writeln(RiverToShowDownProb),
@@ -555,34 +559,49 @@ show_winners:-
     writeln("****** VENCEDORES *****"),
     writeln("***********************"),
     print_winners(0, Big),
-    sleep(7).
+    sleep(15).
 
 
 print_winners(6,Biggest):- !.
 print_winners(Pos, Biggest):- 
     ((get_player_active(Pos, Active),
     Active =:= 1,
-    map_hands("IS_FULL_HOUSE", Value),
+    get_player_cards(Pos, Card1, Card2),
+    append([Card1],[Card2],Hand),
+    get_all_cards_table(TableCards),
+    append(Hand,TableCards,AllCards),
+    verifyHand(AllCards, HandStatus),
+    map_hands(HandStatus, Value),
     Value =:= Biggest,
     Id is Pos + 1) ->
-    (write("Player "),write(Id),write(" -> "),writeln("IS_FULL_HOUSE"),print_winners(Id, Biggest)));
+    (write("Player "),write(Id),write(" -> "),writeln(HandStatus),print_winners(Id, Biggest)));
     (Id is Pos + 1,print_winners(Id, Biggest)).
 
 get_finalists(6,BigAux, Biggest):- Biggest = BigAux.
 get_finalists(Pos, BigAux, Biggest):- 
     get_player_active(Pos, Active),Active =:= 1,Id is Pos + 1 -> 
-        (write("Player "),write(Id),write(" -> "),writeln("IS_FULL_HOUSE"),
-        (map_hands("IS_FULL_HOUSE", Value), Value > BigAux ->
+        (   get_player_cards(Pos, Card1, Card2),
+            append([Card1],[Card2],Hand),
+            get_all_cards_table(TableCards),
+            append(Hand,TableCards,AllCards),
+            verifyHand(AllCards, HandStatus),
+            write("Player "),write(Id),write(" -> "),writeln(HandStatus),
+        (   get_player_cards(Pos, Card1, Card2),
+            append([Card1],[Card2],Hand),
+            get_all_cards_table(TableCards),
+            append(Hand,TableCards,AllCards),
+            verifyHand(AllCards, HandStatus),
+            map_hands(HandStatus, Value), Value > BigAux ->
             get_finalists(Id, Value, Biggest); get_finalists(Id, BigAux, Biggest)));
-    Id is Pos + 1, get_finalists(Id, BigAux, Biggest).
+Id is Pos + 1, get_finalists(Id, BigAux, Biggest).
 
+map_hands("IS_HIGH_CARD", 0).
 map_hands("IS_ONE_PAIR", 1).
 map_hands("IS_TWO_PAIR", 2).
 map_hands("IS_THREE", 3).
 map_hands("IS_STRAIGHT", 4).
 map_hands("IS_FLUSH", 5).
 map_hands("IS_FULL_HOUSE", 6).
-map_hands("IS_HIGH_CARD", 7).
 
 
 % PERFIL DO JOGADOR

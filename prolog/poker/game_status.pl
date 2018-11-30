@@ -24,8 +24,7 @@
     start_dealer_position/0,
     next_player/1,
     reset_cards_table/0,
-    get_cards_table/1,
-    get_card_table/2
+    get_all_cards_table/1
 ]).
 
 :- dynamic(dealer_position/1).
@@ -35,7 +34,7 @@ dealer_position(-1).
 minimum_bet(2).
 
 :- dynamic(cards_table/3).
-cards_table(0, "1", "E").
+cards_table(0, " ", " ").
 cards_table(1, " ", " ").
 cards_table(2, " ", " ").
 cards_table(3, " ", " ").
@@ -120,15 +119,15 @@ start_dealer_position:-
     set_dealer_position(Dealer_position).
 
 
-get_cards_table(Cards):-
-    Aux2 = [], get_card_table(0, Aux1), append(Aux1,[],Cards).
-    %Aux4 = [], get_card_table(1, Aux3), append(Aux2,Aux3,Cards).
-    %Aux6 = [], get_card_table(2, Aux5), append(Aux4,Aux5,Aux6),
-    %Aux8 = [], get_card_table(3, Aux7), append(Aux6,Aux7,Aux8),
-    %get_card_table(4, Aux9), append(Aux8,Aux9,Cards).
+get_all_cards_table(Cards):-
+    get_single_card_table(0, Aux1), append(Aux1,[],Aux2),
+    get_single_card_table(1, Aux3), append(Aux2,Aux3,Aux4),
+    get_single_card_table(2, Aux5), append(Aux4,Aux5,Aux6),
+    get_single_card_table(3, Aux7), append(Aux6,Aux7,Aux8),
+    get_single_card_table(4, Aux9), append(Aux8,Aux9,Cards).
 
-get_card_table(Id, Card):-
-    cards_table(Id, V1, N1), V1 =\= " " -> append([[N1, V1]], [], Card); Card = [].
+get_single_card_table(Id, Card):-
+    cards_table(Id, N1, V1), V1 =\= " " -> Card = [[N1, V1]]; Card = [].
 
 reset_cards_table:-
     set_card_table(0, " ", " "),
