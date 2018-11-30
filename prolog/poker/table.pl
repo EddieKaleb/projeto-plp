@@ -224,8 +224,7 @@ config_card(Value, Naipe):-
     writeln(Naipe)).
 
 is_valid_card(Card, Result):-
-    get_card_player(Card, Valid)
-    (not(Valid), (card_invalid_message, Result is 0));
+    (not(getCardSelected(Card)), (card_invalid_message, Result is 0));
     Result is 1.
 
 card_invalid_message:-
