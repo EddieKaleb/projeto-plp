@@ -213,10 +213,12 @@ select_card_hand:-
 
 config_card(Value, Naipe):-
     writeln("Digite o valor da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
-    read_line_to_string(user_input, Value),
+    read_line_to_string(user_input, ValueTest),
     writeln("Digite o naipe da carta (O, C, P, E): "),
-    read_line_to_string(user_input, Naipe),
-    ((not(get_card_selected([Value, Naipe])), (card_invalid_message), config_card(Value, Naipe));
+    read_line_to_string(user_input, NaipeTest),
+    ((not(get_card_selected([ValueTest, NaipeTest])), (card_invalid_message), config_card(Value, Naipe));
+    Value = ValueTest,
+    Naipe = NaipeTest,
     write("Carta: "),
     write(Value),
     write(" "),
