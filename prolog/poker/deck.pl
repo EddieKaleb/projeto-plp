@@ -1,8 +1,8 @@
 :- module(
     deck, 
     [init_deck/0,
-    getCardSelected/1,
-    getFirstCard/1
+    get_card_selected/1,
+    get_first_card/1
     ]).
 
 :- dynamic(deck/1).
@@ -31,7 +31,7 @@ create(Nipe,[H|T],Part):-
     append(P, [[Nipe,H]], X), 
     Part = X.
 
-getFirstCard(Card):-
+get_first_card(Card):-
     deck(Deck), 
     removeFirst(Deck,D,R),
     Card = R,
@@ -39,7 +39,7 @@ getFirstCard(Card):-
      
 removeFirst([H|T],Deck,R):- R = H, Deck = T.
 
-getCardSelected(Selected):-
+get_card_selected(Selected):-
     deck(Deck),
     validCard(Selected,Deck)->(
         remove(Selected,Deck,R),

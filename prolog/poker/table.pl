@@ -61,9 +61,9 @@ run_preflop_round:-
 run_flop_round:-
     writeln(" -------- FlopRound -------- \n"),
 
-    get_card_by_index(12, [Valor1, Naipe1]),
-    get_card_by_index(13, [Valor2, Naipe2]),
-    get_card_by_index(14, [Valor3, Naipe3]),
+    getFirstCard([Valor1, Naipe1]),
+    getFirstCard([Valor2, Naipe2]),
+    getFirstCard([Valor3, Naipe3]),
     set_card_table(0, Valor1, Naipe1),
     set_card_table(1, Valor2, Naipe2),
     set_card_table(2, Valor3, Naipe3),
@@ -79,7 +79,7 @@ run_flop_round:-
 run_turn_round:-
     writeln(" ------- TurnRound -------- \n"),
 
-    get_card_by_index(15, [Valor4, Naipe4]),
+    getFirstCard([Valor4, Naipe4]),
     set_card_table(3, Valor4, Naipe4),
 
     writeln([Valor4, Naipe4]),
@@ -94,7 +94,7 @@ run_turn_round:-
 run_river_round:-
     writeln(" -------- RiverRound ---------- \n"),
 
-    get_card_by_index(16, [Valor5, Naipe5]),
+    getFirstCard([Valor5, Naipe5]),
     set_card_table(4, Valor5, Naipe5),
 
     writeln([Valor5, Naipe5]),
