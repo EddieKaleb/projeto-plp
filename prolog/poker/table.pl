@@ -374,7 +374,7 @@ init_players_hand:-
 
 run_bot(0):- % Apenas a probabilidade de vitoria 
          actual_player(Actual_player),
-         random(10.0,60.0,RandProb),
+         random(6.0,45.0,RandProb),
          get_player_pre_flop_prob(Actual_player, WinProb),
          RandProb > WinProb,
          call_action(Result), Result =:= 1 -> writeln("Bot Call");
@@ -382,7 +382,7 @@ run_bot(0):- % Apenas a probabilidade de vitoria
 
 run_bot(1):- % Apenas a probabilidade de vitoria
         (actual_player(Actual_player),
-         random(0,5.0,RandProb),
+         random(0,15.0,RandProb),
          get_player_flop_turn_prob(Actual_player, WinProb),
          RandProb > WinProb) -> fold_action,writeln("Bot Fold");
          % Probabilidade de vitoria e nao houve aposta antes
