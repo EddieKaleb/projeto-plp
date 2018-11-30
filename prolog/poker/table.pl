@@ -276,6 +276,9 @@ invalid_action :-
 end_game:-
     show_winners,
     clear_screen,
+    show_profile,
+    sleep(10),
+    clear_screen,
     writeln("\n\n                                   FIM DO JOGO !!!\n\n\n"),
     writeln("                         Deseja continuar jogando ? 1 (Sim) / 2 (Não)\n"),
     input_number(Op),
@@ -537,3 +540,76 @@ map_hands("IS_STRAIGHT", 4).
 map_hands("IS_FLUSH", 5).
 map_hands("IS_FULL_HOUSE", 6).
 map_hands("IS_HIGH_CARD", 7).
+
+
+% PERFIL DO JOGADOR
+
+show_profile:-
+    writeln("        .------..------..------..------..------..------."),
+    writeln("        |P.--. ||E.--. ||R.--. ||F.--. ||I.--. ||L.--. |"),
+    writeln("        | :/\134: || (\134/) || :(): || :(): || (\134/) || :/\134: |"),
+    writeln("        | (__) || :\134/: || ()() || ()() || :\134/: || (__) |"),
+    writeln("        | '--'P|| '--'E|| '--'R|| '--'F|| '--'I|| '--'L|"),
+    writeln("        `------'`------'`------'`------'`------'`------'"),
+    writeln(" "),
+    writeln("PERFIS POSSÍVEIS"),
+    writeln(" "),
+    writeln("[-] MUITO AGRESSIVO [-] AGRESSIVO [+] MUITO MODERADO [+] MODERADO"),
+    get_average_prob(AvgProb),
+    pot(Pot),
+    AvgPot is Pot/ 4,
+    show_profile_status(AvgProb,AvgPot).
+
+get_average_prob(Prob):- 
+    writeln(" "),
+    writeln("PROBABILIDADES"),
+    writeln(" "),
+    get_player_pre_flop_prob(0, Prob1),
+    write("* PRÉ-FLOP ---> "), writeln(Prob1),
+    get_player_flop_turn_prob(0, Prob2),
+    write("* FLOP -------> "), writeln(Prob2),
+    get_player_turn_river_prob(0, Prob3),
+    write("* TURN -------> "), writeln(Prob3),
+    get_player_river_showdown_prob(0, Prob4),
+    write("* RIVER ------> "), writeln(Prob4),
+    writeln(" "),
+    Sum is (Prob1 + Prob2 + Prob3 + Prob4),
+    Prob is Sum / 4.
+
+show_profile_status(AvgProb,AvgPot):-
+    get_player_pre_flop_prob(0, FlopToTurn),
+    get_player_chips(0, Chips),
+    AvgProb < FlopToTurn -> worst_hand(AvgPot, Chips);
+    better_hand(AvgPot, Chips).
+
+worst_hand(AvgPot, Chips):-
+    Chips < AvgPot -> show_msg_profile1;
+    show_msg_profile2.
+
+better_hand(AvgPot, Chips):-
+    Chips < AvgPot -> show_msg_profile3;
+    show_msg_profile4.
+
+show_msg_profile1:- 
+    writeln(" "),
+    writeln("Seu perfil é MUITO AGRESSIVO, no geral sua probabilidade"),
+    writeln("de vitória não melhorou em relação a sua probabilidade no FLOP "),
+    writeln("e suas fichas estão abaixo da média do pote.").
+    
+show_msg_profile2:- 
+    writeln(" "),
+    writeln("Seu perfil é AGRESSIVO, no geral sua probabilidade"),
+    writeln("de vitória não melhorou em relação a sua probabilidade no FLOP,"),
+    writeln("mas suas fichas estão acima da média do pote.").
+
+show_msg_profile3:- 
+    writeln(" "),
+    writeln("Seu perfil é MUITO MODERADO, no geral sua probabilidade"), 
+    writeln("de vitória melhorou em relação a sua probabilidade no FLOP,"),
+    writeln("mas suas fichas estão abaixo da média do pote").
+
+show_msg_profile3:- 
+    writeln(" "),
+    writeln("Seu perfil é MODERADO, no geral sua probabilidade"), 
+    writeln("de vitória melhorou em relação a sua probabilidade no FLOP"),  
+    writeln("e suas fichas estão acima da média do pote").
