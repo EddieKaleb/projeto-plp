@@ -216,16 +216,14 @@ config_card(Value, Naipe):-
     read_line_to_string(user_input, Value),
     writeln("Digite o naipe da carta (O, C, P, E): "),
     read_line_to_string(user_input, Naipe),
-    is_valid_card([Value, Naipe], Result),
-    ((not(Result), config_card(Value, Naipe));
+    ((not(is_valid_card([Value, Naipe])), config_card(Value, Naipe));
     write("Carta: "),
     write(Value),
     write(" "),
     writeln(Naipe)).
 
-is_valid_card(Card, Result):-
-    (not(get_card_selected(Card)), (card_invalid_message, Result is 0));
-    Result is 1.
+is_valid_card(Card):-
+    (get_card_selected(Card), (card_invalid_message).
 
 card_invalid_message:-
     writeln("                       Carta inválida... Selecione outra !"),
