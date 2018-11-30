@@ -119,6 +119,7 @@ config_new_match:-
     set_minimum_bet(2),
     set_pot(0),
     set_minimum_bet(2),
+    set_active_players(6),
     start_dealer_position,
     small_position(Small_position),
     set_actual_player(Small_position),
@@ -323,7 +324,8 @@ fold_action :-
     actual_player(Actual_player),
     set_player_active(Actual_player, 0),
     active_players(Active_players),
-    set_active_players((Active_players - 1)).
+    New_active_players is (Active_players - 1),
+    set_active_players(New_active_players).
 
 
 exit_action :-
