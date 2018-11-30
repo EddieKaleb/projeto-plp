@@ -167,9 +167,10 @@ centralCardsWithProb:-
     current_round(Turn),
     showProb(Turn, Prob),
     
-    write(Prob),
+    format(atom(Output), "~1f", [Prob]),
+    write(Output),
     write("%"),
-    numDigits(Prob, Ndigits),
+    numDigits(Output, Ndigits),
     spaces(5 - Ndigits),
     write("|"),
     spaces(27),
@@ -405,11 +406,13 @@ main :-
     set_card_table(3, "P", "J"),
     set_card_table(4, "P", "J"),
 
-    set_current_round(4),
-    set_player_pre_flop_prob(0, 1.0),
-    set_player_flop_turn_prob(0, 2.0),
-    set_player_turn_river_prob(0, 3.0),
-    set_player_river_showdown_prob(0, 4.0),
+    set_current_round(1),
+    set_player_pre_flop_prob(0, 1.4444),
+    set_player_flop_turn_prob(0, 100.4444),
+    set_player_turn_river_prob(0, 3.4444),
+    set_player_river_showdown_prob(0, 4.444),
+    
+
     
     printTable.
     

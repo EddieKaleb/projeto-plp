@@ -224,7 +224,8 @@ config_card(Value, Naipe):-
     writeln(Naipe)).
 
 is_valid_card(Card, Result):-
-    (not(get_card_player(Card)), (card_invalid_message, Result is 0));
+    get_card_player(Card, Valid)
+    (not(Valid), (card_invalid_message, Result is 0));
     Result is 1.
 
 card_invalid_message:-
@@ -232,8 +233,7 @@ card_invalid_message:-
     sleep(1).
 
 flop_round_manual:-
-    select_flop_cards,
-    bots_flop.
+    select_flop_cards.
 
 select_flop_cards:- 
     clear_screen,
@@ -261,12 +261,10 @@ turn_round_manual:-
     select_turn_card,
     minimum_bet(Minimum_bet),
     New_minimun_bet is Minimum_bet * 2,
-    set_minimum_bet(New_minimun_bet),
-    bots_turn.
+    set_minimum_bet(New_minimun_bet).
 
 river_round_manual:-
-    select_river_card,
-    bots_river.
+    select_river_card.
 
 invalid_action :- 
     clear_screen,
