@@ -1,7 +1,8 @@
 :- module(
     deck, 
     [init_deck/0,
-    get_card_by_index/2
+    getCardSelected/1,
+    getFirstCard/1
     ]).
 
 :- dynamic(deck/1).
@@ -30,10 +31,38 @@ create(Nipe,[H|T],Part):-
     append(P, [[Nipe,H]], X), 
     Part = X.
 
+getFirstCard(Card):-
+    deck(Deck), 
+    removeFirst(Deck,D,R),
+    Card = R,
+    set_deck(D).
+     
+removeFirst([H|T],Deck,R):- R = H, Deck = T.
 
-get_card_by_index(Index,Card):-
-    deck(X), 
-    nth0(Index,X,Value), 
-    Card = Value.
+getCardSelected(Selected):-
+    deck(Deck),
+    validCard(Selected,Deck)->(
+        remove(Selected,Deck,R),
+        set_deck(R)
+    ).
 
+remove(_,[_],R):- R=[].
+remove(Selected,[H|T],R):- 
+    compareCards(Selected,H) -> (R=T);
+    remove(Selected,T,Re), append([H],Re,X), R=X.
+
+compareCards(Selected,H):-
+    nth0(1,H,ValueH), 
+    nth0(1,Selected,ValueS), 
+    ValueH==ValueS ,  
+    nth0(0,H,NaipeH), 
+    nth0(0,Selected,NaipeS),
+    NaipeH==NaipeS.
+
+validCard(Selected,[H]):-
+    compareCards(Selected,H).
+validCard(Selected,[H|T]):- 
+    compareCards(Selected,H);
+    validCard(Selected,T).
+    
 
