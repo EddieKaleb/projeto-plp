@@ -223,7 +223,7 @@ config_card(Value, Naipe):-
     writeln(Naipe)).
 
 is_valid_card(Card):-
-    (get_card_selected(Card), (card_invalid_message).
+    (get_card_selected(Card), (card_invalid_message)).
 
 card_invalid_message:-
     writeln("                       Carta inválida... Selecione outra !"),
