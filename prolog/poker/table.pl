@@ -395,10 +395,10 @@ run_bot(1):- % Apenas a probabilidade de vitoria
             get_player_flop_turn_prob(Actual_player, WinProb),
             RandProb > WinProb) ->
                 ((check_action(Result), Result =:= 1) -> writeln("Bot Check"); 
-                fold_action; writeln("Bot Fold"));
+                fold_action,writeln("Bot Fold"));
          % Houve aposta antes
          (call_action(Result), Result =:= 1) -> writeln("Bot Call");
-         fold_action; writeln("Bot Fold").
+         fold_action,writeln("Bot Fold")).
 
 % Chances de continuar na partida são maiores %          
 run_bot(2):- 
@@ -415,10 +415,10 @@ run_bot(2):-
             get_player_flop_turn_prob(Actual_player, WinProb),
             RandProb > WinProb) ->
                 ((check_action(Result), Result =:= 1) -> writeln("Bot Check"); 
-            fold_action; writeln("Bot Fold"));
+            fold_action, writeln("Bot Fold"));
          % Houve aposta antes
          (call_action(Result), Result =:= 1) -> writeln("Bot Call");
-         fold_action; writeln("Bot Fold").
+         fold_action,writeln("Bot Fold")).
 
 % Chances de continuar na partida são maiores %
 run_bot(3):- % Probabilidade de vitoria e nao houve aposta antes
@@ -434,10 +434,10 @@ run_bot(3):- % Probabilidade de vitoria e nao houve aposta antes
             get_player_flop_turn_prob(Actual_player, WinProb),
             RandProb > WinProb) ->
                 ((check_action(Result), Result =:= 1) -> writeln("Bot Check"); 
-                fold_action; writeln("Bot Fold"));
+                fold_action, writeln("Bot Fold"));
          % Houve aposta antes
          (call_action(Result), Result =:= 1) -> writeln("Bot Call");
-         fold_action; writeln("Bot Fold").
+         fold_action, writeln("Bot Fold")).
 
 show_infos:-
     dealer_position(Dealer_position),
