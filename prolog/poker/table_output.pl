@@ -1,5 +1,4 @@
 :- module(table_output, [printTable/0]).
-:- initialization(main).
 :- use_module('game_status.pl').
 :- use_module('players.pl').
 
@@ -388,31 +387,4 @@ numDigits(Number, Num):-
     atom_chars(L, X),
     length(X, N),
     Num is N.
-
-
-main :-
-    set_dealer_position(3),
-    set_player_active(1, 0),
-    set_player_active(2, 0),
-    set_player_active(3, 0),
-    set_player_active(4, 0),
-    set_player_active(5, 0),
-    set_player_active(0, 0),
-    set_player_chips(5, 600000),
-    set_pot(6000000000),
-    set_card_table(0, "P", "J"),
-    set_card_table(1, "P", "J"),
-    set_card_table(2, "P", "J"),
-    set_card_table(3, "P", "J"),
-    set_card_table(4, "P", "J"),
-
-    set_current_round(1),
-    set_player_pre_flop_prob(0, 1.4444),
-    set_player_flop_turn_prob(0, 100.4444),
-    set_player_turn_river_prob(0, 3.4444),
-    set_player_river_showdown_prob(0, 4.444),
-    
-
-    
-    printTable.
     
