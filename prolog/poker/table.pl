@@ -146,6 +146,7 @@ run_pre_flop_action(Actual_position, End_position):-
 
 
 run_action(Actual_position, End_position):-
+    (active_players(Active_players), Active_players > 1),
     (Actual_position =:= End_position);
     print_table,
     ((get_player_active(Actual_position, Active), Active =:= 1,
