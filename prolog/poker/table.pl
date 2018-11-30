@@ -61,9 +61,9 @@ run_preflop_round:-
 run_flop_round:-
     writeln(" -------- FlopRound -------- \n"),
 
-    getFirstCard([Valor1, Naipe1]),
-    getFirstCard([Valor2, Naipe2]),
-    getFirstCard([Valor3, Naipe3]),
+    get_first_card([Valor1, Naipe1]),
+    get_first_card([Valor2, Naipe2]),
+    get_first_card([Valor3, Naipe3]),
     set_card_table(0, Valor1, Naipe1),
     set_card_table(1, Valor2, Naipe2),
     set_card_table(2, Valor3, Naipe3),
@@ -79,7 +79,7 @@ run_flop_round:-
 run_turn_round:-
     writeln(" ------- TurnRound -------- \n"),
 
-    getFirstCard([Valor4, Naipe4]),
+    get_first_card([Valor4, Naipe4]),
     set_card_table(3, Valor4, Naipe4),
 
     writeln([Valor4, Naipe4]),
@@ -94,7 +94,7 @@ run_turn_round:-
 run_river_round:-
     writeln(" -------- RiverRound ---------- \n"),
 
-    getFirstCard([Valor5, Naipe5]),
+    get_first_card([Valor5, Naipe5]),
     set_card_table(4, Valor5, Naipe5),
 
     writeln([Valor5, Naipe5]),
@@ -224,7 +224,7 @@ config_card(Value, Naipe):-
     writeln(Naipe)).
 
 is_valid_card(Card, Result):-
-    (not(getCardSelected(Card)), (card_invalid_message, Result is 0));
+    (not(get_card_selected(Card)), (card_invalid_message, Result is 0));
     Result is 1.
 
 card_invalid_message:-
