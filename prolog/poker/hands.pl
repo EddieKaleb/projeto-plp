@@ -1,5 +1,5 @@
-% :- module(hands, 
-%     [verifyHand/2]).
+:- module(hands, 
+    [verifyHand/2]).
 
 verifyHand(Cards,Hand):-quick_sort(Cards,Sorted), verify_hand(Sorted,Hand).
 verify_hand(Cards,Hand):- verifyFour(Cards) -> (Hand = "IS_FOUR");
@@ -45,6 +45,17 @@ verify_flush([H|T],Naipe, Cont):- nth0(0,H,Cn), Cn == Naipe, Cont1 is Cont - 1, 
 verifyFour([_,_,_]):- false.
 verifyFour([X,Y,Z,W|T]):- nth0(1,X,ValueX), nth0(1,Y,ValueY), nth0(1,Z,ValueZ), nth0(1,W,ValueW), ValueX==ValueY, ValueZ==ValueY, ValueZ==ValueW; 
 verifyFour([Y,Z,W|T]).
+
+% verifyFullHouse(Cards):- verify_full_house_t(Cards,Value,Te), verify_full_house_p(Te,Value);verify_full_house_t2(Cards,Value,Te),verify_full_house_p2(Te,Value,T).
+% verify_full_house_t([_,_],_,_):- false.
+% verify_full_house_t([X,Y,Z|T], Value,Te):- nth0(1,X,ValueX), nth0(1,Y,ValueY), nth0(1,Z,ValueZ), ValueX==ValueY, ValueZ==ValueY, Value=Y, Te=T; 
+%                                          verify_full_house_t([Y,Z|T],Value,Te).
+% verify_full_house_p([_],_):- false.
+% verify_full_house_p([X,Y|T],Value):-nth0(1,X,ValueX), nth0(1,Y,ValueY), ValueX==ValueY,nth0(1,Value,V), ValueX=\=V; 
+%                                    verify_full_house_p([Y|T],Value).
+
+% verify_full_house_t2(Cards,Value)
+
 
 quick_sort(List,Sorted):-q_sort(List,[],Sorted).
 q_sort([],Acc,Acc).
