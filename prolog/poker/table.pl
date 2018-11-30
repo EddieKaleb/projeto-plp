@@ -371,7 +371,13 @@ run_bot(1):- % Apenas a probabilidade de vitoria
          get_player_flop_turn_prob(Actual_player, WinProb),
          RandProb > WinProb) ->
             ((call_action(Result), Result =:= 1) -> writeln("Bot Call"); 
-            fold_action; writeln("Bot Fold"));
+            (last_bet(Last_bet),
+            Last_bet =:= 0,
+            random(0,35.0,RandProb),
+            get_player_flop_turn_prob(Actual_player, WinProb),
+            RandProb > WinProb) ->
+                ((check_action(Result), Result =:= 1) -> writeln("Bot Check"); 
+                fold_action; writeln("Bot Fold"));
          % Houve aposta antes
          (call_action(Result), Result =:= 1) -> writeln("Bot Call");
          fold_action; writeln("Bot Fold").
@@ -385,6 +391,12 @@ run_bot(2):-
          get_player_turn_river_prob(Actual_player, WinProb),
          RandProb > WinProb) ->
             ((call_action(Result), Result =:= 1) -> writeln("Bot Call"); 
+            (last_bet(Last_bet),
+            Last_bet =:= 0,
+            random(0,35.0,RandProb),
+            get_player_flop_turn_prob(Actual_player, WinProb),
+            RandProb > WinProb) ->
+                ((check_action(Result), Result =:= 1) -> writeln("Bot Check"); 
             fold_action; writeln("Bot Fold"));
          % Houve aposta antes
          (call_action(Result), Result =:= 1) -> writeln("Bot Call");
@@ -398,7 +410,13 @@ run_bot(3):- % Probabilidade de vitoria e nao houve aposta antes
          get_player_river_showdown_prob(Actual_player, WinProb),
          RandProb > WinProb) ->
             ((call_action(Result), Result =:= 1) -> writeln("Bot Call"); 
-            fold_action; writeln("Bot Fold"));
+            (last_bet(Last_bet),
+            Last_bet =:= 0,
+            random(0,35.0,RandProb),
+            get_player_flop_turn_prob(Actual_player, WinProb),
+            RandProb > WinProb) ->
+                ((check_action(Result), Result =:= 1) -> writeln("Bot Check"); 
+                fold_action; writeln("Bot Fold"));
          % Houve aposta antes
          (call_action(Result), Result =:= 1) -> writeln("Bot Call");
          fold_action; writeln("Bot Fold").
