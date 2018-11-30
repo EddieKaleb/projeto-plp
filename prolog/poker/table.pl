@@ -209,14 +209,14 @@ select_card_hand:-
     writeln(" ----- Selecione as cartas da sua mão ------"),
     config_card(Value1, Naipe1),
     config_card(Value2, Naipe2),
-    set_player_cards(Actual_player, [Value1, Naipe1], [Value2, Naipe2]).
+    set_player_cards(Actual_player, [Naipe1, Value1], [Naipe2, Value2]).
 
 config_card(Value, Naipe):-
     writeln("Digite o valor da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
     read_line_to_string(user_input, ValueTest),
     writeln("Digite o naipe da carta (O, C, P, E): "),
     read_line_to_string(user_input, NaipeTest),
-    ((not(get_card_selected([ValueTest, NaipeTest])), (card_invalid_message), config_card(Value, Naipe));
+    ((not(get_card_selected([NaipeTest, ValueTest])), (card_invalid_message), config_card(Value, Naipe));
     Value = ValueTest,
     Naipe = NaipeTest,
     write("Carta: "),
