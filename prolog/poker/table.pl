@@ -382,7 +382,7 @@ run_bot(0):- % Apenas a probabilidade de vitoria
 
 run_bot(1):- % Apenas a probabilidade de vitoria
         (actual_player(Actual_player),
-         random(0,15.0,RandProb),
+         random(0,20.0,RandProb),
          get_player_flop_turn_prob(Actual_player, WinProb),
          RandProb > WinProb) -> fold_action,writeln("Bot Fold");
          % Probabilidade de vitoria e nao houve aposta antes
