@@ -205,11 +205,11 @@ run_river_round_manual:-
 
 select_card_hand:-
     clear_screen,
-    actual_player(Actual_player),
+    show_infos,
     writeln(" ----- Selecione as cartas da sua mão ------"),
     config_card(Value1, Naipe1),
     config_card(Value2, Naipe2),
-    set_player_cards(Actual_player, [Naipe1, Value1], [Naipe2, Value2]).
+    set_player_cards(0, [Naipe1, Value1], [Naipe2, Value2]).
 
 config_card(Value, Naipe):-
     writeln("Digite o Value da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
@@ -469,6 +469,18 @@ show_infos:-
     write("Jogador atual: "), writeln(Actual_player),
     write("Primeiro a apostar: "), writeln(First_bet_player),
     write("Jogadores ativos: "), writeln(Active_players),
+    get_player_cards(0, P0_Card1, P0_Card2),
+    get_player_cards(1, P1_Card1, P1_Card2),
+    get_player_cards(2, P2_Card1, P2_Card2),
+    get_player_cards(3, P3_Card1, P3_Card2),
+    get_player_cards(4, P4_Card1, P4_Card2),
+    get_player_cards(5, P5_Card1, P5_Card2),
+    write(P0_Card1), writeln(P0_Card2),
+    write(P1_Card1), writeln(P1_Card2),
+    write(P2_Card1), writeln(P2_Card2),
+    write(P3_Card1), writeln(P3_Card2),
+    write(P4_Card1), writeln(P4_Card2),
+    write(P5_Card1), writeln(P5_Card2),
     write("\n\n").
 
 print_table:-
