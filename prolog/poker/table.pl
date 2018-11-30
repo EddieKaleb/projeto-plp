@@ -24,7 +24,6 @@ start_game :-
 run_game:-
     set_pot(0),
     set_minimum_bet(2),
-    start_dealer_position,
     small_position(Small_position),
     set_actual_player(Small_position),
     run_match,
@@ -115,6 +114,7 @@ config_new_round(Round_id):-
 
 config_new_match:-
     init_deck,
+    init_players_hand,
     set_minimum_bet(2),
     set_pot(0),
     set_minimum_bet(2),
@@ -169,7 +169,6 @@ run_game_manual:-
     select_card_hand,
     set_pot(0),
     set_minimum_bet(2),
-    start_dealer_position,
     small_position(Small_position),
     set_actual_player(Small_position),
     run_match_manual,
@@ -207,12 +206,13 @@ run_river_round_manual:-
 select_card_hand:-
     clear_screen,
     actual_player(Actual_player),
+    writeln(" ----- Selecione as cartas da sua mão ------"),
     config_card(Value1, Naipe1),
     config_card(Value2, Naipe2),
     set_player_cards(Actual_player, [Value1, Naipe1], [Value2, Naipe2]).
 
 config_card(Value, Naipe):-
-    writeln("Digite o Value da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
+    writeln("Digite o valor da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
     read_line_to_string(user_input, Value),
     writeln("Digite o naipe da carta (O, C, P, E): "),
     read_line_to_string(user_input, Naipe),
@@ -350,6 +350,22 @@ select_player_option(4):- exit_action, halt.
 select_player_option(_):- invalid_action, clear_screen, print_table, show_user_actions.
 
 bot_actions:- current_round(Current_round),run_bot(Current_round).
+
+init_players_hand:-
+    get_first_card(P0_card1), get_first_card(P0_card2),
+    get_first_card(P1_card1), get_first_card(P1_card2),
+    get_first_card(P2_card1), get_first_card(P2_card2),
+    get_first_card(P3_card1), get_first_card(P3_card2),
+    get_first_card(P4_card1), get_first_card(P4_card2),
+    get_first_card(P5_card1), get_first_card(P5_card2),
+
+    set_player_cards(0, P0_card1, P0_card2),
+    set_player_cards(1, P1_card1, P1_card2),
+    set_player_cards(2, P2_card1, P2_card2),
+    set_player_cards(3, P3_card1, P3_card2),
+    set_player_cards(4, P4_card1, P4_card2),
+    set_player_cards(5, P5_card1, P5_card2).
+    
 
 run_bot(0):- % Apenas a probabilidade de vitoria 
          actual_player(Actual_player),
@@ -518,7 +534,7 @@ show_winners:-
     writeln("****** FINALISTAS *****"),
     writeln("***********************"),
     get_finalists(0, 0, Big),
-    writeln("***********************"),
+    writeln("\n\n***********************"),
     writeln("****** VENCEDORES *****"),
     writeln("***********************"),
     print_winners(0, Big),

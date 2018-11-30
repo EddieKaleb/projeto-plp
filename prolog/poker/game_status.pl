@@ -109,7 +109,7 @@ next_player(New_player_position):-
     get_next_position(Actual_player, New_player_position),
     set_actual_player(New_player_position).
 
-start_dealer_position():-
+start_dealer_position:-
     dealer_position(Dealer_pos),
     (
         (Dealer_pos =:= -1, random(0, 5, Dealer_position));
