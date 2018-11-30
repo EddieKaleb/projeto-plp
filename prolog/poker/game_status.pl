@@ -76,9 +76,9 @@ set_minimum_bet(New_minimun_bet):-
     retract(minimum_bet(_)),
     asserta(minimum_bet(New_minimun_bet)).
 
-set_card_table(Index, Valor, Naipe):-
+set_card_table(Index, Value, Naipe):-
     retract(cards_table(Index, _, _)),
-    asserta(cards_table(Index, Valor, Naipe)).
+    asserta(cards_table(Index, Value, Naipe)).
 
 set_active_players(New_active_players):-
     retract(active_players(_)),

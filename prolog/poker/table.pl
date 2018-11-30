@@ -60,16 +60,16 @@ run_preflop_round:-
 run_flop_round:-
     writeln(" -------- FlopRound -------- \n"),
 
-    get_first_card([Valor1, Naipe1]),
-    get_first_card([Valor2, Naipe2]),
-    get_first_card([Valor3, Naipe3]),
-    set_card_table(0, Valor1, Naipe1),
-    set_card_table(1, Valor2, Naipe2),
-    set_card_table(2, Valor3, Naipe3),
+    get_first_card([Value1, Naipe1]),
+    get_first_card([Value2, Naipe2]),
+    get_first_card([Value3, Naipe3]),
+    set_card_table(0, Value1, Naipe1),
+    set_card_table(1, Value2, Naipe2),
+    set_card_table(2, Value3, Naipe3),
 
-    writeln([Valor1, Naipe1]),
-    writeln([Valor2, Naipe2]),
-    writeln([Valor3, Naipe3]),
+    writeln([Value1, Naipe1]),
+    writeln([Value2, Naipe2]),
+    writeln([Value3, Naipe3]),
 
     config_new_round(1),
     sleep(3).
@@ -78,10 +78,10 @@ run_flop_round:-
 run_turn_round:-
     writeln(" ------- TurnRound -------- \n"),
 
-    get_first_card([Valor4, Naipe4]),
-    set_card_table(3, Valor4, Naipe4),
+    get_first_card([Value4, Naipe4]),
+    set_card_table(3, Value4, Naipe4),
 
-    writeln([Valor4, Naipe4]),
+    writeln([Value4, Naipe4]),
 
     minimum_bet(Min_bet),
     New_min_bet is (Min_bet * 2),
@@ -93,10 +93,10 @@ run_turn_round:-
 run_river_round:-
     writeln(" -------- RiverRound ---------- \n"),
 
-    get_first_card([Valor5, Naipe5]),
-    set_card_table(4, Valor5, Naipe5),
+    get_first_card([Value5, Naipe5]),
+    set_card_table(4, Value5, Naipe5),
 
-    writeln([Valor5, Naipe5]),
+    writeln([Value5, Naipe5]),
 
     config_new_round(3),
     sleep(3).
@@ -212,7 +212,7 @@ select_card_hand:-
     set_player_cards(Actual_player, [Naipe1, Value1], [Naipe2, Value2]).
 
 config_card(Value, Naipe):-
-    writeln("Digite o valor da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
+    writeln("Digite o Value da carta (2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K, A): "),
     read_line_to_string(user_input, ValueTest),
     writeln("Digite o naipe da carta (O, C, P, E): "),
     read_line_to_string(user_input, NaipeTest),
@@ -444,11 +444,11 @@ show_infos:-
     small_position(Small_position),
     big_position(Big_position),
     minimum_bet(Min_bet),
-    cards_table(0, Valor0, Naipe0),
-    cards_table(1, Valor1, Naipe1),
-    cards_table(2, Valor2, Naipe2),
-    cards_table(3, Valor3, Naipe3),
-    cards_table(4, Valor4, Naipe4),
+    cards_table(0, Value0, Naipe0),
+    cards_table(1, Value1, Naipe1),
+    cards_table(2, Value2, Naipe2),
+    cards_table(3, Value3, Naipe3),
+    cards_table(4, Value4, Naipe4),
     active_players(Active_players),
     pot(Pot),
     current_round(Current_round),
@@ -459,11 +459,11 @@ show_infos:-
     write("Posição do Big: "), writeln(Big_position),
     write("Aposta mínima: "), writeln(Min_bet),
     write("Cartas da mesa: "),
-    write(Valor0), write("  "), writeln(Naipe0),
-    write(Valor1), write("  "), writeln(Naipe1),
-    write(Valor2), write("  "), writeln(Naipe2),
-    write(Valor3), write("  "), writeln(Naipe3),
-    write(Valor4), write("  "), writeln(Naipe4),
+    write(Value0), write("  "), writeln(Naipe0),
+    write(Value1), write("  "), writeln(Naipe1),
+    write(Value2), write("  "), writeln(Naipe2),
+    write(Value3), write("  "), writeln(Naipe3),
+    write(Value4), write("  "), writeln(Naipe4),
     write("Pot: "), writeln(Pot),    
     write("Round: "), writeln(Current_round),
     write("Jogador atual: "), writeln(Actual_player),
